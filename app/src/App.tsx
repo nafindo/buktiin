@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import PublicLayout from './layouts/PublicLayout';
 import AdminLayout from './layouts/AdminLayout';
@@ -25,7 +25,7 @@ import ClusterStorageManagement from './pages/ClusterStorageManagement';
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         {/* Public Routes without Navbar (like Login) */}
         <Route element={<PublicLayout />}>
@@ -63,7 +63,7 @@ function App() {
         {/* Catch All */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
