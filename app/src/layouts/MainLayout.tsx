@@ -25,7 +25,11 @@ export default function MainLayout() {
           </div>
         </div>
         
-        <nav className="space-y-xs">
+        <nav className="space-y-xs flex-1">
+          <Link to="/dashboard" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/dashboard' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
+            <span className="font-label-caps text-label-caps">Dashboard</span>
+          </Link>
           <Link to="/scanner" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/scanner' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
             <span className="material-symbols-outlined">qr_code_scanner</span>
             <span className="font-label-caps text-label-caps">Live Scanner</span>
@@ -34,22 +38,20 @@ export default function MainLayout() {
             <span className="material-symbols-outlined">history</span>
             <span className="font-label-caps text-label-caps">Scan History</span>
           </Link>
-          <Link to="/dashboard" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/dashboard' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-            <span className="font-label-caps text-label-caps">Dashboard</span>
-          </Link>
           <Link to="/storage" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/storage' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
             <span className="material-symbols-outlined">inventory_2</span>
             <span className="font-label-caps text-label-caps">Storage</span>
           </Link>
+        </nav>
+        
+        <div className="mt-auto border-t border-ui-divider pt-sm pb-md">
           <Link to="/profile" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/profile' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
             <span className="material-symbols-outlined">account_circle</span>
             <span className="font-label-caps text-label-caps">Profile</span>
           </Link>
-        </nav>
-        
-        <div className="mt-auto pt-md border-t border-ui-divider">
-          <p className="font-code-sm text-code-sm text-on-surface-variant">V 4.0.0</p>
+          <div className="px-md mt-sm">
+            <p className="font-code-sm text-code-sm text-on-surface-variant">V 4.0.0</p>
+          </div>
         </div>
       </aside>
 

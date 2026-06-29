@@ -8,10 +8,10 @@ export default function StorageManagement() {
       </div>
       
       <div className="px-lg pb-xl space-y-lg max-w-container-max mx-auto w-full flex-1">
-        {/* Top Bento Grid Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-          {/* Storage Usage Card (Priority 1) */}
-          <div className="lg:col-span-2 p-xl bg-surface-container-lowest border border-ui-divider rounded-lg flex flex-col justify-between hover:border-primary hover:bg-surface-container-low transition-all duration-200">
+        {/* Top Section */}
+        <div className="flex flex-col gap-lg">
+          {/* Storage Usage Card */}
+          <div className="p-xl bg-surface-container-lowest border border-ui-divider rounded-lg flex flex-col justify-between hover:border-primary hover:bg-surface-container-low transition-all duration-200">
             <div className="flex justify-between items-start mb-md">
               <div>
                 <span className="font-label-caps text-label-caps text-on-surface-variant block mb-1">Current Usage</span>
@@ -39,71 +39,6 @@ export default function StorageManagement() {
             </div>
           </div>
 
-          {/* Auto-Delete Settings Card */}
-          <div className="p-xl bg-surface-container-lowest border border-ui-divider rounded-lg hover:border-primary hover:bg-surface-container-low transition-all duration-200">
-            <div className="flex items-center gap-2 mb-md">
-              <span className="material-symbols-outlined text-primary">auto_delete</span>
-              <h3 className="font-label-caps text-label-caps text-on-surface font-bold uppercase">Archival Policy</h3>
-            </div>
-            
-            <div className="space-y-lg mt-lg">
-              <div className="flex items-center justify-between">
-                <span className="font-body-md text-body-md">Auto-Delete Old Files</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-              
-              <div className="space-y-sm">
-                <span className="font-label-caps text-label-caps text-on-surface-variant text-[12px]">Retention Period</span>
-                <div className="flex items-center gap-sm">
-                  <input type="number" defaultValue="30" className="flex-1 bg-surface-container border border-ui-divider px-md py-sm font-code-sm text-center focus:border-primary outline-none" />
-                  <span className="font-body-md text-body-md">Days</span>
-                </div>
-              </div>
-              <p className="font-code-sm text-[11px] text-on-surface-variant italic">Files will be permanently deleted after 30 days of inactivity to free up space.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Backend Storage Nodes */}
-        <div className="space-y-md">
-          <div className="flex justify-between items-end">
-            <h3 className="font-label-caps text-label-caps text-on-surface font-bold uppercase tracking-widest">Storage Nodes & Cloud Integration</h3>
-            <button className="flex items-center gap-1 text-primary font-label-caps text-label-caps hover:underline transition-all">
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              ADD STORAGE ACCOUNT
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-            {/* Google Gemini Node */}
-            <div className="group relative overflow-hidden bg-surface-container-lowest border-2 border-primary rounded-lg p-lg flex items-center gap-lg">
-              <div className="w-16 h-16 bg-primary-container rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_done</span>
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-headline-md text-[18px] font-bold">Google Gemini Storage</h4>
-                  <span className="bg-status-success text-white px-2 py-[2px] rounded-DEFAULT font-code-sm text-[10px]">CONNECTED</span>
-                </div>
-                <p className="font-code-sm text-code-sm text-on-surface-variant">primary-operator@buktiin.cloud</p>
-                <div className="mt-sm flex items-center gap-lg">
-                  <span className="font-label-caps text-[12px] font-bold">5 TB CAPACITY</span>
-                  <span className="font-code-sm text-[12px] text-on-surface-variant">0.7% Used</span>
-                </div>
-              </div>
-              <button className="material-symbols-outlined text-on-surface-variant hover:text-status-error transition-colors">settings</button>
-            </div>
-            
-            {/* Add New Storage Placeholder */}
-            <div className="border-2 border-dashed border-ui-divider rounded-lg p-lg flex flex-col items-center justify-center text-center hover:border-primary hover:bg-surface-container transition-all group cursor-pointer">
-              <span className="material-symbols-outlined text-outline-variant group-hover:text-primary mb-2 transition-colors">add_box</span>
-              <p className="font-label-caps text-label-caps text-on-surface-variant">Expand Capacity</p>
-              <p className="font-code-sm text-[11px] text-outline text-on-surface-variant mt-1">Add AWS S3, Google Drive, or Local NAS</p>
-            </div>
-          </div>
         </div>
 
         {/* Recent Large Files / Video Management */}
