@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="light" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Daftar BUKTIIN - Bukti Packing, Aman Kirim</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed-variant": "#00531e",
+                "on-tertiary-container": "#003e89",
+                "secondary-container": "#fe6b00",
+                "on-primary-fixed": "#002108",
+                "on-tertiary-fixed": "#001a41",
+                "on-secondary-fixed": "#351000",
+                "background": "#fcf9f8",
+                "surface-container-highest": "#e5e2e1",
+                "outline": "#6c7b6a",
+                "outline-variant": "#bbcbb8",
+                "on-surface-variant": "#3c4a3c",
+                "surface-dim": "#dcd9d9",
+                "primary-fixed": "#69ff87",
+                "status-error": "#FF0000",
+                "on-secondary-fixed-variant": "#7a3000",
+                "secondary-fixed-dim": "#ffb693",
+                "inverse-primary": "#3ce36a",
+                "secondary": "#a04100",
+                "inverse-on-surface": "#f3f0ef",
+                "surface-background": "#FFFFFF",
+                "secondary-fixed": "#ffdbcc",
+                "on-secondary": "#ffffff",
+                "surface-container-high": "#eae7e7",
+                "on-primary": "#ffffff",
+                "on-secondary-container": "#572000",
+                "on-error-container": "#93000a",
+                "primary": "#006e2a",
+                "surface-container-low": "#f6f3f2",
+                "tertiary-fixed-dim": "#adc6ff",
+                "tertiary-container": "#84adff",
+                "surface-container-lowest": "#ffffff",
+                "on-error": "#ffffff",
+                "tertiary": "#005ac1",
+                "surface-variant": "#e5e2e1",
+                "on-surface": "#1b1c1c",
+                "on-background": "#1b1c1c",
+                "error-container": "#ffdad6",
+                "ui-divider": "#E0E0E0",
+                "surface-tint": "#006e2a",
+                "surface": "#fcf9f8",
+                "tertiary-fixed": "#d8e2ff",
+                "on-primary-container": "#004c1b",
+                "error": "#ba1a1a",
+                "primary-container": "#00c853",
+                "inverse-surface": "#303030",
+                "status-success": "#00C853",
+                "status-processing": "#FF6B00",
+                "on-tertiary": "#ffffff",
+                "surface-container": "#f0eded",
+                "primary-fixed-dim": "#3ce36a",
+                "surface-bright": "#fcf9f8",
+                "on-tertiary-fixed-variant": "#004494"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "xl": "32px",
+                "xs": "4px",
+                "base": "4px",
+                "lg": "24px",
+                "container-max": "1280px",
+                "sm": "8px",
+                "md": "16px",
+                "gutter": "16px"
+            },
+            "fontFamily": {
+                "code-sm": ["JetBrains Mono"],
+                "headline-lg": ["Be Vietnam Pro"],
+                "body-md": ["Be Vietnam Pro"],
+                "body-lg": ["Be Vietnam Pro"],
+                "label-caps": ["JetBrains Mono"],
+                "headline-lg-mobile": ["Be Vietnam Pro"],
+                "display-lg": ["Be Vietnam Pro"],
+                "headline-md": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .industrial-grid {
+            background-image: radial-gradient(#bbcbb8 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+        .shimmer-bg {
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 83, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- Hero/Auth Container -->
+<main class="flex-grow flex flex-col md:flex-row industrial-grid">
+<!-- Left Side: Visual/Branding -->
+<div class="hidden md:flex md:w-5/12 bg-inverse-surface text-surface-background p-xl flex-col justify-between relative overflow-hidden">
+<div class="absolute inset-0 opacity-10">
+<div class="w-full h-full bg-cover bg-center" data-alt="A macro close-up of a high-tech warehouse logistics system, featuring automated conveyor belts and robotic arms with vibrant green status lights. The lighting is cold and industrial with deep shadows, emphasizing precision and speed. The style is ultra-modern, clean, and highly technological with a professional aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5fO_W_UzmtUje6OHgiFtjgbqrdCWmGsbtRiYFlyd-T4PTIVNbM4OKO4vEApf6TP_ix6sK_YV4KwheDgMYMIyIctfxntLZyKpOJ1asXra31nT8HOopGB2MO18XMjifuAYrXSHkU_jBQj7mfBSpDGZlfOUfyQ4g2qoRAYGmhMd8frcZhGsQghdgIUWmdnE7bsLk21yqFMoHPbBgX6ozdJcE6Z0Kgy_y1wNg1Ycnjn1iWX3ya0ADcHLE')"></div>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
+                    BUKTIIN
+                </div>
+<div class="mt-md">
+<h1 class="font-display-lg text-display-lg leading-tight">Bukti Packing,<br/><span class="text-primary-fixed">Aman Kirim</span></h1>
+<p class="font-body-lg text-body-lg text-surface-variant mt-md max-w-md">
+                        Digitalisasi rekaman packing gudang Anda untuk transparansi penuh dan keamanan pengiriman.
+                    </p>
+</div>
+</div>
+<div class="relative z-10 space-y-md">
+<div class="p-md border border-outline-variant bg-surface-container-highest/10 backdrop-blur-md rounded-DEFAULT">
+<div class="flex items-center gap-2 mb-sm text-primary-fixed">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-caps text-label-caps">QUALITY ASSURANCE</span>
+</div>
+<div class="font-code-sm text-code-sm text-surface-variant">
+                        SYSTEM_STATUS: OPERATIONAL<br/>
+                        UPTIME: 99.9%<br/>
+                        REGION: ID-JKT-01
+                    </div>
+</div>
+</div>
+</div>
+<!-- Right Side: Registration Form -->
+<div class="flex-grow flex items-center justify-center p-md md:p-xl">
+<div class="w-full max-w-md space-y-xl">
+<div class="space-y-sm">
+<div class="md:hidden flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary mb-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">package_2</span>
+                        BUKTIIN
+                    </div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg">Mulai Sekarang</h2>
+<p class="text-on-surface-variant font-body-md">Lengkapi data untuk membuat akun gudang Anda.</p>
+</div>
+<form class="space-y-md" onsubmit="event.preventDefault();">
+<!-- Full Name -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+<input class="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Masukkan nama lengkap" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Email -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="email@toko.com" type="email"/>
+</div>
+</div>
+<!-- Phone -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">NO. TELEPON</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">call</span>
+<input class="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="0812..." type="tel"/>
+</div>
+</div>
+</div>
+<!-- Shop Name -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">NAMA TOKO / GUDANG</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">warehouse</span>
+<input class="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Contoh: Gudang Utama Jakarta" type="text"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant block">KATA SANDI</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full pl-[48px] pr-[48px] py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Min. 8 Karakter" type="password"/>
+<button class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-sm py-sm">
+<input class="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" id="terms" type="checkbox"/>
+<label class="font-body-md text-on-surface-variant leading-tight" for="terms">
+                            Saya menyetujui <a class="text-primary font-bold hover:underline" href="#">Syarat &amp; Ketentuan</a> serta <a class="text-primary font-bold hover:underline" href="#">Kebijakan Privasi</a> BUKTIIN.
+                        </label>
+</div>
+<!-- CTA -->
+<button class="w-full py-md bg-primary-container hover:bg-primary text-on-primary font-bold rounded-DEFAULT flex items-center justify-center gap-sm transition-all active:scale-95 group relative overflow-hidden" type="submit">
+<span class="shimmer-bg absolute inset-0 pointer-events-none"></span>
+<span class="relative z-10 uppercase tracking-wider">Daftar Sekarang</span>
+<span class="material-symbols-outlined relative z-10 transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</form>
+<div class="pt-lg border-t border-ui-divider text-center">
+<p class="font-body-md text-on-surface-variant">
+                        Sudah punya akun? <a class="text-primary font-bold hover:underline" href="#">Masuk di sini</a>
+</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="bg-surface border-t border-ui-divider w-full px-lg py-md flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="flex items-center gap-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">BUKTIIN v2.4.0</span>
+<span class="hidden md:block w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">© 2026 Nafindo Group. All Rights Reserved.</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="font-label-caps text-label-caps">STATUS:</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+<span class="font-code-sm text-code-sm uppercase">Secure Connection</span>
+</div>
+<span class="mx-md hidden md:block text-ui-divider">|</span>
+<span class="font-code-sm text-code-sm">Developed by Nafindo Group</span>
+</div>
+</footer>
+<script>
+        // Micro-interaction: Shimmer follow or button effects
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-95'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-95'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-95'));
+        });
+
+        // Simple input focus behavior for labels
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.previousElementSibling.classList.replace('text-on-surface-variant', 'text-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.previousElementSibling.classList.replace('text-primary', 'text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

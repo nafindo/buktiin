@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BUKTIIN - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=beVietnamPro:wght@100..900&family=jetbrainsMono:wght@100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        @font-face {
+            font-family: 'beVietnamPro';
+            src: local('Be Vietnam Pro');
+        }
+        @font-face {
+            font-family: 'jetbrainsMono';
+            src: local('JetBrains Mono');
+        }
+        body {
+            font-family: 'beVietnamPro', sans-serif;
+            background-color: #fcf9f8;
+            color: #1b1c1c;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .industrial-card {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            transition: all 0.2s ease;
+        }
+        .industrial-card:hover {
+            border-color: #006e2a;
+            background-color: #f6f3f2;
+        }
+        .stat-icon-bg {
+            background: #f0eded;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+<!-- Include Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#351000",
+                    "inverse-surface": "#303030",
+                    "ui-divider": "#E0E0E0",
+                    "surface-dim": "#dcd9d9",
+                    "surface": "#fcf9f8",
+                    "surface-container-high": "#eae7e7",
+                    "tertiary-fixed": "#d8e2ff",
+                    "secondary-container": "#fe6b00",
+                    "primary-fixed-dim": "#3ce36a",
+                    "outline": "#6c7b6a",
+                    "on-background": "#1b1c1c",
+                    "error": "#ba1a1a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "surface-container": "#f0eded",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1b1c1c",
+                    "secondary-fixed": "#ffdbcc",
+                    "on-tertiary-fixed": "#001a41",
+                    "on-primary-fixed-variant": "#00531e",
+                    "status-success": "#00C853",
+                    "surface-bright": "#fcf9f8",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "status-error": "#FF0000",
+                    "on-tertiary-fixed-variant": "#004494",
+                    "secondary": "#a04100",
+                    "tertiary-container": "#84adff",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#00c853",
+                    "on-secondary-fixed-variant": "#7a3000",
+                    "on-primary-container": "#004c1b",
+                    "on-secondary-container": "#572000",
+                    "status-processing": "#FF6B00",
+                    "background": "#fcf9f8",
+                    "secondary-fixed-dim": "#ffb693",
+                    "surface-variant": "#e5e2e1",
+                    "outline-variant": "#bbcbb8",
+                    "on-tertiary-container": "#003e89",
+                    "inverse-primary": "#3ce36a",
+                    "on-surface-variant": "#3c4a3c",
+                    "primary": "#006e2a",
+                    "on-error-container": "#93000a",
+                    "surface-container-highest": "#e5e2e1",
+                    "tertiary": "#005ac1",
+                    "surface-background": "#FFFFFF",
+                    "primary-fixed": "#69ff87",
+                    "surface-tint": "#006e2a",
+                    "on-primary-fixed": "#002108",
+                    "inverse-on-surface": "#f3f0ef"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "container-max": "1280px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["beVietnamPro"],
+                    "display-lg": ["beVietnamPro"],
+                    "body-md": ["beVietnamPro"],
+                    "label-caps": ["jetbrainsMono"],
+                    "headline-lg": ["beVietnamPro"],
+                    "headline-md": ["beVietnamPro"],
+                    "code-sm": ["jetbrainsMono"],
+                    "headline-lg-mobile": ["beVietnamPro"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-ui-divider dark:border-outline-variant p-md space-y-sm shrink-0">
+<div class="flex items-center gap-2 mb-xl">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
+</div>
+<div class="mb-lg px-xs">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-primary rounded-DEFAULT flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-primary">Packing Station 01</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Active Session</p>
+</div>
+</div>
+</div>
+<nav class="space-y-xs">
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-label-caps text-label-caps">Live Scanner</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-caps text-label-caps">Scan History</span>
+</a>
+<a class="flex items-center gap-md p-md bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold rounded-DEFAULT border-l-4 border-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-caps text-label-caps">Storage Management</span>
+</a>
+<a class="flex items-center gap-md p-md text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</a>
+</nav>
+<div class="mt-auto pt-md border-t border-ui-divider">
+<p class="font-code-sm text-code-sm text-on-surface-variant">V 2.0.4 - PRO</p>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-lg py-md border-b border-ui-divider bg-surface dark:bg-inverse-surface z-10">
+<div class="flex items-center gap-md md:hidden">
+<span class="material-symbols-outlined text-primary">menu</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
+</div>
+<div class="hidden md:block">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">Warehouse Overview</h1>
+</div>
+<div class="flex items-center gap-lg">
+<button class="relative hover:bg-surface-container transition-colors p-sm rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-status-error rounded-full"></span>
+</button>
+<button class="hover:bg-surface-container transition-colors p-sm rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-surface-container border border-ui-divider flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sharp, professional studio headshot of a young warehouse manager with a focused expression, wearing a clean logistical vest. The background is a soft-focus industrial setting with neat shelving. High-end lighting creates a professional tech-service aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6ELpYW01Va6uSsSddcFeC0g8lyEsrRd9fWZEQSywco_m7wihxefaRSLH1fofEYL2KhXTKlo8BHOC36jHjIIDJtb4UUtGAXkNlMYPqDTqJEeeblmr2JAOurClIgjT3EENPyYOVl4eHkZBDIP3Ss0erPJTZQ_ydvnUB-NOGsJVYmtn2oXKnAU_fsqaDDUQg-e3MEMndT7oqwYrOcOGXZC_0CbCGM5E9Pi4BqLzUwJfESfJOf7JV1YVB"/>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto p-lg">
+<div class="max-w-[1440px] mx-auto space-y-lg">
+<!-- Daily Statistics -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Total Orders -->
+<div class="industrial-card p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Orders</span>
+<div class="stat-icon-bg">
+<span class="material-symbols-outlined text-primary">package</span>
+</div>
+</div>
+<div>
+<p class="font-display-lg text-4xl font-bold">320</p>
+<p class="font-code-sm text-code-sm text-primary mt-xs">+12.5% from yesterday</p>
+</div>
+</div>
+<!-- Selesai -->
+<div class="industrial-card p-lg flex flex-col justify-between border-b-4 border-status-success">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Selesai</span>
+<div class="stat-icon-bg">
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div>
+<p class="font-display-lg text-4xl font-bold">280</p>
+<p class="font-code-sm text-code-sm text-status-success mt-xs">87.5% Success Rate</p>
+</div>
+</div>
+<!-- Proses -->
+<div class="industrial-card p-lg flex flex-col justify-between border-b-4 border-status-processing">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Proses</span>
+<div class="stat-icon-bg">
+<span class="material-symbols-outlined text-status-processing" style="font-variation-settings: 'FILL' 1;">pending</span>
+</div>
+</div>
+<div>
+<p class="font-display-lg text-4xl font-bold">3</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant mt-xs">Awaiting packing</p>
+</div>
+</div>
+<!-- Video Uploads -->
+<div class="industrial-card p-lg flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Video Proof</span>
+<div class="stat-icon-bg">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</div>
+</div>
+<div>
+<p class="font-display-lg text-4xl font-bold">278</p>
+<p class="font-code-sm text-code-sm text-primary mt-xs">99.2% Capture rate</p>
+</div>
+</div>
+</section>
+<!-- Charts Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Main Line Chart -->
+<div class="industrial-card p-lg lg:col-span-8 h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h3 class="font-headline-md text-headline-md font-bold">Order Trends</h3>
+<p class="font-body-md text-on-surface-variant">Daily volume for the current month</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-xs border border-primary text-primary font-label-caps text-label-caps rounded-DEFAULT">Daily</button>
+<button class="px-md py-xs border border-ui-divider text-on-surface-variant font-label-caps text-label-caps rounded-DEFAULT hover:bg-surface-variant">Weekly</button>
+</div>
+</div>
+<div class="flex-1 w-full relative">
+<canvas id="orderTrendChart"></canvas>
+</div>
+</div>
+<!-- Marketplace Pie Chart -->
+<div class="industrial-card p-lg lg:col-span-4 h-[400px] flex flex-col">
+<h3 class="font-headline-md text-headline-md font-bold mb-md">Marketplace Distribution</h3>
+<div class="flex-1 relative flex items-center justify-center">
+<canvas id="marketplacePieChart"></canvas>
+</div>
+<div class="grid grid-cols-3 gap-xs mt-md">
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">SHOPEE</p>
+<p class="font-bold text-primary">60%</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">TOKOPEDIA</p>
+<p class="font-bold text-secondary">25%</p>
+</div>
+<div class="text-center">
+<p class="font-label-caps text-[10px] text-on-surface-variant">TIKTOK</p>
+<p class="font-bold text-tertiary">15%</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Revenue & Activity Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Revenue Stats -->
+<div class="industrial-card p-lg lg:col-span-5 relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md font-bold mb-md">Revenue Statistics</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xl">LAST 30 DAYS</p>
+<div class="space-y-lg">
+<div>
+<p class="font-body-md text-on-surface-variant">Total Managed Value</p>
+<p class="font-display-lg text-3xl font-bold text-primary">Rp 124.500.000</p>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div class="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-status-success">
+<p class="font-code-sm text-code-sm text-on-surface-variant">Net Profit</p>
+<p class="font-bold">Rp 18.2M</p>
+</div>
+<div class="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-primary">
+<p class="font-code-sm text-code-sm text-on-surface-variant">Tax Ded.</p>
+<p class="font-bold">Rp 1.4M</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Atmospheric Grid Pattern -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(#006e2a 0.5px, transparent 0.5px); background-size: 16px 16px;"></div>
+</div>
+<!-- Recent Activity -->
+<div class="industrial-card p-lg lg:col-span-7 flex flex-col">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-headline-md font-bold">Recent Activity</h3>
+<button class="font-label-caps text-label-caps text-primary hover:underline">[ VIEW ALL ]</button>
+</div>
+<div class="space-y-md flex-1">
+<!-- Activity Item 1 -->
+<div class="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
+<div class="w-10 h-10 bg-status-success/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-status-success">videocam</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface font-semibold">Video proof uploaded for #ORD-8921</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">2 minutes ago • Packing Station 01</p>
+</div>
+<div class="text-right">
+<span class="px-md py-xs bg-status-success text-on-primary font-label-caps text-[10px] rounded-full">SELESAI</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
+<div class="w-10 h-10 bg-tertiary/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary">workspace_premium</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface font-semibold">Warehouse "Store A" upgraded to Enterprise</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">15 minutes ago • Admin Action</p>
+</div>
+<div class="text-right">
+<span class="px-md py-xs border border-tertiary text-tertiary font-label-caps text-[10px] rounded-full">UPGRADE</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
+<div class="w-10 h-10 bg-status-processing/10 rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-status-processing">sync</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-on-surface font-semibold">API Syncing with Shopee Warehouse</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">45 minutes ago • System</p>
+</div>
+<div class="text-right">
+<span class="px-md py-xs bg-status-processing text-on-primary font-label-caps text-[10px] rounded-full">PROSES</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="mt-xl border-t border-ui-divider py-md flex flex-col md:flex-row justify-between items-center text-on-surface-variant">
+<p class="font-code-sm text-code-sm">© 2026 Nafindo Group. All Rights Reserved.</p>
+<div class="flex gap-lg items-center mt-md md:mt-0">
+<span class="font-label-caps text-label-caps">Developed by Nafindo Group</span>
+<span class="font-code-sm text-code-sm bg-surface-container px-sm py-1 rounded">BUILD_ID: B-9982</span>
+</div>
+</footer>
+</div>
+</main>
+<script>
+        // Line Chart Configuration
+        const ctxLine = document.getElementById('orderTrendChart').getContext('2d');
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: ['01 May', '05 May', '10 May', '15 May', '20 May', '25 May', '30 May'],
+                datasets: [{
+                    label: 'Daily Orders',
+                    data: [150, 185, 160, 240, 280, 210, 320],
+                    borderColor: '#006e2a',
+                    backgroundColor: 'rgba(0, 110, 42, 0.05)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#006e2a'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#E0E0E0' },
+                        ticks: { font: { family: 'JetBrains Mono', size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'JetBrains Mono', size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // Pie Chart Configuration
+        const ctxPie = document.getElementById('marketplacePieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Shopee', 'Tokopedia', 'TikTok'],
+                datasets: [{
+                    data: [60, 25, 15],
+                    backgroundColor: ['#006e2a', '#a04100', '#005ac1'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body></html>

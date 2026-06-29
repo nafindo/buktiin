@@ -1,0 +1,139 @@
+import { Link, useNavigate } from 'react-router-dom';
+
+export default function LoginRegister() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate('/plans');
+  };
+
+  return (
+    <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+      {/* Hero/Auth Container */}
+      <main className="flex-grow flex flex-col md:flex-row industrial-grid">
+        {/* Left Side: Visual/Branding */}
+        <div className="hidden md:flex md:w-5/12 bg-inverse-surface text-surface-background p-xl flex-col justify-between relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5fO_W_UzmtUje6OHgiFtjgbqrdCWmGsbtRiYFlyd-T4PTIVNbM4OKO4vEApf6TP_ix6sK_YV4KwheDgMYMIyIctfxntLZyKpOJ1asXra31nT8HOopGB2MO18XMjifuAYrXSHkU_jBQj7mfBSpDGZlfOUfyQ4g2qoRAYGmhMd8frcZhGsQghdgIUWmdnE7bsLk21yqFMoHPbBgX6ozdJcE6Z0Kgy_y1wNg1Ycnjn1iWX3ya0ADcHLE')" }}></div>
+          </div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary-fixed">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>package_2</span>
+              BUKTIIN
+            </div>
+            <div className="mt-md">
+              <h1 className="font-display-lg text-display-lg leading-tight">Bukti Packing,<br/><span className="text-primary-fixed">Aman Kirim</span></h1>
+              <p className="font-body-lg text-body-lg text-surface-variant mt-md max-w-md">
+                Digitalisasi rekaman packing gudang Anda untuk transparansi penuh dan keamanan pengiriman.
+              </p>
+            </div>
+          </div>
+          <div className="relative z-10 space-y-md">
+            <div className="p-md border border-outline-variant bg-surface-container-highest/10 backdrop-blur-md rounded-DEFAULT">
+              <div className="flex items-center gap-2 mb-sm text-primary-fixed">
+                <span className="material-symbols-outlined">verified</span>
+                <span className="font-label-caps text-label-caps">QUALITY ASSURANCE</span>
+              </div>
+              <div className="font-code-sm text-code-sm text-surface-variant">
+                SYSTEM_STATUS: OPERATIONAL<br/>
+                UPTIME: 99.9%<br/>
+                REGION: ID-JKT-01
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Right Side: Registration Form */}
+        <div className="flex-grow flex items-center justify-center p-md md:p-xl">
+          <div className="w-full max-w-md space-y-xl">
+            <div className="space-y-sm">
+              <div className="md:hidden flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary mb-lg">
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>package_2</span>
+                BUKTIIN
+              </div>
+              <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg">Mulai Sekarang</h2>
+              <p className="text-on-surface-variant font-body-md">Lengkapi data untuk membuat akun gudang Anda.</p>
+            </div>
+            <form className="space-y-md" onSubmit={handleSubmit}>
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+                  <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Masukkan nama lengkap" type="text"/>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <div className="space-y-xs">
+                  <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
+                  <div className="relative group">
+                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="email@toko.com" type="email"/>
+                  </div>
+                </div>
+                <div className="space-y-xs">
+                  <label className="font-label-caps text-label-caps text-on-surface-variant block">NO. TELEPON</label>
+                  <div className="relative group">
+                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">call</span>
+                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="0812..." type="tel"/>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA TOKO / GUDANG</label>
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">warehouse</span>
+                  <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Contoh: Gudang Utama Jakarta" type="text"/>
+                </div>
+              </div>
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant block">KATA SANDI</label>
+                <div className="relative group">
+                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+                  <input className="w-full pl-[48px] pr-[48px] py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Min. 8 Karakter" type="password"/>
+                  <button className="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
+                    <span className="material-symbols-outlined">visibility</span>
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-start gap-sm py-sm">
+                <input className="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" id="terms" type="checkbox"/>
+                <label className="font-body-md text-on-surface-variant leading-tight" htmlFor="terms">
+                  Saya menyetujui <a className="text-primary font-bold hover:underline" href="#">Syarat & Ketentuan</a> serta <a className="text-primary font-bold hover:underline" href="#">Kebijakan Privasi</a> BUKTIIN.
+                </label>
+              </div>
+              <button className="w-full py-md bg-primary-container hover:bg-primary text-on-primary font-bold rounded-DEFAULT flex items-center justify-center gap-sm transition-all active:scale-95 group relative overflow-hidden" type="submit">
+                <span className="shimmer-bg absolute inset-0 pointer-events-none"></span>
+                <span className="relative z-10 uppercase tracking-wider">Daftar Sekarang</span>
+                <span className="material-symbols-outlined relative z-10 transition-transform group-hover:translate-x-1">arrow_forward</span>
+              </button>
+            </form>
+            <div className="pt-lg border-t border-ui-divider text-center">
+              <p className="font-body-md text-on-surface-variant">
+                Sudah punya akun? <Link className="text-primary font-bold hover:underline" to="/dashboard">Masuk di sini</Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+      
+      {/* Footer Component */}
+      <footer className="bg-surface border-t border-ui-divider w-full px-lg py-md flex flex-col md:flex-row justify-between items-center gap-md">
+        <div className="flex items-center gap-md">
+          <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">BUKTIIN v2.4.0</span>
+          <span className="hidden md:block w-1 h-1 rounded-full bg-outline-variant"></span>
+          <span className="font-code-sm text-code-sm text-on-surface-variant">© 2026 Nafindo Group. All Rights Reserved.</span>
+        </div>
+        <div className="flex items-center gap-sm text-on-surface-variant">
+          <span className="font-label-caps text-label-caps">STATUS:</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+            <span className="font-code-sm text-code-sm uppercase">Secure Connection</span>
+          </div>
+          <span className="mx-md hidden md:block text-ui-divider">|</span>
+          <span className="font-code-sm text-code-sm">Developed by Nafindo Group</span>
+        </div>
+      </footer>
+    </div>
+  );
+}

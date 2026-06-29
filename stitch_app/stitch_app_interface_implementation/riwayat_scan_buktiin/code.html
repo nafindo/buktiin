@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BUKTIIN - Scan History</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#351000",
+                      "inverse-surface": "#303030",
+                      "ui-divider": "#E0E0E0",
+                      "surface-dim": "#dcd9d9",
+                      "surface": "#fcf9f8",
+                      "surface-container-high": "#eae7e7",
+                      "tertiary-fixed": "#d8e2ff",
+                      "secondary-container": "#fe6b00",
+                      "primary-fixed-dim": "#3ce36a",
+                      "outline": "#6c7b6a",
+                      "on-background": "#1b1c1c",
+                      "error": "#ba1a1a",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#adc6ff",
+                      "surface-container": "#f0eded",
+                      "on-error": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#1b1c1c",
+                      "secondary-fixed": "#ffdbcc",
+                      "on-tertiary-fixed": "#001a41",
+                      "on-primary-fixed-variant": "#00531e",
+                      "status-success": "#00C853",
+                      "surface-bright": "#fcf9f8",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "status-error": "#FF0000",
+                      "on-tertiary-fixed-variant": "#004494",
+                      "secondary": "#a04100",
+                      "tertiary-container": "#84adff",
+                      "surface-container-low": "#f6f3f2",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-container": "#00c853",
+                      "on-secondary-fixed-variant": "#7a3000",
+                      "on-primary-container": "#004c1b",
+                      "on-secondary-container": "#572000",
+                      "status-processing": "#FF6B00",
+                      "background": "#fcf9f8",
+                      "secondary-fixed-dim": "#ffb693",
+                      "surface-variant": "#e5e2e1",
+                      "outline-variant": "#bbcbb8",
+                      "on-tertiary-container": "#003e89",
+                      "inverse-primary": "#3ce36a",
+                      "on-surface-variant": "#3c4a3c",
+                      "primary": "#006e2a",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e5e2e1",
+                      "tertiary": "#005ac1",
+                      "surface-background": "#FFFFFF",
+                      "primary-fixed": "#69ff87",
+                      "surface-tint": "#006e2a",
+                      "on-primary-fixed": "#002108",
+                      "inverse-on-surface": "#f3f0ef"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "container-max": "1280px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Be Vietnam Pro"],
+                      "display-lg": ["Be Vietnam Pro"],
+                      "body-md": ["Be Vietnam Pro"],
+                      "label-caps": ["JetBrains Mono"],
+                      "headline-lg": ["Be Vietnam Pro"],
+                      "headline-md": ["Be Vietnam Pro"],
+                      "code-sm": ["JetBrains Mono"],
+                      "headline-lg-mobile": ["Be Vietnam Pro"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #E0E0E0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #BBCBB8; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-surface-container-low border-r border-ui-divider p-md space-y-sm fixed left-0 top-0 z-50">
+<div class="flex flex-col mb-xl">
+<div class="flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary mb-xs">
+                BUKTIIN
+            </div>
+<div class="flex flex-col p-sm bg-surface-container rounded-lg">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Warehouse operator portrait with professional uniform and logistics background, daylight environment, sharp focus, tech-driven atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB34o8_0eUQ20K6-4xAs4EePg55BcnfGZCgq0bC13qvVH-c8OlfAYH19GV9NdAhxP6L_mYnr_t8Ids6OySUttBVEUZ-itRXgdrirYydAnNmg_J3f9hSvKPTo79xGw2ONtWxTaXmMQG3n0Y5jfvSrNQwRH2xDQg_bP8T5IH_7VGhrXhxwwGzJeiTFnZIemejqx66j6KPY5K2RRS5Ybv3PJ8peY6Dnk2tHRPVAfDY6nPM3O7EVU0GyJtq"/>
+</div>
+<div class="overflow-hidden">
+<p class="font-label-caps text-code-sm truncate">Packing Station 01</p>
+<p class="text-xs text-on-surface-variant font-code-sm opacity-70">Active Session</p>
+</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="qr_code_scanner">qr_code_scanner</span>
+                Live Scanner
+            </a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-md py-sm bg-primary-container text-on-primary-container font-bold rounded-DEFAULT border-l-4 border-primary font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                Scan History
+            </a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+                Storage Management
+            </a>
+<a class="flex items-center gap-3 px-md py-sm text-on-surface-variant hover:bg-surface-variant transition-all font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                Profile
+            </a>
+</nav>
+<div class="pt-md border-t border-ui-divider">
+<p class="font-code-sm text-[10px] text-on-surface-variant text-center opacity-50 uppercase tracking-tighter">v.2.4.1-Stable</p>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 bg-surface flex justify-between items-center w-full px-lg py-md border-b border-ui-divider">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Scan History</h1>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm">
+<button class="p-sm text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="hidden sm:flex items-center gap-2 border-l border-ui-divider pl-md">
+<span class="font-label-caps text-label-caps text-on-surface-variant">Admin_S01</span>
+</div>
+</div>
+</header>
+<!-- Page Body -->
+<section class="p-lg flex-1">
+<!-- Bento Search & Filter Panel -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md mb-lg">
+<!-- Search Section -->
+<div class="lg:col-span-6 bg-surface-container-lowest border border-ui-divider p-md flex flex-col justify-center">
+<label class="font-label-caps text-code-sm text-on-surface-variant mb-xs">Cari Resi atau Nama Customer</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full pl-10 pr-md py-sm bg-surface border border-ui-divider focus:border-2 focus:border-primary outline-none font-body-md transition-all" placeholder="Contoh: RESI-012345678" type="text"/>
+</div>
+</div>
+<!-- Date Range Filter -->
+<div class="lg:col-span-4 bg-surface-container-lowest border border-ui-divider p-md flex flex-col justify-center">
+<label class="font-label-caps text-code-sm text-on-surface-variant mb-xs">Filter Rentang Tanggal</label>
+<div class="flex items-center gap-2">
+<input class="flex-1 px-sm py-sm bg-surface border border-ui-divider focus:border-primary outline-none font-code-sm" type="date"/>
+<span class="text-on-surface-variant">to</span>
+<input class="flex-1 px-sm py-sm bg-surface border border-ui-divider focus:border-primary outline-none font-code-sm" type="date"/>
+</div>
+</div>
+<!-- Export CTA -->
+<div class="lg:col-span-2 bg-surface-container-lowest border border-ui-divider p-md flex flex-col items-stretch justify-center">
+<button class="w-full h-full bg-on-surface text-surface py-md font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-on-surface-variant transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-md" data-icon="download">download</span>
+                        Export CSV
+                    </button>
+</div>
+</div>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest border border-ui-divider overflow-x-auto">
+<table class="w-full border-collapse">
+<thead class="bg-surface-container text-left border-b border-ui-divider">
+<tr>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant">Tanggal</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant">Resi</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant">Customer</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant">Items</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant">Status</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant text-center">Video</th>
+<th class="px-md py-sm font-label-caps text-label-caps text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-ui-divider">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-md font-code-sm">2026-10-24 14:22</td>
+<td class="px-md py-md font-code-sm font-bold">RESI-88219901</td>
+<td class="px-md py-md font-body-md">Andi Wijaya</td>
+<td class="px-md py-md font-body-md">2x Laptop Sleeve, 1x Mouse</td>
+<td class="px-md py-md">
+<span class="inline-block px-2 py-0.5 bg-status-success text-white font-label-caps text-[10px] rounded-xs uppercase">Selesai</span>
+</td>
+<td class="px-md py-md text-center">
+<button class="text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+</button>
+</td>
+<td class="px-md py-md text-right">
+<button class="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-md font-code-sm">2026-10-24 14:15</td>
+<td class="px-md py-md font-code-sm font-bold">RESI-88219902</td>
+<td class="px-md py-md font-body-md">Siti Aminah</td>
+<td class="px-md py-md font-body-md">5x Packing Tape</td>
+<td class="px-md py-md">
+<span class="inline-block px-2 py-0.5 bg-status-processing text-white font-label-caps text-[10px] rounded-xs uppercase">Proses</span>
+</td>
+<td class="px-md py-md text-center">
+<button class="text-on-surface-variant opacity-20 cursor-not-allowed">
+<span class="material-symbols-outlined" data-icon="videocam_off">videocam_off</span>
+</button>
+</td>
+<td class="px-md py-md text-right">
+<button class="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-md font-code-sm">2026-10-24 13:58</td>
+<td class="px-md py-md font-code-sm font-bold">RESI-88219895</td>
+<td class="px-md py-md font-body-md">Budiono Siregar</td>
+<td class="px-md py-md font-body-md">1x Mechanical Keyboard</td>
+<td class="px-md py-md">
+<span class="inline-block px-2 py-0.5 bg-status-error text-white font-label-caps text-[10px] rounded-xs uppercase">Gagal</span>
+</td>
+<td class="px-md py-md text-center">
+<button class="text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+</button>
+</td>
+<td class="px-md py-md text-right">
+<button class="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-md font-code-sm">2026-10-24 13:45</td>
+<td class="px-md py-md font-code-sm font-bold">RESI-88219890</td>
+<td class="px-md py-md font-body-md">Rina Kartika</td>
+<td class="px-md py-md font-body-md">1x Monitor 24", 1x HDMI</td>
+<td class="px-md py-md">
+<span class="inline-block px-2 py-0.5 bg-status-success text-white font-label-caps text-[10px] rounded-xs uppercase">Selesai</span>
+</td>
+<td class="px-md py-md text-center">
+<button class="text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+</button>
+</td>
+<td class="px-md py-md text-right">
+<button class="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-md font-code-sm">2026-10-24 13:30</td>
+<td class="px-md py-md font-code-sm font-bold">RESI-88219888</td>
+<td class="px-md py-md font-body-md">Dedi Mulyadi</td>
+<td class="px-md py-md font-body-md">3x USB Hub Type-C</td>
+<td class="px-md py-md">
+<span class="inline-block px-2 py-0.5 bg-status-success text-white font-label-caps text-[10px] rounded-xs uppercase">Selesai</span>
+</td>
+<td class="px-md py-md text-center">
+<button class="text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+</button>
+</td>
+<td class="px-md py-md text-right">
+<button class="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination Utility -->
+<div class="px-lg py-md bg-surface-container border-t border-ui-divider flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-code-sm text-code-sm text-on-surface-variant">Showing 1-25 of 1,204 results</p>
+<div class="flex items-center gap-xs">
+<button class="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-white font-label-caps text-label-caps shadow-sm">1</button>
+<button class="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">2</button>
+<button class="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">3</button>
+<span class="px-2 text-on-surface-variant">...</span>
+<button class="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">48</button>
+<button class="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-auto w-full px-lg py-md border-t border-ui-divider bg-surface flex flex-col md:flex-row justify-between items-center">
+<p class="font-code-sm text-code-sm text-on-surface-variant">© 2026 Nafindo Group. All Rights Reserved.</p>
+<div class="flex items-center gap-lg mt-md md:mt-0">
+<a class="font-label-caps text-code-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="font-label-caps text-code-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+<span class="font-label-caps text-code-sm text-on-surface-variant border-l border-ui-divider pl-lg">Developed by Nafindo Group</span>
+</div>
+</footer>
+</main>
+<!-- Mobile Navigation (BottomNavBar) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-ui-divider h-16 flex items-center justify-around z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="qr_code_scanner">qr_code_scanner</span>
+<span class="text-[10px] font-label-caps">Live</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-[10px] font-label-caps">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-label-caps">Board</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-label-caps">User</span>
+</a>
+</nav>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.querySelectorAll('button, a').forEach(elem => {
+            elem.addEventListener('mousedown', () => {
+                elem.classList.add('scale-95');
+            });
+            elem.addEventListener('mouseup', () => {
+                elem.classList.remove('scale-95');
+            });
+            elem.addEventListener('mouseleave', () => {
+                elem.classList.remove('scale-95');
+            });
+        });
+
+        // Search Bar Focus Effect
+        const searchInput = document.querySelector('input[type="text"]');
+        const searchContainer = searchInput?.parentElement?.parentElement;
+        searchInput?.addEventListener('focus', () => {
+            searchContainer?.classList.add('ring-1', 'ring-primary/20');
+        });
+        searchInput?.addEventListener('blur', () => {
+            searchContainer?.classList.remove('ring-1', 'ring-primary/20');
+        });
+    </script>
+</body></html>

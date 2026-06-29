@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing Plans - BUKTIIN</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-pill {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pricing-card {
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .pricing-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#00531e",
+                        "on-tertiary-container": "#003e89",
+                        "secondary-container": "#fe6b00",
+                        "on-primary-fixed": "#002108",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-secondary-fixed": "#351000",
+                        "background": "#fcf9f8",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline": "#6c7b6a",
+                        "outline-variant": "#bbcbb8",
+                        "on-surface-variant": "#3c4a3c",
+                        "surface-dim": "#dcd9d9",
+                        "primary-fixed": "#69ff87",
+                        "status-error": "#FF0000",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "secondary-fixed-dim": "#ffb693",
+                        "inverse-primary": "#3ce36a",
+                        "secondary": "#a04100",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-background": "#FFFFFF",
+                        "secondary-fixed": "#ffdbcc",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#572000",
+                        "on-error-container": "#93000a",
+                        "primary": "#006e2a",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "tertiary-container": "#84adff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#005ac1",
+                        "surface-variant": "#e5e2e1",
+                        "on-surface": "#1b1c1c",
+                        "on-background": "#1b1c1c",
+                        "error-container": "#ffdad6",
+                        "ui-divider": "#E0E0E0",
+                        "surface-tint": "#006e2a",
+                        "surface": "#fcf9f8",
+                        "tertiary-fixed": "#d8e2ff",
+                        "on-primary-container": "#004c1b",
+                        "error": "#ba1a1a",
+                        "primary-container": "#00c853",
+                        "inverse-surface": "#303030",
+                        "status-success": "#00C853",
+                        "status-processing": "#FF6B00",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "primary-fixed-dim": "#3ce36a",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary-fixed-variant": "#004494"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "container-max": "1280px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Be Vietnam Pro"],
+                        "body-md": ["Be Vietnam Pro"],
+                        "body-lg": ["Be Vietnam Pro"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface sticky top-0 z-50 flex justify-between items-center w-full px-lg py-md border-b border-ui-divider">
+<div class="flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>BUKTIIN</span>
+</div>
+<div class="hidden md:flex items-center gap-xl">
+<nav class="flex gap-md">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container transition-colors px-md py-sm rounded-DEFAULT" href="#">Features</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary px-md py-sm" href="#">Pricing</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container transition-colors px-md py-sm rounded-DEFAULT" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container p-sm rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container p-sm rounded-full transition-colors">settings</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, professional portrait of a modern tech warehouse manager, wearing a minimalist dark polo shirt. The background is a soft-focus industrial setting with white walls and warm accent lighting, matching the light-mode industrial tech aesthetic. The overall mood is reliable, expert, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMwz5z3sVLags57JmwTtEFsanawiUrOSIb-fxbKWafJBY8ArY7sWfxquLZUK-Snn8kEFgxqtg8eZxMEsjFITNON-BryvjQNbFtzcoptPVTODCkkEAAjtIuNzfn1ClrUXL3jtZutTTOCFmjr7pNVq5RlMmdawXcXRRetwUI_ugo6tLFiUh-urV3J1TT9roKAdpgDrdta5tDyisnlq5fGz7cfczod0dNGfYfFpGE5XXj-OA-khE9VULO"/>
+</div>
+</div>
+</div>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden material-symbols-outlined">menu</button>
+</header>
+<main class="flex-grow container mx-auto px-lg py-xl max-w-7xl">
+<!-- Header Section -->
+<div class="text-center mb-xl">
+<h1 class="font-headline-lg text-headline-lg mb-sm">Upgrade Your Evidence System</h1>
+<p class="text-on-surface-variant max-w-2xl mx-auto mb-md">Scale your packing station security with automated video recording and cloud storage designed for modern e-commerce teams.</p>
+<!-- Billing Toggle -->
+<div class="flex items-center justify-center gap-md mt-md">
+<span class="font-label-caps text-label-caps text-on-surface" id="monthly-label">Monthly</span>
+<button class="relative w-14 h-7 bg-surface-container-highest rounded-full p-1 focus:outline-none transition-colors" id="billing-toggle" onclick="toggleBilling()">
+<div class="w-5 h-5 bg-primary rounded-full transition-transform transform translate-x-0" id="toggle-knob"></div>
+</button>
+<span class="font-label-caps text-label-caps text-on-surface-variant" id="annual-label">Annual <span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full ml-1">SAVE 17%</span></span>
+</div>
+</div>
+<!-- Pricing Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md items-stretch">
+<!-- Basic Tier -->
+<div class="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-DEFAULT relative overflow-hidden">
+<div class="mb-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-xs">BASIC</h3>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md">Rp</span>
+<span class="font-headline-lg text-headline-lg price-val" data-annual="40k" data-monthly="49k">49k</span>
+<span class="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mt-xs">For solo sellers.</p>
+</div>
+<div class="flex-grow space-y-md border-t border-ui-divider pt-md">
+<ul class="space-y-sm">
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>20GB Storage</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>50 Orders/day</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>1 User Access</span>
+</li>
+</ul>
+</div>
+<button class="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Basic</button>
+</div>
+<!-- Starter Tier (Recommended) -->
+<div class="pricing-card flex flex-col bg-surface border-2 border-primary p-md rounded-DEFAULT relative shadow-lg">
+<div class="absolute top-0 right-0">
+<span class="bg-primary text-white font-label-caps text-[10px] px-3 py-1">RECOMMENDED</span>
+</div>
+<div class="mb-md">
+<h3 class="font-label-caps text-label-caps text-primary mb-xs">STARTER</h3>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md text-on-surface">Rp</span>
+<span class="font-headline-lg text-headline-lg price-val" data-annual="82k" data-monthly="99k">99k</span>
+<span class="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mt-xs">Perfect for growing stores.</p>
+</div>
+<div class="flex-grow space-y-md border-t border-ui-divider pt-md">
+<ul class="space-y-sm">
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span class="font-bold text-on-surface">100GB Storage</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>200 Orders/day</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>3 User Access</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>Priority Log History</span>
+</li>
+</ul>
+</div>
+<button class="mt-xl w-full py-md bg-primary text-white font-bold hover:opacity-90 active:scale-95 transition-all rounded-DEFAULT">Start Free Trial</button>
+</div>
+<!-- Pro Tier -->
+<div class="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-DEFAULT">
+<div class="mb-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-xs">PRO</h3>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md">Rp</span>
+<span class="font-headline-lg text-headline-lg price-val" data-annual="165k" data-monthly="199k">199k</span>
+<span class="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mt-xs">Advanced warehouse needs.</p>
+</div>
+<div class="flex-grow space-y-md border-t border-ui-divider pt-md">
+<ul class="space-y-sm">
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>250GB Storage</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>500 Orders/day</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>10 User Access</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>Multi-station Sync</span>
+</li>
+</ul>
+</div>
+<button class="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Pro</button>
+</div>
+<!-- Business Tier -->
+<div class="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-DEFAULT">
+<div class="mb-md">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-xs">BUSINESS</h3>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-headline-md">Rp</span>
+<span class="font-headline-lg text-headline-lg price-val" data-annual="331k" data-monthly="399k">399k</span>
+<span class="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mt-xs">Enterprise-grade scale.</p>
+</div>
+<div class="flex-grow space-y-md border-t border-ui-divider pt-md">
+<ul class="space-y-sm">
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>500GB Storage</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>Unlimited Orders</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>Unlimited Users</span>
+</li>
+<li class="flex items-center gap-2 font-body-md text-[14px]">
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+<span>API Access</span>
+</li>
+</ul>
+</div>
+<button class="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Business</button>
+</div>
+</div>
+<!-- Trust Section (Bento Inspired) -->
+<div class="mt-xl grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container-low p-md rounded-DEFAULT border border-ui-divider flex gap-md items-center">
+<div class="bg-primary-container p-sm rounded-DEFAULT">
+<span class="material-symbols-outlined text-on-primary-container">shield</span>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps">Secure Evidence</h4>
+<p class="text-[12px] text-on-surface-variant">Encrypted cloud storage for all packing logs.</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-md rounded-DEFAULT border border-ui-divider flex gap-md items-center">
+<div class="bg-secondary-container p-sm rounded-DEFAULT">
+<span class="material-symbols-outlined text-white">bolt</span>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps">Instantly Scan</h4>
+<p class="text-[12px] text-on-surface-variant">Direct integration with packing barcodes.</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-md rounded-DEFAULT border border-ui-divider flex gap-md items-center">
+<div class="bg-tertiary-container p-sm rounded-DEFAULT">
+<span class="material-symbols-outlined text-on-tertiary-container">support_agent</span>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps">24/7 Support</h4>
+<p class="text-[12px] text-on-surface-variant">Our local team is ready to help your warehouse.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface border-t border-ui-divider w-full px-lg py-md flex flex-col md:flex-row justify-between items-center gap-md">
+<div class="font-label-caps text-label-caps text-on-surface-variant">
+            © 2026 Nafindo Group. All Rights Reserved.
+        </div>
+<div class="flex gap-md items-center font-code-sm text-code-sm text-on-surface-variant">
+<span>v2.4.0-stable</span>
+<span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+<span>Developed by Nafindo Group</span>
+</div>
+</footer>
+<script>
+        let isAnnual = false;
+        
+        function toggleBilling() {
+            isAnnual = !isAnnual;
+            const knob = document.getElementById('toggle-knob');
+            const monthlyLabel = document.getElementById('monthly-label');
+            const annualLabel = document.getElementById('annual-label');
+            const priceVals = document.querySelectorAll('.price-val');
+            
+            if (isAnnual) {
+                knob.classList.replace('translate-x-0', 'translate-x-7');
+                monthlyLabel.classList.replace('text-on-surface', 'text-on-surface-variant');
+                annualLabel.classList.replace('text-on-surface-variant', 'text-on-surface');
+                priceVals.forEach(val => {
+                    val.innerText = val.dataset.annual;
+                    val.classList.add('scale-110');
+                    setTimeout(() => val.classList.remove('scale-110'), 200);
+                });
+            } else {
+                knob.classList.replace('translate-x-7', 'translate-x-0');
+                monthlyLabel.classList.replace('text-on-surface-variant', 'text-on-surface');
+                annualLabel.classList.replace('text-on-surface', 'text-on-surface-variant');
+                priceVals.forEach(val => {
+                    val.innerText = val.dataset.monthly;
+                    val.classList.add('scale-110');
+                    setTimeout(() => val.classList.remove('scale-110'), 200);
+                });
+            }
+        }
+    </script>
+</body></html>

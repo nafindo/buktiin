@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BUKTIIN Admin Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Be+Vietnam+Pro', sans-serif;
+            background-color: #fcf9f8;
+        }
+        .mono {
+            font-family: 'JetBrains+Mono', monospace;
+        }
+        /* Custom scrollbar for utilitarian look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0eded;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6c7b6a;
+            border-radius: 0px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "error-container": "#ffdad6",
+                "surface-tint": "#006e2a",
+                "status-error": "#FF0000",
+                "on-surface": "#1b1c1c",
+                "surface-container-high": "#eae7e7",
+                "on-secondary-fixed-variant": "#7a3000",
+                "surface": "#fcf9f8",
+                "tertiary-fixed-dim": "#adc6ff",
+                "tertiary": "#005ac1",
+                "primary-fixed": "#69ff87",
+                "on-background": "#1b1c1c",
+                "status-success": "#00C853",
+                "on-error-container": "#93000a",
+                "on-tertiary-fixed": "#001a41",
+                "on-primary-fixed-variant": "#00531e",
+                "on-primary": "#ffffff",
+                "on-secondary-fixed": "#351000",
+                "on-surface-variant": "#3c4a3c",
+                "surface-container-highest": "#e5e2e1",
+                "primary-container": "#00c853",
+                "on-secondary-container": "#572000",
+                "on-tertiary": "#ffffff",
+                "primary": "#006e2a",
+                "ui-divider": "#E0E0E0",
+                "on-tertiary-container": "#003e89",
+                "tertiary-fixed": "#d8e2ff",
+                "surface-bright": "#fcf9f8",
+                "on-error": "#ffffff",
+                "tertiary-container": "#84adff",
+                "secondary": "#a04100",
+                "inverse-on-surface": "#f3f0ef",
+                "surface-variant": "#e5e2e1",
+                "on-tertiary-fixed-variant": "#004494",
+                "error": "#ba1a1a",
+                "outline-variant": "#bbcbb8",
+                "secondary-fixed": "#ffdbcc",
+                "outline": "#6c7b6a",
+                "primary-fixed-dim": "#3ce36a",
+                "secondary-fixed-dim": "#ffb693",
+                "on-primary-container": "#004c1b",
+                "on-primary-fixed": "#002108",
+                "on-secondary": "#ffffff",
+                "surface-container": "#f0eded",
+                "surface-container-lowest": "#ffffff",
+                "status-processing": "#FF6B00",
+                "surface-background": "#FFFFFF",
+                "background": "#fcf9f8",
+                "inverse-surface": "#303030",
+                "inverse-primary": "#3ce36a",
+                "secondary-container": "#fe6b00",
+                "surface-dim": "#dcd9d9",
+                "surface-container-low": "#f6f3f2"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "spacing": {
+                "xs": "4px",
+                "md": "16px",
+                "gutter": "16px",
+                "sm": "8px",
+                "container-max": "1280px",
+                "base": "4px",
+                "xl": "32px",
+                "lg": "24px"
+              },
+              "fontFamily": {
+                "body-lg": ["Be Vietnam Pro"],
+                "code-sm": ["JetBrains Mono"],
+                "display-lg": ["Be Vietnam Pro"],
+                "label-caps": ["JetBrains Mono"],
+                "headline-md": ["Be Vietnam Pro"],
+                "headline-lg": ["Be Vietnam Pro"],
+                "headline-lg-mobile": ["Be Vietnam Pro"],
+                "body-md": ["Be Vietnam Pro"]
+              },
+              "fontSize": {
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="flex flex-col h-screen py-lg px-md h-full w-64 fixed left-0 top-0 border-r border-ui-divider bg-surface z-50">
+<div class="mb-xl">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Admin Console</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Warehouse System</p>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md text-primary font-bold border-r-2 border-primary bg-surface-container" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">group</span>
+                User Management
+            </a>
+<a class="flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">settings_applications</span>
+                Plan Configuration
+            </a>
+<a class="flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                System Logs
+            </a>
+</nav>
+<div class="mt-auto pt-lg border-t border-ui-divider space-y-xs">
+<button class="w-full bg-primary-container text-on-primary-container py-md px-md font-bold text-center mb-md hover:opacity-90 transition-opacity">
+                New Entry
+            </button>
+<a class="flex items-center gap-md px-md py-sm font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-md px-md py-sm font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="flex justify-between items-center h-16 px-lg ml-64 border-b border-ui-divider bg-surface fixed top-0 right-0 left-0 z-40">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">EvidenceSaaS</span>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-md py-xs bg-surface-container border border-ui-divider focus:border-primary outline-none font-body-md text-body-md w-64" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="relative hover:bg-surface-container-low p-xs rounded transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:bg-surface-container-low p-xs rounded transition-all">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-px bg-ui-divider"></div>
+<div class="flex items-center gap-md cursor-pointer hover:bg-surface-container-low py-xs px-sm rounded transition-all">
+<div class="text-right">
+<p class="font-body-md text-body-md font-bold leading-none">Admin Profile</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Superuser</p>
+</div>
+<img class="w-10 h-10 rounded-full object-cover border border-ui-divider" data-alt="A professional studio portrait of a modern logistics administrator. The person has a clean-cut appearance, wearing a dark minimal polo shirt. The background is a soft-focus industrial office space with clean lines and high-key lighting. The overall style is professional, minimalist, and high-tech." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkoRNWA9pwgMHRiqUQ7KUh6nlTJtQGAH2v7GD40kVgCyYj83icVIld8DHgv-Rae63XvR5Jl2GoHezzvU-9JJk8wn8zTW_cgIi-EkMcr_FeyCmpvR94bvo8QIp8nPQJoDjei2FoTeqFjNwNsa8F3KPmuRUHTScY8HZJbwP4b27UOfhf2Y043-xcvrmhXHbFnxQDOV3agjfK9zhMxpLsOnBj6a0gF4NklyZZ74ghBqurS5SbUDIq0scP"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-lg pb-xl space-y-lg relative min-h-screen">
+<!-- Welcome Header -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg">System Dashboard</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Real-time performance metrics for EvidenceSaaS</p>
+</div>
+<div class="flex items-center gap-sm font-code-sm text-code-sm bg-surface-container-highest px-md py-xs border border-ui-divider">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">circle</span>
+                LIVE SYSTEM STATUS: OPTIMAL
+            </div>
+</div>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Total Users -->
+<div class="bg-surface border border-ui-divider p-lg group hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Total Users</p>
+<span class="material-symbols-outlined text-primary">group</span>
+</div>
+<p class="font-display-lg text-display-lg mb-xs">1,245</p>
+<div class="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
+<span class="material-symbols-outlined">trending_up</span>
+                    +12% vs last month
+                </div>
+</div>
+<!-- Active Users -->
+<div class="bg-surface border border-ui-divider p-lg group hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Active Users</p>
+<span class="material-symbols-outlined text-status-processing">person_celebrate</span>
+</div>
+<p class="font-display-lg text-display-lg mb-xs">1,180</p>
+<div class="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+                    94.7% Activity Rate
+                </div>
+</div>
+<!-- Revenue -->
+<div class="bg-surface border border-ui-divider p-lg group hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant">Revenue</p>
+<span class="material-symbols-outlined text-secondary">payments</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-md text-headline-md">Rp</span>
+<p class="font-display-lg text-display-lg mb-xs">45.2jt</p>
+</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
+<span class="material-symbols-outlined">trending_up</span>
+                    +8.4% MRR Growth
+                </div>
+</div>
+<!-- New Users -->
+<div class="bg-surface border border-ui-divider p-lg group hover:border-primary transition-colors">
+<div class="flex justify-between items-start mb-md">
+<p class="font-label-caps text-label-caps uppercase text-on-surface-variant">New Users (24h)</p>
+<span class="material-symbols-outlined text-primary">person_add</span>
+</div>
+<p class="font-display-lg text-display-lg mb-xs">45</p>
+<div class="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
+<span class="material-symbols-outlined">arrow_upward</span>
+                    +5 from yesterday
+                </div>
+</div>
+</div>
+<!-- Charts Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Revenue Growth Chart -->
+<div class="lg:col-span-2 bg-surface border border-ui-divider p-lg">
+<div class="flex justify-between items-center mb-xl">
+<h3 class="font-headline-md text-headline-md">Revenue Growth</h3>
+<div class="flex gap-md font-label-caps text-label-caps">
+<span class="flex items-center gap-xs"><span class="w-3 h-3 bg-primary rounded-full"></span> Actual</span>
+<span class="flex items-center gap-xs"><span class="w-3 h-3 bg-ui-divider rounded-full"></span> Target</span>
+</div>
+</div>
+<div class="relative h-64 w-full flex items-end gap-2 border-b border-l border-ui-divider px-md pb-md">
+<!-- Simple visualization of a line chart using div bars -->
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-24 opacity-30"></div>
+<div class="w-full bg-primary h-20 transition-all hover:h-22 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">JAN</p>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-28 opacity-30"></div>
+<div class="w-full bg-primary h-24 transition-all hover:h-26 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">FEB</p>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-32 opacity-30"></div>
+<div class="w-full bg-primary h-36 transition-all hover:h-38 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">MAR</p>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-36 opacity-30"></div>
+<div class="w-full bg-primary h-40 transition-all hover:h-42 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">APR</p>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-40 opacity-30"></div>
+<div class="w-full bg-primary h-44 transition-all hover:h-46 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">MAY</p>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1">
+<div class="w-full bg-ui-divider h-48 opacity-30"></div>
+<div class="w-full bg-primary h-52 transition-all hover:h-54 cursor-pointer"></div>
+<p class="font-code-sm text-code-sm text-center mt-2">JUN</p>
+</div>
+</div>
+</div>
+<!-- Plan Distribution -->
+<div class="bg-surface border border-ui-divider p-lg">
+<h3 class="font-headline-md text-headline-md mb-xl">Plan Distribution</h3>
+<div class="flex flex-col items-center justify-center space-y-lg">
+<!-- Donut Chart UI -->
+<div class="relative w-48 h-48 rounded-full border-[16px] border-primary-container flex items-center justify-center">
+<div class="absolute inset-0 rounded-full border-[16px] border-primary border-t-transparent border-r-transparent -rotate-45"></div>
+<div class="text-center">
+<p class="font-headline-lg text-headline-lg">1.2k</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant uppercase">Total Active</p>
+</div>
+</div>
+<!-- Legend -->
+<div class="w-full grid grid-cols-2 gap-sm">
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-primary"></span> Enterprise</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-primary-container"></span> Business</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-secondary"></span> Pro</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-status-processing"></span> Starter</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-ui-divider"></span> Basic</div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm"><span class="w-2 h-2 bg-surface-variant"></span> Free</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Log -->
+<section class="bg-surface border border-ui-divider overflow-hidden">
+<div class="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
+<h3 class="font-label-caps text-label-caps uppercase">System Activity Log</h3>
+<button class="font-code-sm text-code-sm text-primary flex items-center gap-xs hover:underline">
+                    View All Logs <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+<div class="divide-y divide-ui-divider">
+<div class="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
+<span class="font-code-sm text-code-sm text-on-surface-variant shrink-0">14:22:05</span>
+<span class="material-symbols-outlined text-status-success">check_circle</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md">Admin <strong>Syamsul.H</strong> updated system pricing for <strong>Starter Plan</strong>.</p>
+</div>
+<span class="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase">Config</span>
+</div>
+<div class="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
+<span class="font-code-sm text-code-sm text-on-surface-variant shrink-0">13:45:12</span>
+<span class="material-symbols-outlined text-status-processing">info</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md">Automated scale-up triggered for <strong>Server Node-B2</strong>.</p>
+</div>
+<span class="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase">System</span>
+</div>
+<div class="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
+<span class="font-code-sm text-code-sm text-on-surface-variant shrink-0">12:10:30</span>
+<span class="material-symbols-outlined text-status-success">person_add</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md">New Enterprise subscription confirmed: <strong>Global Logistics Corp</strong>.</p>
+</div>
+<span class="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase">Billing</span>
+</div>
+<div class="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
+<span class="font-code-sm text-code-sm text-on-surface-variant shrink-0">11:55:01</span>
+<span class="material-symbols-outlined text-status-error">warning</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md">Failed login attempt detected from <strong>IP 182.253.xx.xx</strong>.</p>
+</div>
+<span class="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase">Security</span>
+</div>
+</div>
+</section>
+<!-- Footer Shell -->
+<footer class="flex justify-between items-center py-md px-lg border-t border-ui-divider bg-surface absolute bottom-0 left-0 right-0 w-full">
+<div class="flex items-center gap-lg font-code-sm text-code-sm text-on-surface-variant">
+<a class="hover:text-primary transition-opacity" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-opacity" href="#">Terms of Service</a>
+<span class="text-ui-divider">|</span>
+<span class="font-bold text-on-surface">v1.2.4</span>
+</div>
+<div class="font-code-sm text-code-sm font-bold text-on-surface uppercase tracking-wider">
+                Developed by Nafindo Group
+            </div>
+</footer>
+</main>
+<!-- Floating Action Button (Supressed based on prompt context but design-ready) -->
+<!-- Determined not needed for this Dashboard overview based on SC rules -->
+<script>
+        // Simple micro-interaction for numbers incrementing
+        document.addEventListener('DOMContentLoaded', () => {
+            const counters = document.querySelectorAll('.font-display-lg');
+            counters.forEach(counter => {
+                const target = counter.innerText.replace(/[^\d.]/g, '');
+                if (target) {
+                    let count = 0;
+                    const updateCount = () => {
+                        const targetNum = parseFloat(target);
+                        const increment = targetNum / 50;
+                        if (count < targetNum) {
+                            count += increment;
+                            // Format back to original style if it had decimals or units
+                            if (counter.innerText.includes('jt')) {
+                                counter.innerText = (Math.round(count * 10) / 10).toFixed(1) + 'jt';
+                            } else {
+                                counter.innerText = Math.floor(count).toLocaleString();
+                            }
+                            setTimeout(updateCount, 20);
+                        }
+                    };
+                    updateCount();
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management - BUKTIIN Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#006e2a",
+                        "status-error": "#FF0000",
+                        "on-surface": "#1b1c1c",
+                        "surface-container-high": "#eae7e7",
+                        "on-secondary-fixed-variant": "#7a3000",
+                        "surface": "#fcf9f8",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "tertiary": "#005ac1",
+                        "primary-fixed": "#69ff87",
+                        "on-background": "#1b1c1c",
+                        "status-success": "#00C853",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#001a41",
+                        "on-primary-fixed-variant": "#00531e",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#351000",
+                        "on-surface-variant": "#3c4a3c",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-container": "#00c853",
+                        "on-secondary-container": "#572000",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#006e2a",
+                        "ui-divider": "#E0E0E0",
+                        "on-tertiary-container": "#003e89",
+                        "tertiary-fixed": "#d8e2ff",
+                        "surface-bright": "#fcf9f8",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#84adff",
+                        "secondary": "#a04100",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#004494",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#bbcbb8",
+                        "secondary-fixed": "#ffdbcc",
+                        "outline": "#6c7b6a",
+                        "primary-fixed-dim": "#3ce36a",
+                        "secondary-fixed-dim": "#ffb693",
+                        "on-primary-container": "#004c1b",
+                        "on-primary-fixed": "#002108",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "surface-container-lowest": "#ffffff",
+                        "status-processing": "#FF6B00",
+                        "surface-background": "#FFFFFF",
+                        "background": "#fcf9f8",
+                        "inverse-surface": "#303030",
+                        "inverse-primary": "#3ce36a",
+                        "secondary-container": "#fe6b00",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "container-max": "1280px",
+                        "base": "4px",
+                        "xl": "32px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Be Vietnam Pro"],
+                        "code-sm": ["JetBrains Mono"],
+                        "display-lg": ["Be Vietnam Pro"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Be Vietnam Pro"],
+                        "headline-lg": ["Be Vietnam Pro"],
+                        "headline-lg-mobile": ["Be Vietnam Pro"],
+                        "body-md": ["Be Vietnam Pro"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "code-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-caps": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #fcf9f8;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .mono-text { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen py-lg px-md h-full w-64 fixed left-0 top-0 bg-surface dark:bg-on-surface border-r border-ui-divider dark:border-outline z-50">
+<div class="mb-xl px-sm">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Admin Console</h1>
+<p class="font-code-sm text-code-sm uppercase tracking-wider text-on-surface-variant">Warehouse System</p>
+</div>
+<div class="flex items-center gap-md p-md mb-lg bg-surface-container rounded-lg">
+<img class="w-10 h-10 rounded-full border border-outline" data-alt="A professional headshot of a young Southeast Asian male administrator in a clean-cut warehouse office setting. The lighting is crisp and industrial with cool white tones and subtle tech interface overlays in the background. The style is sharp, high-contrast digital photography with a modern SaaS aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtgZsmdGup6sqnpbVKxGQiWKGg30LRNZ0fCxaZE1-oKZg9LFNYLx0XR_3PMzNgf60oqkzb9FdBec4Kg6yaMnE8culEuu1sLPx2xY69ZRm6oRsYuTb8H333T28nRTkGOVuFenU1Q7wcoWpwHnzOwKhvrZAxc9NNFuTlK414AHY-5G5v6_vWT2nKGbaWLRHP7r95X2rFcDfD6DNcjz-QAh3oZ2Kh9OSPv1KIZQmKv7TTI8FHhWwHTFSQ"/>
+<div class="overflow-hidden">
+<p class="font-body-md text-body-md font-bold text-on-surface truncate">Admin User</p>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Master Admin</p>
+</div>
+</div>
+<nav class="flex-1 space-y-xs">
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-on-surface-variant dark:text-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-primary dark:text-primary-fixed font-bold border-r-2 border-primary dark:border-primary-fixed" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-md text-body-md">User Management</span>
+</a>
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-on-surface-variant dark:text-surface-variant" href="#">
+<span class="material-symbols-outlined">settings_applications</span>
+<span class="font-body-md text-body-md">Plan Configuration</span>
+</a>
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-on-surface-variant dark:text-surface-variant" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">System Logs</span>
+</a>
+</nav>
+<div class="mt-auto space-y-xs">
+<button class="w-full bg-primary-container text-on-primary-container font-bold py-md px-lg rounded-lg mb-md flex items-center justify-center gap-sm transition-all hover:opacity-90">
+<span class="material-symbols-outlined">add</span>
+<span>New Entry</span>
+</button>
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-on-surface-variant dark:text-surface-variant" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+<a class="flex items-center gap-md p-md transition-colors duration-200 ease-in-out hover:bg-surface-container dark:hover:bg-surface-variant text-on-surface-variant dark:text-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen relative pb-16">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-lg fixed top-0 right-0 left-64 bg-surface dark:bg-on-surface border-b border-ui-divider dark:border-outline z-40">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-surface">EvidenceSaaS</span>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-ui-divider rounded-lg py-sm pl-xl pr-md text-body-md font-body-md focus:border-primary-container focus:ring-0 outline-none transition-all" placeholder="Search system records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<button class="material-symbols-outlined text-on-surface-variant cursor-pointer transition-all hover:bg-surface-container-low p-sm rounded-full">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant cursor-pointer transition-all hover:bg-surface-container-low p-sm rounded-full">help</button>
+<div class="h-8 w-[1px] bg-ui-divider"></div>
+<div class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-low py-xs px-sm rounded-lg transition-all">
+<span class="font-body-md text-body-md font-bold text-primary">Admin Profile</span>
+<img class="w-8 h-8 rounded-full border border-outline" data-alt="A small circular avatar profile picture for a system administrator. The image is clean and minimalist, showing a generic user icon with high-tech cyan and green aesthetic patterns in the background. Lighting is vibrant and emphasizes a digital, professional atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5lhZt7mrZcAPzie5UN2KYFY68nAUrc2Bca0yll52oq4EdZVn-OaSXmUAQxvMIgheCRB9HKfm62bwqMLeOHZXxUSSpbwL_2ig0xmV-bC3mfbL2HF0ky5e2oZ3LVdXaGGHb7EWuKuo5mK9F7bg5lgbRLRp-Xr-b7DRvwsx7f3gzbHg3boDM7qGbCSP_MP4arcqz-bAU5u0wAgVuRQiFE5rskaAJXPHcNaLWREimXHsLB3HiDo8nlw2L"/>
+</div>
+</div>
+</header>
+<!-- Page Container -->
+<div class="pt-24 px-xl max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-lg mb-xl">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">User Management</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Maintain and audit system access across warehouse tiers.</p>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-sm bg-white border border-secondary text-secondary px-lg py-sm rounded transition-all hover:bg-surface-container-low">
+<span class="material-symbols-outlined">download</span>
+<span class="font-label-caps text-label-caps">EXPORT CSV</span>
+</button>
+<button class="flex items-center gap-sm bg-status-success text-on-primary px-lg py-sm rounded font-bold shadow-sm transition-all hover:opacity-90">
+<span class="material-symbols-outlined">person_add</span>
+<span class="font-label-caps text-label-caps">INVITE USER</span>
+</button>
+</div>
+</div>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-lg mb-xl">
+<div class="bg-white border border-ui-divider p-lg rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary text-3xl">group</span>
+<span class="font-code-sm text-code-sm text-status-success">+12%</span>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">TOTAL USERS</p>
+<p class="font-headline-md text-headline-md">1,284</p>
+</div>
+<div class="bg-white border border-ui-divider p-lg rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-status-processing text-3xl">verified</span>
+<span class="font-code-sm text-code-sm text-status-processing">92%</span>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE NOW</p>
+<p class="font-headline-md text-headline-md">156</p>
+</div>
+<div class="bg-white border border-ui-divider p-lg rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-secondary text-3xl">subscriptions</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Enterprise</span>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">PLAN CONVERSION</p>
+<p class="font-headline-md text-headline-md">24.5%</p>
+</div>
+<div class="bg-white border border-ui-divider p-lg rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-status-error text-3xl">priority_high</span>
+<span class="font-code-sm text-code-sm text-status-error">Attention</span>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">EXPIRED TODAY</p>
+<p class="font-headline-md text-headline-md">3</p>
+</div>
+</div>
+<!-- Table Filters -->
+<div class="bg-surface-container-low border border-ui-divider p-md mb-xs flex flex-wrap items-center justify-between gap-md rounded-t-xl">
+<div class="flex items-center gap-md flex-1">
+<div class="relative w-full max-w-xs">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">filter_list</span>
+<input class="w-full bg-white border border-ui-divider rounded py-xs pl-xl pr-sm text-body-md" placeholder="Filter by Name or ID..." type="text"/>
+</div>
+<select class="bg-white border border-ui-divider rounded py-xs px-md font-body-md text-on-surface-variant outline-none">
+<option>All Plans</option>
+<option>Enterprise</option>
+<option>Pro</option>
+<option>Basic</option>
+</select>
+<select class="bg-white border border-ui-divider rounded py-xs px-md font-body-md text-on-surface-variant outline-none">
+<option>All Status</option>
+<option>Active</option>
+<option>Grace</option>
+<option>Expired</option>
+</select>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-code-sm text-code-sm text-on-surface-variant uppercase">Displaying 25 of 1,284 entries</span>
+</div>
+</div>
+<!-- Main Data Table -->
+<div class="bg-white border border-ui-divider overflow-hidden rounded-b-xl shadow-sm mb-xl">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container text-on-surface-variant border-b border-ui-divider">
+<tr>
+<th class="py-md px-lg font-label-caps text-label-caps uppercase tracking-wider">Name</th>
+<th class="py-md px-lg font-label-caps text-label-caps uppercase tracking-wider">Email</th>
+<th class="py-md px-lg font-label-caps text-label-caps uppercase tracking-wider">Plan</th>
+<th class="py-md px-lg font-label-caps text-label-caps uppercase tracking-wider">Status</th>
+<th class="py-md px-lg font-label-caps text-label-caps uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-ui-divider">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold">BS</div>
+<span class="font-body-md text-body-md font-bold text-on-surface">Budi S.</span>
+</div>
+</td>
+<td class="py-md px-lg font-code-sm text-code-sm text-on-surface-variant">budi.s@warehouse.co.id</td>
+<td class="py-md px-lg"><span class="px-sm py-1 border border-ui-divider rounded font-code-sm text-code-sm bg-surface">Enterprise</span></td>
+<td class="py-md px-lg">
+<span class="bg-status-success text-white font-label-caps text-xs px-sm py-1 rounded">ACTIVE</span>
+</td>
+<td class="py-md px-lg text-right">
+<div class="flex justify-end gap-xs">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-xs text-on-surface-variant hover:text-status-error transition-colors"><span class="material-symbols-outlined">delete</span></button>
+<button class="p-xs text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary font-bold">RW</div>
+<span class="font-body-md text-body-md font-bold text-on-surface">Rina W.</span>
+</div>
+</td>
+<td class="py-md px-lg font-code-sm text-code-sm text-on-surface-variant">rina.w@logistic.net</td>
+<td class="py-md px-lg"><span class="px-sm py-1 border border-ui-divider rounded font-code-sm text-code-sm bg-surface">Pro</span></td>
+<td class="py-md px-lg">
+<span class="bg-status-processing text-white font-label-caps text-xs px-sm py-1 rounded">GRACE</span>
+</td>
+<td class="py-md px-lg text-right">
+<div class="flex justify-end gap-xs">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">edit</span></button>
+<button class="p-xs text-on-surface-variant hover:text-status-error transition-colors"><span class="material-symbols-outlined">delete</span></button>
+<button class="p-xs text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-surface-dim flex items-center justify-center text-on-surface font-bold">AK</div>
+<span class="font-body-md text-body-md font-bold text-on-surface">Andi K.</span>
+</div>
+</td>
+<td class="py-md px-lg font-code-sm text-code-sm text-on-surface-variant">andi.k@transhub.io</td>
+<td class="py-md px-lg"><span class="px-sm py-1 border border-ui-divider rounded font-code-sm text-code-sm bg-surface">Basic</span></td>
+<td class="py-md px-lg">
+<span class="bg-status-error text-white font-label-caps text-xs px-sm py-1 rounded">EXPIRED</span>
+</td>
+<td class="py-md px-lg text-right">
+<div class="flex justify-end gap-xs">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-xs text-on-surface-variant hover:text-status-error transition-colors"><span class="material-symbols-outlined">delete</span></button>
+<button class="p-xs text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- Repeat Rows... -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-md px-lg">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold">SP</div>
+<span class="font-body-md text-body-md font-bold text-on-surface">Siti P.</span>
+</div>
+</td>
+<td class="py-md px-lg font-code-sm text-code-sm text-on-surface-variant">siti.permata@buktiin.ai</td>
+<td class="py-md px-lg"><span class="px-sm py-1 border border-ui-divider rounded font-code-sm text-code-sm bg-surface">Enterprise</span></td>
+<td class="py-md px-lg">
+<span class="bg-status-success text-white font-label-caps text-xs px-sm py-1 rounded">ACTIVE</span>
+</td>
+<td class="py-md px-lg text-right">
+<div class="flex justify-end gap-xs">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-xs text-on-surface-variant hover:text-status-error transition-colors"><span class="material-symbols-outlined">delete</span></button>
+<button class="p-xs text-on-surface-variant hover:text-secondary transition-colors"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination -->
+<div class="p-md bg-surface border-t border-ui-divider flex justify-between items-center">
+<button class="px-lg py-xs border border-ui-divider rounded font-label-caps text-xs text-on-surface-variant hover:bg-surface-container transition-all">PREVIOUS</button>
+<div class="flex gap-xs">
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-white rounded font-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded font-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded font-bold">3</button>
+<span class="flex items-center px-xs">...</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded font-bold">52</button>
+</div>
+<button class="px-lg py-xs border border-ui-divider rounded font-label-caps text-xs text-on-surface-variant hover:bg-surface-container transition-all">NEXT</button>
+</div>
+</div>
+<!-- Utility Info -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg opacity-80">
+<div class="flex items-center gap-md p-lg bg-surface-container-low border-l-4 border-primary rounded">
+<span class="material-symbols-outlined text-primary text-3xl">info</span>
+<div class="font-body-md text-body-md">
+<span class="font-bold">Pro Tip:</span> Rapid search is enabled using the <code class="bg-surface-container px-1 font-code-sm">Ctrl + K</code> shortcut for global user lookup across all warehouses.
+                    </div>
+</div>
+<div class="flex items-center gap-md p-lg bg-surface-container-low border-l-4 border-secondary rounded">
+<span class="material-symbols-outlined text-secondary text-3xl">terminal</span>
+<div class="font-code-sm text-code-sm text-on-surface-variant">
+                        SYSTEM_ID: XA-449-PRIME | REPLICA_SYNC: SUCCESSFUL | LATENCY: 12ms
+                    </div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="flex justify-between items-center py-md px-lg ml-0 md:ml-0 w-full absolute bottom-0 bg-surface dark:bg-on-surface border-t border-ui-divider dark:border-outline z-30">
+<div class="flex items-center gap-lg">
+<span class="font-code-sm text-code-sm font-bold text-on-surface dark:text-surface">EvidenceSaaS v1.2.4</span>
+<div class="flex gap-md">
+<a class="font-code-sm text-code-sm uppercase tracking-wider text-on-surface-variant hover:text-primary transition-opacity" href="#">Privacy Policy</a>
+<a class="font-code-sm text-code-sm uppercase tracking-wider text-on-surface-variant hover:text-primary transition-opacity" href="#">Terms of Service</a>
+</div>
+</div>
+<p class="font-code-sm text-code-sm uppercase tracking-wider text-on-surface-variant">Developed by Nafindo Group</p>
+</footer>
+</main>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Highlight row on click effect
+                const wasActive = row.classList.contains('bg-primary-container/10');
+                document.querySelectorAll('tr').forEach(r => r.classList.remove('bg-primary-container/10'));
+                if (!wasActive) row.classList.add('bg-primary-container/10');
+            });
+        });
+
+        // Search Bar Focus Effect
+        const mainSearch = document.querySelector('input[type="text"]');
+        mainSearch.addEventListener('focus', () => {
+            mainSearch.parentElement.classList.add('ring-2', 'ring-primary-container/30');
+        });
+        mainSearch.addEventListener('blur', () => {
+            mainSearch.parentElement.classList.remove('ring-2', 'ring-primary-container/30');
+        });
+    </script>
+</body></html>
