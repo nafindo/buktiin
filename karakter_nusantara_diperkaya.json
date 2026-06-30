@@ -1,0 +1,2408 @@
+{
+  "metadata": {
+    "judul": "Absensi Pro - Aplikasi Absensi Multi-Toko",
+    "versi": "2.0",
+    "tanggal_dibuat": "2026-06-22",
+    "catatan": "Konsolidasi lengkap karakter, lokasi, dialog, dan detail produksi untuk AI Gemini"
+  },
+  "analisis_karakter": {
+    "karakter_yang_muncul_di_adegan_tapi_belum_ada_deskripsi_fullbody": [
+      {
+        "nama": "KEN AROK",
+        "muncul_di_adegan": "ADEGAN 01 - Prolog Dendam Leluhur 1222 M",
+        "status": "TIDAK ADA di daftar karakter fullbody",
+        "catatan_kritis": "Karakter penting yang HARUS ditambahkan. Ken Arok adalah pendiri Singhasari, leluhur Kertanegara, dan pembunuh Kertajaya."
+      },
+      {
+        "nama": "SASTRAJAYA (Ayah Jayakatwang)",
+        "muncul_di_adegan": "ADEGAN 01 - Disebut sebagai 'Ayah Jayakatwang' yang menangis",
+        "status": "TIDAK ADA di daftar karakter fullbody",
+        "catatan_kritis": "BUKAN Kertajaya. Jayakatwang adalah cucu Kertajaya (Jayasabha putra Kertajaya → Sastrajaya putra Jayasabha → Jayakatwang putra Sastrajaya). Ayah Jayakatwang = Sastrajaya, adipati Gelanggelang 1258-1271."
+      },
+      {
+        "nama": "PATIH DAHA",
+        "muncul_di_adegan": "ADEGAN 03 - Perencanaan di Daha",
+        "status": "TIDAK ADA di daftar karakter fullbody",
+        "catatan_kritis": "Karakter baru yang tidak disebutkan sebelumnya. Perlu ditambahkan deskripsi."
+      },
+      {
+        "nama": "PENDATANG (Pengungsi Luka)",
+        "muncul_di_adegan": "ADEGAN 05 - Pendatang luka membanjiri istana",
+        "status": "TIDAK ADA di daftar karakter fullbody",
+        "catatan_kritis": "Tokoh fiksi representasi masyarakat. Perlu deskripsi visual."
+      }
+    ],
+    "karakter_yang_tidak_muncul_di_adegan_tapi_ada_di_fullbody": [
+      {
+        "nama": "TURUKBALI (Adik Kertanegara)",
+        "catatan": "Tidak muncul di adegan manapun. Pertimbangkan untuk dimasukkan ke adegan atau dihapus dari daftar."
+      }
+    ],
+    "mapping_karakter_yang_perlu_diperjelas": [
+      {
+        "label_adegan": "PUTRI",
+        "identitas_sebenarnya": "PUTRI KEPALA DESA PANDAKAN (Ibu Gajah Mada)",
+        "catatan": "Di adegan 10, 13, 17 disebut 'PUTRI' saja. Harus diubah menjadi [PUTRI KEPALA DESA PANDAKAN] agar tidak ambigu."
+      }
+    ]
+  },
+  "bagian_1_karakter_fullbody": {
+    "karakter_01_kertanegara": {
+      "nama_lengkap": "Sri Kertanegara Wikrama Dharmatunggadewa",
+      "usia": 45,
+      "periode": "1268–1292 M",
+      "gelar": "Sri Kertanegara Wikrama Dharmatunggadewa",
+      "identitas": "Raja terakhir Singhasari, penganut Tantrayana (sinkretisme Siwa-Buddha)",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama",
+          "Yuan Shi"
+        ],
+        "fakta_kunci": [
+          "Menolak tunduk pada Kaisar Mongol Kubilai Khan",
+          "Melukai utusan Mongol (Meng-qi) dengan memotong telinga dan membakar wajahnya",
+          "Memimpin ekspedisi Pamalayu ke Sumatra untuk menguasai wilayah maritim",
+          "Gelar lengkap: Sri Kertanegara Wikrama Dharmatunggadewa"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wibawa, berjanggut hitam panjang lebat, mata tajam namun naif",
+        "mahkota": "Mahkota emas raja Singhasari (mungkin berbentuk padmasana atau mahkota Siwa-Buddha)",
+        "pakaian": "Pakaian upacara Tantrayana berwarna putih dan emas, kain sutra lembut, gelang emas, perhiasan kepala",
+        "aksesoris": "Memegang cangkir tuak emas",
+        "postur": "Tegap, ekspresi bijaksana tapi naif",
+        "gaya_berpakaian_referensi": "Raja pada masa itu memakai pakaian sutera, bersepatu dan perhiasan emas, serta rambutnya disanggul"
+      },
+      "senjata": "Tidak memegang senjata (memegang cangkir tuak)",
+      "logat_bahasa": "Bahasa Jawa Kuno formal tingkat raja. Menggunakan gelar 'Paduka' untuk dirinya. Menggunakan kata-kata bijak dan filosofis. Contoh: 'Taringnya sudah tumpul, Mpu. Lebih dari enam puluh tahun dia hidup dalam bayang-bayang Singhasari.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah harus menunjukkan kebijaksanaan yang berlebihan hingga terlihat naif (tidak curiga pada Jayakatwang)"
+    },
+    "karakter_02_jayakatwang": {
+      "nama_lengkap": "Sri Jayakatwang (Jaya = 'kemenangan', Ketawang = 'bangkit/muncul')",
+      "usia": 65,
+      "periode": "1271–1293 M (memerintah Kediri 1292–1293)",
+      "gelar": "Raja Daha/Kediri",
+      "identitas": "Keturunan garis kerajaan Kediri lama, cucu Kertajaya, ingin membalas dendam leluhur yang dikalahkan Ken Arok 1222",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama",
+          "Kidung Harsawijaya",
+          "Kidung Panji Wijayakrama"
+        ],
+        "fakta_kunci": [
+          "Silsilah: Kertajaya → Jayasabha → Sastrajaya → Jayakatwang",
+          "Bupati (adipati) Kediri sejak 1271 di bawah Singhasari",
+          "Memimpin pemberontakan 1292 dengan taktik diversi: serangan utara (Jaran Guyang) dan selatan (Kebo Mundarang)",
+          "Nama asli: Sanjaya, Aji Katong, Jayakatyeng. Dalam berita Tiongkok: Ha-ji-ka-tang",
+          "Istri: Turukbali (saudari perempuan Kertanegara) — menurut Prasasti Mula Malurung",
+          "Ibu Jayakatwang adalah adik kandung Wisnuwardhana (Seminingrat)",
+          "Hubungan dengan Kertanegara: sepupu, ipar, besan"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wibawa, berjanggut putih panjang tebal, mata tajam penuh dendam dan strategi",
+        "mahkota": "Mahkota sederhana khas Kadiri (berbeda dengan mahkota Singhasari, mungkin lebih rendah status)",
+        "pakaian": "Pakaian raja Kadiri berwarna merah tua dan salem (warna khas Kadiri, berbeda dengan putih-emas Singhasari)",
+        "aksesoris": "Tongkat komando",
+        "postur": "Bungkuk sedikit karena usia, ekspresi angkuh tapi berharga diri",
+        "gaya_berpakaian_referensi": "Pakaian sutera, perhiasan emas, rambut disanggul"
+      },
+      "senjata": "Tongkat komando (tanda kekuasaan), tidak memegang senjata tajam di pose berdiri",
+      "logat_bahasa": "Bahasa Jawa Kuno formal tingkat raja, lebih tua dan berwibawa. Menggunakan metafora perang. Contoh: 'Ini bukan perang. Ini pembebasan. Bendera ini adalah simbol kemerdekaan Kadiri dari hegemoni Singhasari!'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah harus menunjukkan 70 tahun dendam yang terpendam. Postur bungkuk menunjukkan usia tapi mata tetap tajam."
+    },
+    "karakter_03_raden_wijaya": {
+      "nama_lengkap": "Sri Kertarajasa Jayawardhana (nama asli: Sang Nararya Sanggramawijaya)",
+      "usia": 28,
+      "periode": "1293 M (pendiri Majapahit)",
+      "gelar": "Sri Kertarajasa Jayawardhana",
+      "identitas": "Menantu Kertanegara, pendiri Majapahit 1293. Taktik licik: berpura-pura tunduk pada Jayakatwang, bersekutu dengan Mongol, lalu mengkhianati mereka.",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama",
+          "Kidung Harsawijaya"
+        ],
+        "fakta_kunci": [
+          "Menikahi 4 putri Kertanegara: Tribhuwaneswari, Narendraduhita, Jayendradewi, Gayatri (menurut Nagarakretagama)",
+          "Ayah: Rakyan Jayadarma (pangeran Sunda Galuh), Ibu: Dyah Lembu Tal (cucu Ken Arok)",
+          "Membangun desa di Hutan Tarik, dinamai Majapahit dari buah maja yang pahit",
+          "Bersekutu dengan pasukan Mongol Kubilai Khan untuk mengalahkan Jayakatwang, lalu mengkhianati Mongol"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Tampan, wajah licik tapi tersembunyi di balik ekspresi patuh",
+        "pakaian": "Pakaian prajurit muda Singhasari ringan, baju besi ringan",
+        "aksesoris": "Keris di pinggang, kain poleng hitam-putih sebagai penutup kepala",
+        "postur": "Atletis, ekspresi diam-diam melawan, tangan kanan terkepal saat berlutut (di adegan penyerahan)",
+        "gaya_berpakaian_referensi": "Prajurit elite Singhasari (Arya) dengan baju besi ringan"
+      },
+      "senjata": "Keris di pinggang, pedang (di adegan pertempuran)",
+      "logat_bahasa": "Bahasa Jawa Kuno formal, licik dan manipulatif. Mampu berpura-pura rendah hati. Contoh: 'Aku datang untuk hidup, Paduka. Aku kalah. Pasukanku hancur. Aku bukan ancaman.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah harus menunjukkan dua sisi: patuh di permukaan, licik di mata."
+    },
+    "karakter_04_gajah_pagon": {
+      "nama_lengkap": "Gajah Pagon",
+      "usia": 38,
+      "identitas": "Ayah Gajah Mada (lahir 1299). Petinggi Majapahit yang setia kepada Raden Wijaya. Prajurit elite (Arya).",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton"
+        ],
+        "fakta_kunci": [
+          "Petinggi Majapahit yang setia kepada Raden Wijaya",
+          "Berperang dalam pemberontakan Jayakatwang",
+          "Terluka dalam pertempuran dan diselamatkan di desa"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah jujur dan setia, ekspresi pengorbanan",
+        "pakaian": "Pakaian prajurit elite lengkap dengan baju besi",
+        "senjata": "Tombak, perisai",
+        "postur": "Perawakan besar berotot tinggi, tegap kuat, luka di dada terbalut kain",
+        "gaya_berpakaian_referensi": "Prajurit elite dengan baju zirah, sering dihiasi motif ukiran pada lempengan logam"
+      },
+      "logat_bahasa": "Bahasa prajurit setia, rendah hati. Contoh: 'Aku hanya prajurit, Raden. Yang memimpin adalah kau. Darahku mengalir untuk melindungi, bukan untuk memerintah.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Tubuh besar berotot, luka di dada sebagai bukti pertempuran."
+    },
+    "karakter_05_ardharaja": {
+      "nama_lengkap": "Ardharaja",
+      "usia": 30,
+      "identitas": "Putra Jayakatwang, menantu Kertanegara (menikahi putri Kertanegara). Membelot ke Raden Wijaya saat pertempuran di Rabut Carat.",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Prasasti Kudadu"
+        ],
+        "fakta_kunci": [
+          "Putra Jayakatwang",
+          "Menantu Kertanegara",
+          "Membelot ke Raden Wijaya di Rabut Carat",
+          "Dieksekusi bersama ayahnya di atas kapal Mongol"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah bimbang dan tragis, mata berkaca-kaca, ekspresi dilema antara ayah dan mertua",
+        "pakaian": "Pakaian campuran seragam Singhasari dan Kadiri (menunjukkan posisi di antara dua kerajaan)",
+        "postur": "Medium, postur menunjukkan keraguan"
+      },
+      "senjata": "Pedang (tapi tidak digenggam erat, menunjukkan keraguan)",
+      "logat_bahasa": "Bahasa penuh konflik batin. Contoh: 'Tapi kemenangan apa yang dibangun di atas pengkhianatan?'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah harus menunjukkan dilema moral: cinta pada ayah vs kewajiban pada mertua."
+    },
+    "karakter_06_aria_wiraraja": {
+      "nama_lengkap": "Aria Wiraraja (nama asli: Banyak Wide)",
+      "usia": 72,
+      "periode_meninggal": "1316 M",
+      "gelar": "Rakryan Demung/Mantri Makapramuka (penasihat kenegaraan), Adipati Madura",
+      "identitas": "Mantan pejabat tinggi Singhasari, diasingkan ke Sumenep 1269. Menyusun rencana tipu muslihat dengan Raden Wijaya.",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama"
+        ],
+        "fakta_kunci": [
+          "Nama asli: Banyak Wide — 'Banyak' = gelar Brahmana, 'Wide' = dari widya (ilmu pengetahuan)",
+          "Diasingkan Kertanegara ke Sumenep, Madura pada 1269 karena menolak paham Tantrayana",
+          "Menyuruh Wijaya berpura-pura tunduk pada Jayakatwang, meminta Hutan Tarik",
+          "Mendirikan Kerajaan Lamajang Tigang Juru (1294–1316)",
+          "Makam di Situs Biting, Kutorenon, Lumajang"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah tua penuh penyesalan, mata muram, ekspresi penebus dosa",
+        "janggut": "Berjanggut putih panjang",
+        "pakaian": "Pakaian sederhana petani/desa (karena diasingkan, bukan pakaian istana)",
+        "aksesoris": "Tongkat",
+        "postur": "Bungkuk karena usia tua"
+      },
+      "senjata": "Tidak memegang senjata (sudah bukan prajurit)",
+      "logat_bahasa": "Bahasa tua penuh penyesalan dan kebijaksanaan. Contoh: 'Aku yang salah. Aku yang menyarankan Jayakatwang. Aku yang membantu dia merencanakan pemberontakan.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah menunjukkan beban 40 tahun penyesalan sejak diasingkan 1269."
+    },
+    "karakter_07_mpu_raganatha": {
+      "nama_lengkap": "Mpu Raganatha (Mpu Raganata)",
+      "usia": 68,
+      "identitas": "Patih tua Singhasari",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton"
+        ],
+        "fakta_kunci": [
+          "Digantikan posisinya oleh Kebo Anengah dan Apanji Aragani karena menolak gagasan Ekspedisi Pamalayu",
+          "Gugur saat serangan Kebo Mundarang ke istana Singhasari"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah khawatir dan bijaksana, ekspresi peringatan yang diabaikan",
+        "janggut": "Berjanggut putih panjang",
+        "pakaian": "Pakaian menteri tua dengan destar putih",
+        "aksesoris": "Memegang lontar",
+        "postur": "Tegap tapi tua"
+      },
+      "senjata": "Tidak memegang senjata (memegang lontar)",
+      "logat_bahasa": "Bahasa penasihat tua, penuh metafora. Contoh: 'Macan ompong tetap punya taring, Paduka. Taring yang tumpul bisa diasah kembali.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Ekspresi wajah menunjukkan kekhawatiran yang tidak didengar."
+    },
+    "karakter_08_turukbali": {
+      "nama_lengkap": "Turukbali (Nararya Turukbali)",
+      "usia": 35,
+      "identitas": "Adik perempuan Kertanegara, istri Jayakatwang. Permaisuri Kediri. Korban politik pernikahan.",
+      "referensi_historis": {
+        "sumber": [
+          "Prasasti Mula Malurung"
+        ],
+        "fakta_kunci": [
+          "Putri Seminingrat (Wisnuwardhana)",
+          "Istri Jayakatwang — menurut Prasasti Mula Malurung",
+          "Dijodohkan sebagai bagian dari diplomasi perkawinan antar-kerajaan"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah cantik tapi sedih, mata berair menangis diam",
+        "pakaian": "Pakaian permaisuri Kadiri",
+        "ekspresi": "Korban politik pernikahan",
+        "postur": "Anggun"
+      },
+      "senjata": "Tidak ada",
+      "logat_bahasa": "Bahasa perempuan bangsawan, sedih. (Tidak muncul di adegan, jika muncul: 'Aku hanya perempuan yang dijual untuk perdamaian yang palsu.')",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "TIDAK MUNCUL DI ADEGAN APAPUN — pertimbangkan untuk dimasukkan ke adegan atau dihapus."
+    },
+    "karakter_09_kepala_desa_pandakan": {
+      "nama_lengkap": "Kepala Desa Pandakan",
+      "usia": 55,
+      "identitas": "Tokoh fiksi representasi masyarakat desa Jawa kuno yang menyelamatkan Gajah Pagon",
+      "referensi_historis": {
+        "sumber": [
+          "Fiksi - representasi masyarakat agraris Jawa"
+        ],
+        "fakta_kunci": [
+          "Tidak tercatat dalam sumber sejarah utama"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah dermawan dan ramah",
+        "pakaian": "Pakaian sederhana desa Jawa kuno (kain kemben, tidak bersepatu, bertelanjang dada atau kain sederhana)",
+        "postur": "Medium",
+        "ekspresi": "Penyelamat dan manusiawi"
+      },
+      "senjata": "Tidak ada",
+      "logat_bahasa": "Bahasa desa sederhana tapi bijak. Contoh: 'Yang terluka adalah saudara. Di desa ini, tidak ada musuh — hanya manusia.'",
+      "pose": "Fullbody standing pose, background putih polos"
+    },
+    "karakter_10_putri_kepala_desa_pandakan": {
+      "nama_lengkap": "Putri Kepala Desa Pandakan (Ibu Gajah Mada)",
+      "usia": 25,
+      "identitas": "Istri Gajah Pagon, ibu Gajah Mada. Gajah Mada lahir sekitar 1299.",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton"
+        ],
+        "fakta_kunci": [
+          "Gajah Mada lahir sekitar 1299",
+          "Tidak ada nama spesifik dalam sumber sejarah"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah lembut dan cantik alami",
+        "pakaian": "Pakaian sederhana wanita desa Jawa kuno (kemben, kain wulang emas jika upacara)",
+        "ekspresi": "Penyayang dan penyelamat",
+        "postur": "Medium"
+      },
+      "senjata": "Tidak ada",
+      "logat_bahasa": "Bahasa ibu yang penyayang. Contoh: 'Kau hidup. Itu sudah cukup. Kau masih punya tangan untuk memegang tombak, dan hati untuk berjuang.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "Di adegan, label harus jadi [PUTRI KEPALA DESA PANDAKAN] bukan hanya [PUTRI]"
+    },
+    "karakter_11_jaran_guyang": {
+      "nama_lengkap": "Jaran Guyang",
+      "usia": 40,
+      "identitas": "Komandan pasukan umpan utara dalam pemberontakan Jayakatwang",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Kidung Panji Wijayakrama"
+        ],
+        "fakta_kunci": [
+          "Nama 'Jaran' = kuda, 'Guyang' = nama daerah/tempat",
+          "Memimpin pasukan diversi dari utara untuk menarik pasukan Singhasari"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah tegas",
+        "pakaian": "Pakaian prajurit Kadiri",
+        "postur": "Atletis",
+        "ekspresi": "Rela dikorbankan"
+      },
+      "senjata": "Pedang, tombak",
+      "logat_bahasa": "Bahasa prajurit yang rela berkorban. Contoh: 'Aku siap menjadi umpan, Paduka. Biarkan darahku mengalir di Kedung Pluk.'",
+      "pose": "Fullbody standing pose, background putih polos"
+    },
+    "karakter_12_kebo_mundarang": {
+      "nama_lengkap": "Kebo Mundarang (Kebo Anengah / Mahisa Mundarang)",
+      "usia": 42,
+      "identitas": "Komandan pasukan utama selatan dalam pemberontakan Jayakatwang",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton"
+        ],
+        "fakta_kunci": [
+          "'Kebo' = kerbau, 'Mahisa' = banteng (nama prajurit elite)",
+          "Memimpin serangan langsung ke istana Singhasari saat pasukan utama Kertanegara sedang di Pamalayu",
+          "Menyerbu istana dan membunuh Kertanegara"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah galak dan efektif",
+        "pakaian": "Pakaian gelap prajurit elite",
+        "postur": "Besar dan mengintimidasi",
+        "ekspresi": "Brutal"
+      },
+      "senjata": "Kapak, pedang",
+      "logat_bahasa": "Bahasa prajurit brutal. Contoh: 'Istana Singhasari akan runtuh sebelum fajar. Aku akan membawa kepala Kertanegara ke hadapanmu.'",
+      "pose": "Fullbody standing pose, background putih polos"
+    },
+    "karakter_13_ike_mese": {
+      "nama_lengkap": "Ike Mese (Yise'mu)",
+      "usia": 38,
+      "identitas": "Komandan pasukan Mongol, navigator Uyghur (bukan Mongol etnis)",
+      "referensi_historis": {
+        "sumber": [
+          "Yuan Shi"
+        ],
+        "fakta_kunci": [
+          "Navigator Uyghur yang memimpin ekspedisi laut",
+          "Memimpin armada laut 1.000 kapal dari Quanzhou",
+          "Bersama Shi Bi dan Gao Xing, memimpin 20.000–30.000 prajurit",
+          "Setelah kekalahan di Jawa, dihukum oleh Kublai Khan dengan cambuk publik dan penyitaan harta"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah dingin dan profesional militer",
+        "pakaian": "Pakaian baju besi ring Mongol",
+        "aksesoris": "Helm kerucut",
+        "postur": "Tegap berkuda",
+        "ekspresi": "Superior teknologi"
+      },
+      "senjata": "Pedang Mongol, busur",
+      "logat_bahasa": "Bahasa Tiongkok kuno (diterjemahkan ke Indonesia). Dingin dan taktis. Contoh: 'Dan setelah itu? Apakah kau akan tunduk pada Kaisar Kubilai Khan?'",
+      "pose": "Fullbody standing pose, background putih polos"
+    },
+    "karakter_14_shi_bi": {
+      "nama_lengkap": "Shi Bi",
+      "usia": 35,
+      "identitas": "Komandan utama pasukan Mongol (Jenderal Mongol). Veteran penaklukan Dinasti Song Selatan.",
+      "referensi_historis": {
+        "sumber": [
+          "Yuan Shi",
+          "Prasasti Serutu Island (Karimata)"
+        ],
+        "fakta_kunci": [
+          "Veteran penaklukan Dinasti Song Selatan",
+          "Memimpin strategi keseluruhan ekspedisi",
+          "Prasasti Serutu Island menemukan jejak armada Mongol 1293"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah curiga dan taktis",
+        "pakaian": "Pakaian baju besi ring Mongol variasi (mungkin lebih tinggi pangkat dari Ike Mese)",
+        "postur": "Tegap",
+        "ekspresi": "Tidak percaya"
+      },
+      "senjata": "Pedang, tongkat komando",
+      "logat_bahasa": "Bahasa jenderal, curiga. (Tidak banyak dialog di dokumen asli)",
+      "pose": "Fullbody standing pose, background putih polos"
+    },
+    "karakter_15_jayakatwang_kecil": {
+      "nama_lengkap": "Jayakatwang Kecil",
+      "usia": 8,
+      "identitas": "Anak Jayakatwang yang menyaksikan kehancuran Kediri pada 1222 oleh Ken Arok",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton (interpretasi)"
+        ],
+        "fakta_kunci": [
+          "Tidak tercatat secara spesifik dalam sumber sejarah",
+          "Momen traumatis yang membentuk dendam seumur hidupnya",
+          "Jayakatwang sebenarnya lahir sekitar 1227-1230 (setelah kekalahan Kertajaya 1222), jadi dia TIDAK menyaksikan kekalahan Kertajaya secara langsung",
+          "TAPI dia adalah keturunan langsung yang tumbuh dengan cerita kehancuran leluhur"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah anak yang melihat ayahnya menangis",
+        "pakaian": "Pakaian sederhana pangeran kecil Kadiri",
+        "ekspresi": "Determinasi dan kesedihan bercampur",
+        "postur": "Kecil"
+      },
+      "senjata": "Tidak ada",
+      "logat_bahasa": "Tidak bicara. Hanya ekspresi visual.",
+      "pose": "Fullbody standing pose, background putih polos",
+      "catatan_produksi": "KONDISI HISTORIS: Jayakatwang lahir SETELAH 1222, jadi adegan 'Jayakatwang kecil melihat ayahnya menangis' adalah FIKSI DRAMATIS. Ayahnya di adegan adalah Sastrajaya (bukan Kertajaya)."
+    }
+  },
+  "karakter_baru_yang_harus_ditambahkan": {
+    "karakter_16_ken_arok": {
+      "nama_lengkap": "Sri Rajasa Bhatara Sang Amurwabhumi (Ken Arok / Sri Ranggah Rajasa Girinathaputra)",
+      "usia": 40,
+      "periode": "1222–1227 M",
+      "identitas": "Pendiri Kerajaan Tumapel/Singhasari, pembunuh Tunggul Ametung, pembunuh Kertajaya raja Kadiri terakhir",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama",
+          "Prasasti Mula Malurung"
+        ],
+        "fakta_kunci": [
+          "Membunuh Tunggul Ametung dengan keris Mpu Gandring untuk merebut Ken Dedes",
+          "Mengalahkan Kertajaya di Pertempuran Ganter 1222",
+          "Gelar: Sri Rajasa Bhatara Sang Amurwabhumi (Pararaton) atau Sri Ranggah Rajasa Girinathaputra (Nagarakretagama)",
+          "Dibunuh Anusapati (anak tiri) tahun 1227",
+          "Dipuja sebagai Siwa di Genengan dan sebagai Buddha di Usana"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah tegas dan ambisius, mata tajam seperti pemburu",
+        "janggut": "Berjanggut hitam panjang",
+        "pakaian": "Pakaian prajurit Tumapel, kain kemben dengan selendang, tidak mewah karena baru naik tahta",
+        "aksesoris": "Keris Mpu Gandring di pinggang (senjata pusaka)",
+        "postur": "Atletis dan agresif",
+        "gaya_berpakaian_referensi": "Pakaian prajurit Jawa kuno abad 13, kain kemben, bertelanjang dada atau kain sederhana"
+      },
+      "senjata": "Keris Mpu Gandring (pusaka), pedang",
+      "logat_bahasa": "Bahasa prajurit ambisius. Di adegan hanya aksi tanpa bicara.",
+      "pose": "Fullbody standing pose, background putih polos",
+      "muncul_di_adegan": "ADEGAN 01 - Siluet mengayunkan keris",
+      "catatan_produksi": "Hanya muncul sebagai siluet di adegan 01. Tapi perlu deskripsi fullbody untuk asset."
+    },
+    "karakter_17_sastrajaya": {
+      "nama_lengkap": "Sastrajaya",
+      "usia": 45,
+      "periode": "1258–1271 M",
+      "identitas": "Ayah Jayakatwang, adipati Gelanggelang, putra Jayasabha (putra Kertajaya)",
+      "referensi_historis": {
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama",
+          "Prasasti Mula Malurung"
+        ],
+        "fakta_kunci": [
+          "Putra Jayasabha (putra Kertajaya raja Kadiri terakhir)",
+          "Menikah dengan saudari perempuan Wisnuwardhana (Seminingrat)",
+          "Adipati Gelanggelang 1258–1271",
+          "Digantikan putranya Jayakatwang tahun 1271"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah sedih dan kalah, mata berkaca-kaca, ekspresi kekalahan",
+        "janggut": "Berjanggut hitam (masih muda, 45 tahun)",
+        "pakaian": "Pakaian adipati Kadiri yang sederhana (bukan raja, hanya bupati bawahan Singhasari)",
+        "postur": "Berlutut di puing istana, postur kalah",
+        "gaya_berpakaian_referensi": "Pakaian bangsawan menengah, sutra sederhana, tidak semegah raja"
+      },
+      "senjata": "Tidak memegang senjata (sudah kalah)",
+      "logat_bahasa": "Bahasa kalah dan penuh harapan. Contoh: 'Suatu hari, Kadiri akan bangkit kembali. Ingatlah, anakku. Api yang padam hari ini akan menyala kembali dalam darahmu.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "muncul_di_adegan": "ADEGAN 01 - Berlutut di puing istana",
+      "catatan_produksi": "KONDISI HISTORIS: Jayakatwang lahir sekitar 1227-1230, Sastrajaya masih hidup saat itu. Tapi kekalahan Kertajaya 1222 terjadi SEBELUM Sastrajaya menjadi adipati (1258). Jadi adegan ini adalah FIKSI DRAMATIS yang menggabungkan momen kekalahan leluhur dengan nasihat ayah."
+    },
+    "karakter_18_patih_daha": {
+      "nama_lengkap": "Patih Daha (nama tidak tercatat dalam sumber sejarah)",
+      "usia": 55,
+      "identitas": "Patih istana Daha/Kediri, penasihat Jayakatwang",
+      "referensi_historis": {
+        "sumber": [
+          "Fiksi - karakter pendukung"
+        ],
+        "fakta_kunci": [
+          "Tidak tercatat dalam sumber sejarah utama",
+          "Representasi pejabat tinggi Kadiri"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah tua penuh strategi, mata licik",
+        "janggut": "Berjanggut putih tipis",
+        "pakaian": "Pakaian menteri Kadiri dengan destar merah (warna khas Kadiri)",
+        "aksesoris": "Memegang lontar atau peta",
+        "postur": "Sedikit bungkuk, postur penasihat"
+      },
+      "senjata": "Tidak memegang senjata",
+      "logat_bahasa": "Bahasa penasihat strategis. Contoh: 'Singhasari sedang kosong, Paduka. Pasukan terbaiknya di Pamalayu. Hanya prajurit istana yang tersisa di Tumapel.'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "muncul_di_adegan": "ADEGAN 03 - Perencanaan di Daha",
+      "catatan_produksi": "Karakter fiksi pendukung. Pakaian harus berbeda dengan Mpu Raganatha (destar putih = Singhasari, destar merah = Kadiri)"
+    },
+    "karakter_19_pendatang": {
+      "nama_lengkap": "Pendatang/Pengungsi Luka",
+      "usia": 35,
+      "identitas": "Warga sipil yang luka-luka dari serangan Jaran Guyang",
+      "referensi_historis": {
+        "sumber": [
+          "Fiksi - representasi masyarakat"
+        ],
+        "fakta_kunci": [
+          "Tidak tercatat dalam sumber sejarah utama"
+        ]
+      },
+      "deskripsi_penampilan": {
+        "wajah": "Wajah ketakutan, tangan berlumuran darah",
+        "pakaian": "Pakaian sederhana warga sipil, compang-camping, robek",
+        "postur": "Berlari, postur panik",
+        "ekspresi": "Ketakutan dan darurat"
+      },
+      "senjata": "Tidak ada",
+      "logat_bahasa": "Bahasa panik dan tidak teratur. Contoh: 'Jayakatwang! Jayakatwang menyerang! Desa kami dibakar! Pasukan dari utara... mereka membunuh semua!'",
+      "pose": "Fullbody standing pose, background putih polos",
+      "muncul_di_adegan": "ADEGAN 05 - Pendatang luka membanjiri istana",
+      "catatan_produksi": "Karakter fiksi. Pakaian harus menunjukkan kerusakan akibat perang."
+    }
+  },
+  "bagian_2_lokasi_scene": {
+    "lokasi_01_medan_perang_kadiri_1222": {
+      "nama": "Medan Perang Kadiri 1222 M",
+      "deskripsi_visual": "Malam gelap, api membakar istana Kadiri, puing-puing batu, asap tebal, siluet prajurit bertarung, darah di tanah, suasana kehancuran kerajaan",
+      "referensi_historis": {
+        "peristiwa": "Pertempuran Ganter: Ken Arok mengalahkan Kertajaya, raja terakhir Kediri",
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama"
+        ],
+        "detail": "Para panglima perang Panjalu yaitu Mahisa Walungan (adik Dandhang Gendis) dan Gubar Baleman mati di tangan Ken Arok. Dandhang Gendis sendiri melarikan diri dan bersembunyi naik menuju kahyangan."
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Api pembakaran sebagai sumber cahaya utama, siluet",
+        "warna_dominan": "Hitam, merah api, abu-abu asap",
+        "properti": [
+          "Puing batu istana",
+          "Mayat prajurit",
+          "Senjata berserakan",
+          "Api berkobar"
+        ],
+        "suasana": "Kacau, gelap, traumatis",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 01"
+        ]
+      }
+    },
+    "lokasi_02_ruang_rahasia_istana_daha": {
+      "nama": "Ruang Rahasia Istana Daha",
+      "deskripsi_visual": "Ruangan gelap batu bata, lilin redup, meja kayu besar dengan peta Jawa dari kulit, surat lontar terbakar, bayangan bergerak di dinding, suasana strategi militer",
+      "referensi_historis": {
+        "lokasi": "Daha = ibu kota Kediri (kini Kediri, Jawa Timur)",
+        "peristiwa": "Jayakatwang merencanakan pemberontakan di sini",
+        "sumber": [
+          "Pararaton",
+          "Kidung Harsawijaya"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Lilin redup, bayangan bergerak",
+        "warna_dominan": "Coklat tua, hitam, oranye api lilin",
+        "properti": [
+          "Meja kayu besar",
+          "Peta Jawa dari kulit",
+          "Surat lontar",
+          "Lilin",
+          "Batu bata"
+        ],
+        "suasana": "Misterius, strategis, gelap",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 03"
+        ]
+      }
+    },
+    "lokasi_03_ruang_tahta_singhasari": {
+      "nama": "Ruang Tahta Singhasari",
+      "deskripsi_visual": "Aula megah dengan pilar batu besar, singgasana emas di tengah, lantai marmer, cahaya emas dari jendela tinggi, asap dupa mengambang, gamelan di sudut, suasana upacara dan kebesaran",
+      "referensi_historis": {
+        "lokasi": "Istana Singhasari di Tumapel (kini Malang)",
+        "peristiwa": "Kertanegara memerintah dari sini",
+        "sumber": [
+          "Nagarakretagama",
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Sore hari",
+        "cahaya": "Cahaya emas dari jendela tinggi, sinar matahari sore",
+        "warna_dominan": "Emas, putih, coklat batu",
+        "properti": [
+          "Singgasana emas",
+          "Pilar batu besar",
+          "Lantai marmer",
+          "Gamelan",
+          "Dupa",
+          "Cangkir tuak emas"
+        ],
+        "suasana": "Megah, upacara, kebesaran",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 02",
+          "ADEGAN 05",
+          "ADEGAN 07",
+          "ADEGAN 08"
+        ]
+      }
+    },
+    "lokasi_04_halaman_latihan_istana": {
+      "nama": "Halaman Latihan Istana",
+      "deskripsi_visual": "Halaman terbuka dengan pilar batu kuno, tanah pasir, sinar matahari sore, bayangan panjang, peralatan latihan berserakan, suasana persahabatan prajurit",
+      "referensi_historis": {
+        "peristiwa": "Latihan prajurit elite Singhasari (Arya)",
+        "sumber": [
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Sore hari",
+        "cahaya": "Sinar matahari sore, bayangan panjang",
+        "warna_dominan": "Coklat tanah, emas matahari, abu-abu batu",
+        "properti": [
+          "Pilar batu kuno",
+          "Peralatan latihan (pedang kayu, perisai)",
+          "Tanah pasir"
+        ],
+        "suasana": "Persahabatan, latihan, tenang",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 04"
+        ]
+      }
+    },
+    "lokasi_05_medan_perang_kedung_pluk": {
+      "nama": "Medan Perang Kedung Pluk",
+      "deskripsi_visual": "Lapangan terbuka, rumput kering, debu beterbangan, matahari terik, mayat dan senjata berserakan, suasana pertempuran sengit",
+      "referensi_historis": {
+        "peristiwa": "Lokasi pertempuran diversi utara (Jaran Guyang)",
+        "sumber": [
+          "Pararaton",
+          "Kidung Panji Wijayakrama"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Siang hari",
+        "cahaya": "Matahari terik, debu",
+        "warna_dominan": "Kuning rumput kering, coklat debu, merah darah",
+        "properti": [
+          "Rumput kering",
+          "Mayat",
+          "Senjata berserakan",
+          "Debu"
+        ],
+        "suasana": "Sengit, panas, kacau",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 06"
+        ]
+      }
+    },
+    "lokasi_06_bukit_kapulungan": {
+      "nama": "Bukit Kapulungan",
+      "deskripsi_visual": "Bukit kecil dengan rumput kering, angin kencang, matahari terbenam di belakang, siluet prajurit, suasana kemenangan yang rapuh",
+      "referensi_historis": {
+        "peristiwa": "Lokasi kemenangan sementara Wijaya sebelum Ardharaja membelot",
+        "sumber": [
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Sore hari (matahari terbenam)",
+        "cahaya": "Matahari terbenam di belakang, siluet",
+        "warna_dominan": "Oranye, ungu, coklat",
+        "properti": [
+          "Rumput kering",
+          "Batu-batu",
+          "Bendera"
+        ],
+        "suasana": "Kemenangan yang rapuh, dramatis",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 06"
+        ]
+      }
+    },
+    "lokasi_07_hutan_selatan_sungai_lekso": {
+      "nama": "Hutan Selatan/Sungai Lekso",
+      "deskripsi_visual": "Hutan lebat gelap, sungai berbatu, malam hari, cahaya bulan tipis, suara air mengalir, suasana gerakan diam-diam pasukan",
+      "referensi_historis": {
+        "peristiwa": "Jalur pasukan selatan Kebo Mundarang menuju istana Singhasari",
+        "sumber": [
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Cahaya bulan tipis",
+        "warna_dominan": "Hitam, biru gelap, abu-abu",
+        "properti": [
+          "Hutan lebat",
+          "Sungai berbatu",
+          "Batu besar"
+        ],
+        "suasana": "Gelap, rahasia, mencekam",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 07"
+        ]
+      }
+    },
+    "lokasi_08_koridor_istana_singhasari": {
+      "nama": "Koridor Istana Singhasari",
+      "deskripsi_visual": "Koridor batu panjang dengan obor di dinding, bayangan bergerak, darah di lantai, suasana panik dan pertarungan jarak dekat",
+      "referensi_historis": {
+        "peristiwa": "Serangan Kebo Mundarang ke istana saat Kertanegara tidak bersiaga",
+        "sumber": [
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Obor di dinding, bayangan bergerak",
+        "warna_dominan": "Oranye api, hitam, merah darah",
+        "properti": [
+          "Koridor batu panjang",
+          "Obor",
+          "Darah di lantai",
+          "Mayat"
+        ],
+        "suasana": "Panik, mencekam, pertarungan",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 07"
+        ]
+      }
+    },
+    "lokasi_09_rabut_carat": {
+      "nama": "Rabut Carat (Desa Carat)",
+      "deskripsi_visual": "Area perkemahan di hutan, tanah kering, batu-batu besar, sore hari, bendera merah-putih terlihat dari kejauhan, suasana kekacauan dan pengkhianatan",
+      "referensi_historis": {
+        "lokasi": "Raos Pecinan, Carat, Gempol, Pasuruan",
+        "peristiwa": "Tempat Wijaya dan 600 pasukannya bersembunyi dari pasukan Gelanggelang",
+        "sumber": [
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Sore hari",
+        "cahaya": "Sore redup",
+        "warna_dominan": "Coklat tanah, hijau hutan, merah bendera",
+        "properti": [
+          "Batu-batu besar",
+          "Tenda perkemahan",
+          "Bendera merah-putih"
+        ],
+        "suasana": "Kekacauan, pengkhianatan, tragis",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 09"
+        ]
+      }
+    },
+    "lokasi_10_desa_pandakan": {
+      "nama": "Desa Pandakan",
+      "deskripsi_visual": "Desa kecil dengan rumah bambu dan jerami, sawah hijau, sungai kecil, suasana pagi yang tenang dan damai, kontras dengan perang",
+      "referensi_historis": {
+        "status": "Desa fiksi yang menyelamatkan Gajah Pagon",
+        "sumber": [
+          "Fiksi"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Pagi hari",
+        "cahaya": "Cahaya pagi lembut",
+        "warna_dominan": "Hijau sawah, coklat bambu, biru sungai",
+        "properti": [
+          "Rumah bambu dan jerami",
+          "Sawah hijau",
+          "Sungai kecil",
+          "Pondok sederhana"
+        ],
+        "suasana": "Tenang, damai, kontras dengan perang",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 10",
+          "ADEGAN 13",
+          "ADEGAN 17"
+        ]
+      }
+    },
+    "lokasi_11_hutan_tarik": {
+      "nama": "Hutan Tarik",
+      "deskripsi_visual": "Hutan lebat, malam gelap, api unggun kecil, hujan turun, tanah becek, suasana kekalahan dan perenungan",
+      "referensi_historis": {
+        "lokasi": "Hutan Tarik di delta Brantas",
+        "peristiwa": "Tempat Wijaya membangun desa Majapahit. Nama 'Majapahit' dari buah maja yang pahit",
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Api unggun kecil",
+        "warna_dominan": "Hitam, coklat tanah becek, oranye api",
+        "properti": [
+          "Hutan lebat",
+          "Api unggun",
+          "Hujan",
+          "Tanah becek"
+        ],
+        "suasana": "Kekalahan, perenungan, harapan baru",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 11",
+          "ADEGAN 13"
+        ]
+      }
+    },
+    "lokasi_12_tenda_perkemahan_mongol": {
+      "nama": "Tenda Perkemahan Mongol",
+      "deskripsi_visual": "Tenda besar kain putih, bendera Mongol, api unggun banyak, suasana asing dan mengancam, teknologi beda dengan Jawa",
+      "referensi_historis": {
+        "peristiwa": "Armada Mongol mendarat di Tuban, 22 Maret 1293. 20.000–30.000 prajurit, 1.000 kapal",
+        "sumber": [
+          "Yuan Shi"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Pagi hari",
+        "cahaya": "Pagi terang",
+        "warna_dominan": "Putih tenda, merah bendera, oranye api",
+        "properti": [
+          "Tenda besar kain putih",
+          "Bendera Mongol",
+          "Api unggun banyak",
+          "Senjata Mongol"
+        ],
+        "suasana": "Asing, mengancam, teknologi superior",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 14"
+        ]
+      }
+    },
+    "lokasi_13_medan_perang_kediri": {
+      "nama": "Medan Perang Kediri",
+      "deskripsi_visual": "Kota besar dengan tembok tinggi, gerbang hancur, ribuan prajurit bertarung, api membakar rumah, asap tebal, suasana epik perang besar",
+      "referensi_historis": {
+        "peristiwa": "Pertempuran Daha (Kediri), 26 April 1293. Jayakatwang dikalahkan oleh aliansi Mongol-Wijaya",
+        "sumber": [
+          "Yuan Shi",
+          "Pararaton",
+          "Nagarakretagama"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Pagi hari",
+        "cahaya": "Pagi terang, asap tebal",
+        "warna_dominan": "Abu-abu asap, merah api, coklat tanah",
+        "properti": [
+          "Tembok tinggi",
+          "Gerbang hancur",
+          "Ribuan prajurit",
+          "Api",
+          "Asap tebal"
+        ],
+        "suasana": "Epik, besar, kehancuran",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 15"
+        ]
+      }
+    },
+    "lokasi_14_dek_kapal_kayu_mongol": {
+      "nama": "Dek Kapal Kayu Mongol",
+      "deskripsi_visual": "Malam di laut Jawa, dek kayu basah, tali dan layar, bulan purnama, ombak tenang, suasana tragis dan final",
+      "referensi_historis": {
+        "peristiwa": "Jayakatwang dan Ardharaja dieksekusi di kapal Mongol, Maret 1293",
+        "sumber": [
+          "Yuan Shi",
+          "Pararaton"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Malam hari",
+        "cahaya": "Bulan purnama",
+        "warna_dominan": "Biru laut, putih bulan, coklat kayu",
+        "properti": [
+          "Dek kayu basah",
+          "Tali dan layar",
+          "Bulan purnama",
+          "Ombak tenang"
+        ],
+        "suasana": "Tragis, final, tenang tapi mencekam",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 16"
+        ]
+      }
+    },
+    "lokasi_15_bukit_majapahit": {
+      "nama": "Bukit Majapahit",
+      "deskripsi_visual": "Bukit hijau dengan pemukiman baru, api unggun besar, matahari terbit, kabut pagi, suasana harapan dan kelahiran kerajaan baru",
+      "referensi_historis": {
+        "peristiwa": "Pendirian Majapahit 1293. Wijaya membangun kerajaan baru di Hutan Tarik",
+        "sumber": [
+          "Pararaton",
+          "Nagarakretagama"
+        ]
+      },
+      "detail_teknis_produksi": {
+        "waktu": "Pagi hari (matahari terbit)",
+        "cahaya": "Matahari terbit, kabut pagi",
+        "warna_dominan": "Hijau bukit, oranye matahari, putih kabut",
+        "properti": [
+          "Pemukiman baru",
+          "Api unggun besar",
+          "Kabut pagi",
+          "Pohon maja"
+        ],
+        "suasana": "Harapan, kelahiran baru, epik",
+        "adegan_yang_menggunakan": [
+          "ADEGAN 17"
+        ]
+      }
+    }
+  },
+  "adegan_11_wijaya_di_hutan_tarik": {
+    "judul": "WIJAYA DI HUTAN TARIK — RENCANA BARU",
+    "lokasi": "Hutan Tarik (Lokasi 11)",
+    "waktu": "Malam ke pagi buta",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Malam, hutan lebat, api unggun kecil, hujan turun, Wijaya duduk sendirian di batu besar",
+        "suara": "Suara hujan, suara api unggun",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya menatap api unggun, wajah penuh perenungan",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Tracking shot",
+        "gerak": "Aria Wiraraja berjalan dengan tongkat dari kejauhan, wajah penuh penyesalan",
+        "suara": "Bunyi tongkat di tanah becek, langkah kaki",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Aria Wiraraja berdiri di depan Wijaya, menunduk, tongkat di tangan",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya berdiri, menatap tajam Aria Wiraraja",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "ARIA WIRARAJA",
+        "teks": "Aku yang salah. Aku yang menyarankan Jayakatwang. Aku yang membantu dia merencanakan pemberontakan. Aku... telah mengkhianati Singhasari.",
+        "logat": "Bahasa tua penuh penyesalan. Suara lemah, hampir terbata-bata. Setiap kata adalah BEBAN 40 tahun.",
+        "gerak_saat_bicara": "Berdiri dengan tongkat, tangan kanan memegang tongkat erat-erat, tangan kiri terbuka ke dada (isyarat 'aku bersalah'), kepala menunduk dalam, tubuh sedikit goyah",
+        "ekspresi": "Mata muram, wajah penuh penyesalan, bibir gemetar, hampir menangis",
+        "catatan": "Aria Wiraraja adalah PENYEBAB kehancuran Singhasari. Dia menyesal. Tapi penyesalan tidak cukup."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Maka bantu aku memperbaiki kesalahanmu. Aku butuh Madura. Aku butuh kekuatanmu. Bantu aku bangkit kembali, dan kita akan membalas kematian Kertanegara.",
+        "logat": "Bahasa licik yang menyamar sebagai permintaan. Suara tenang tapi tajam. TIDAK memaafkan, tapi MENGGUNAKAN.",
+        "gerak_saat_bicara": "Berdiri dari batu, tangan kanan meraih bahu Aria Wiraraja (isyarat 'aku butuhmu'), tangan kiri terbuka ke arah hutan (isyarat 'kekuatan'), mata menatap tajam",
+        "ekspresi": "Mata tajam seperti elang, wajah tenang tapi berbahaya, senyum tipis",
+        "catatan": "Wijaya tidak MARAH pada Aria Wiraraja. Dia MELIHAT PELUANG. Ini menunjukkan KEPALSUAN Wijaya."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian sederhana, basah karena hujan. Aria Wiraraja: pakaian petani sederhana, tongkat.",
+      "makeup": "Wijaya: wajah lelah tapi mata tajam. Aria Wiraraja: wajah tua penuh kerutan, mata muram.",
+      "properti": "Api unggun, batu besar, tongkat, hujan",
+      "warna_dominan": "Hitam hutan, oranye api, biru hujan",
+      "musik": "Gamelan nada misterius, gender slenthem, suara hujan"
+    }
+  },
+  "adegan_12_penyerahan_wijaya": {
+    "judul": "PENYERAHAN WIJAYA DI HADAPAN JAYAKATWANG",
+    "lokasi": "Ruang Tahta Istana Daha (Lokasi 02 variasi)",
+    "waktu": "Siang",
+    "durasi_estimasi": "4 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Siang, istana Daha, Wijaya berjalan sendirian ke arah singgasana Jayakatwang",
+        "suara": "Hening, langkah kaki",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya berlutut di hadapan Jayakatwang, kepala menunduk dalam, tangan di depan dada",
+        "suara": "Bunyi lutut di lantai batu",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Jayakatwang",
+        "gerak": "Jayakatwang menatap dari singgasana, mata tajam, tangan memegang tongkat komando",
+        "suara": "Hening",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Jayakatwang tertawa dingin, melambaikan tangan",
+        "suara": "Tertawa dingin",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya menatap Jayakatwang, tenang, tangan masih di dada",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Jayakatwang menghela napas, melambaikan tangan ke arah Wijaya",
+        "suara": "Helaan napas",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya berlutut lebih dalam, kepala hampir menyentuh lantai",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Kau datang untuk mati, Wijaya? Kau datang untuk membalas kematian mertuamu?",
+        "logat": "Bahasa raja yang menang. Suara dingin, hampir mengejek. Menggunakan 'kau' (bukan 'engkau') menunjukkan MEREMEHKAN.",
+        "gerak_saat_bicara": "Duduk di singgasana, tangan kanan memegang tongkat komando, tangan kiri terbuka ke arah Wijaya (isyarat 'jelaskan'), kepala sedikit miring menatap bawah",
+        "ekspresi": "Mata tajam mengejek, senyum dingin, wajah angkuh",
+        "catatan": "Jayakatwang TIDAK takut pada Wijaya. Dia sudah menang. Tapi dia CURIGA."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Aku datang untuk hidup, Paduka. Aku kalah. Pasukanku hancur. Aku bukan ancaman.",
+        "logat": "Bahasa rendah hati yang palsu. Suara lemah, hampir memohon. Tapi mata tetap tajam. PENIPUAN sempurna.",
+        "gerak_saat_bicara": "Berlutut, kepala menunduk dalam, tangan kanan di dada, tangan kiri terbuka ke arah Jayakatwang (isyarat 'aku tak berdaya'), bahu sedikit turun",
+        "ekspresi": "Wajah menunduk (TIDAK terlihat), tapi mata yang terlihat dari bawah menunjukkan TAJAM",
+        "catatan": "Wijaya adalah AKTOR TERBAIK. Dia bisa membuat Jayakatwang percaya. Tapi PENONTON harus melihat KEPALSUAN di matanya."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Hidup? Kau pikir aku tak tahu kau memimpin pasukan utara? Kau pikir aku tak tahu kau menantu Kertanegara?",
+        "logat": "Bahasa raja yang menguji. Suara semakin keras, hampir berteriak. Tapi tetap terkontrol. Ini adalah UJIAN.",
+        "gerak_saat_bicara": "Tertawa dingin, tangan kanan mengetuk tongkat ke lantai (isyarat 'aku tahu semua'), tangan kiri menunjuk Wijaya, tubuh sedikit maju dari singgasana",
+        "ekspresi": "Senyum dingin melebar, mata tajam menguji, wajah penuh kebanggaan",
+        "catatan": "Jayakatwang TAHU siapa Wijaya. Tapi dia MEREMEHKAN. Ini adalah KESALAHAN FATAL."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Aku kalah. Pasukanku hancur. Aku bukan ancaman. Biarkan aku hidup di ujung dunia, Paduka. Aku akan menghilang.",
+        "logat": "Bahasa memohon yang sempurna. Suara semakin lemah, hampir menangis. Tapi setiap kata adalah KEBOHONGAN.",
+        "gerak_saat_bicara": "Berlutut lebih dalam, tangan kanan meraih ke arah Jayakatwang (isyarat 'ampunilah'), tangan kiri di lantai (isyarat 'aku tak berdaya'), kepala semakin menunduk",
+        "ekspresi": "Wajah menunjukkan ketakutan (palsu), mata berkaca-kaca (air mata palsu), bibir gemetar",
+        "catatan": "Wijaya mengulang 'Aku kalah. Pasukanku hancur. Aku bukan ancaman.' — ini adalah MANTRA penipuan."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Aku ampuni hidupmu. Pergi ke Alas Tarik. Berburulah. Jangan pernah kembali. Jika kau muncul di Daha lagi, kepalamu akan menggelinding.",
+        "logat": "Bahasa raja yang meremehkan. Suara tenang kembali, hampak kasihan. Tapi ancaman di akhir adalah TAJAM.",
+        "gerak_saat_bicara": "Menghela napas, tangan kanan melambaikan ke arah Wijaya (isyarak 'pergilah'), tangan kiri memegang tongkat, tubuh bersandar di singgasana",
+        "ekspresi": "Mata menunjukkan kasihan (salah), senyum tipis, wajah lega",
+        "catatan": "Jayakatwang membiarkan Wijaya hidup karena dia MEREMEHKAN. Ini adalah KESALAHAN yang akan menghancurkannya."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Terima kasih, Paduka. Aku akan menjadi bayang-bayang di hutan. Kau tidak akan pernah mendengar namaku lagi.",
+        "logat": "Bahasa rendah hati terakhir. Suara lemah, hampir berbisik. Tapi kata 'bayang-bayang' adalah PERINGATAN tersembunyi.",
+        "gerak_saat_bicara": "Berlutut lebih dalam, kepala hampir menyentuh lantai, tangan kanan di depan dada, tangan kiri di lantai",
+        "ekspresi": "Wajah menunduk (TIDAK terlihat), tapi SENYUM TIPIS di sudut bibir",
+        "catatan": "Kata 'bayang-bayang' adalah KUNCI. Wijaya akan menjadi bayang-bayang yang MENGINTAI. Jayakatwang tidak menyadari ancaman ini."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian compang-camping, tanpa senjata. Jayakatwang: pakaian raja Kadiri, tongkat komando.",
+      "makeup": "Wijaya: wajah kotor, pakaian robek. Jayakatwang: wajah tua berjanggut putih, mata tajam.",
+      "properti": "Singgasana, tongkat komando, lantai batu",
+      "warna_dominan": "Merah tua, emas, coklat batu",
+      "musik": "Gamelan nada tegang, gender slenthem, gong panjang saat Jayakatwang mengancam"
+    }
+  },
+  "adegan_13_membangun_kekuatan_di_tarik": {
+    "judul": "MEMBANGUN KEKUATAN DI TARIK",
+    "lokasi": "Hutan Tarik (Lokasi 11)",
+    "waktu": "Montase beberapa bulan",
+    "durasi_estimasi": "2 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Montage shot 1",
+        "gerak": "Wijaya membabat pohon dengan parang, keringat bercucuran",
+        "suara": "Bunyi parang menebas pohon",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Montage shot 2",
+        "gerak": "Gajah Pagon memegang bayi, menatap Wijaya yang sedang bekerja",
+        "suara": "Suara bayi menangis kecil",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Montage shot 3",
+        "gerak": "Putri menatap luka suaminya yang masih terbalut kain",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya berhenti menebas, menatap Gajah Pagon dan bayinya",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Di sini, kita membangun kembali. Bukan Singhasari, tapi sesuatu yang baru. Sesuatu yang akan menelan Daha.",
+        "logat": "Bahasa pemimpin yang bangkit. Suara tegas, penuh tekad. TIDAK lagi rendah hati. Ini adalah Wijaya yang ASLI.",
+        "gerak_saat_bicara": "Membabat pohon dengan parang di tangan kanan, berhenti, tangan kiri terbuka ke arah hutan (isyarat 'sesuatu yang baru'), mata menatap tajam ke arah Daha",
+        "ekspresi": "Mata tajam penuh ambisi, wajah tegas, tidak ada keraguan",
+        "catatan": "Wijaya tidak lagi berpura-pura. Ini adalah Wijaya yang LICIK dan BERAMBISI."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Aku akan mengirimkan putraku untuk mengabdi padamu, Raden Wijaya. Dia akan tumbuh menjadi prajuritmu.",
+        "logat": "Bahasa prajurit setia. Suara tenang, penuh pengorbanan. Menyerahkan MASA DEPAN keluarganya.",
+        "gerak_saat_bicara": "Memegang bayi dengan tangan kiri, tangan kanan meraih ke arah Wijaya (isyarat 'aku menyerahkan padamu'), menatap Wijaya dengan tulus",
+        "ekspresi": "Mata tulus, senyum kebanggaan, wajah tenang",
+        "catatan": "Gajah Pagon menyerahkan ANAKNYA (Gajah Mada) kepada Wijaya. Ini adalah IKATAN generasi."
+      },
+      {
+        "karakter": "PUTRI KEPALA DESA PANDAKAN",
+        "teks": "Kau masih terluka.",
+        "logat": "Bahasa istri yang khawatir. Suara lembut, penuh perhatian.",
+        "gerak_saat_bicara": "Menatap luka suaminya, tangan kanan menyentuh luka di dada Gajah Pagon dengan lembut",
+        "ekspresi": "Mata khawatir, senyum sedih, wajah penuh kasih sayang",
+        "catatan": "Kalimat pendek tapi PENUH makna. Perhatian kecil yang menunjukkan CINTA."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Luka sembuh. Tapi hutang tidak. Hutangku pada Raden Wijaya adalah hutang pada kehidupan ini sendiri.",
+        "logat": "Bahasa prajurit filosofis. Suara tenang tapi dalam. Setiap kata adalah KESADARAN hidup.",
+        "gerak_saat_bicara": "Tersenyum, menatap bayinya, tangan kanan memegang tangan bayi, tangan kiri meraih ke arah Wijaya",
+        "ekspresi": "Senyum pahit, mata menunjukkan kedalaman, wajah tenang",
+        "catatan": "'Hutang pada kehidupan ini sendiri' adalah FILOSOFI Gajah Pagon. Dia hidup untuk BAYAR HUTANG."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian sederhana petani. Gajah Pagon: pakaian sederhana, luka terbalut. Putri: pakaian wanita desa.",
+      "makeup": "Wijaya: wajah kotor, keringat. Gajah Pagon: luka di dada. Putri: wajah lembut.",
+      "properti": "Parang, bayi, kain perban, pohon maja",
+      "warna_dominan": "Hijau hutan, cokkat tanah, putih bayi",
+      "musik": "Gamelan nada harapan, gender barung, suara alam"
+    }
+  },
+  "adegan_14_kedatangan_mongol": {
+    "judul": "KEDATANGAN MONGOL & ALIANSI",
+    "lokasi": "Tenda Perkemahan Mongol (Lokasi 12)",
+    "waktu": "Pagi",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Pagi, pantai utara Jawa (Tuban), tenda besar kain putih, bendera Mongol, pasukan Mongol berbaris",
+        "suara": "Suara pasukan berbaris, bendera berkibar",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya berjalan sendirian ke arah tenda utama, diikuti oleh pengawal",
+        "suara": "Langkah kaki",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Wijaya berdiri di hadapan Shi Bi dan Ike Mese, berlutut",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Ike Mese",
+        "gerak": "Ike Mese berkuda, menatap curiga ke arah Wijaya",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya menatap tajam, senyum tipis",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Aku ahli waris Kertanegara. Aku menyerahkan diri. Tapi bantu aku kalahkan Jayakatwang dulu. Dia yang membunuh mertuaku. Dia yang menghina Kaisar Mongol.",
+        "logat": "Bahasa diplomatik licik. Suara tenang, penuh PERHITUNGAN. Menggunakan 'ahli waris' untuk LEGITIMASI. Menggunakan 'menghina Kaisar Mongol' untuk MEMANIPULASI.",
+        "gerak_saat_bicara": "Berdiri tegak, tangan kanan di dada (isyarat 'menyerahkan diri'), tangan kiri terbuka ke arah Mongol (isyarat 'bantu aku'), mata menatap Shi Bi",
+        "ekspresi": "Wajah patuh (palsu), mata tajam (asli), senyum tipis",
+        "catatan": "Wijaya menggunakan KERTANEGARA sebagai alat. Dia tidak benar-benar ingin membalas dendam — dia ingin MENGGUNAKAN Mongol."
+      },
+      {
+        "karakter": "IKE MESE",
+        "teks": "Dan setelah itu? Apakah kau akan tunduk pada Kaisar Kubilai Khan?",
+        "logat": "Bahasa Tiongkok kuno (diterjemahkan). Suara dingin, profesional militer. TIDAK percaya pada Wijaya.",
+        "gerak_saat_bicara": "Berkuda, tangan kanan memegang tali kuda, tangan kiri di pinggang (dekat pedang), menatap Wijaya dari atas kuda",
+        "ekspresi": "Mata curiga, wajah dingin, tidak ada emosi",
+        "catatan": "Ike Mese adalah navigator Uyghur, bukan Mongol etnis. Dia LEBIH CERDAS dari rata-rata Mongol."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Maka Jawa akan menjadi sahabat Kaisar Mongol. Kami akan mengirim upeti. Kami akan membuka pelabuhan untuk perdagangan. Tapi pertama — Jayakatwang harus mati.",
+        "logat": "Bahasa diplomatik sempurna. Suara tenang, menawarkan KEMENANGAN BERSAMA. Tapi prioritasnya JAYAKATWANG.",
+        "gerak_saat_bicara": "Tangan kanan terbuka ke arah langit (isyarat 'sahabat'), tangan kiri menunjuk ke arah Daha (isyarat 'Jayakatwang'), mata menatap Ike Mese",
+        "ekspresi": "Senyum diplomatik, mata tajam, wajah tenang",
+        "catatan": "Wijaya menawarkan 'upeti' dan 'perdagangan' — ini adalah JANJI yang tidak akan ditepati."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian sederhana tapi bersih. Shi Bi: baju besi Mongol variasi. Ike Mese: baju besi ring Mongol, helm kerucut.",
+      "makeup": "Wijaya: wajah tenang. Shi Bi: wajah curiga. Ike Mese: wajah dingin.",
+      "properti": "Tenda besar kain putih, bendera Mongol, kuda, pedang",
+      "warna_dominan": "Putih tenda, merah bendera, biru langit",
+      "musik": "Musik Mongol (morin khuur), gender slenthem, nada asing"
+    }
+  },
+  "adegan_15_pertempuran_kediri": {
+    "judul": "PERTEMPURAN KEDIRI — 20 MARET 1293",
+    "lokasi": "Medan Perang Kediri (Lokasi 13)",
+    "waktu": "Pagi",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Pagi, luar tembok Kediri, ribuan prajurit gabungan Mongol-Majapahit bersiap serang",
+        "suara": "Teriakan pasukan, bunyi genderang perang",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya mengangkat pedang tinggi-tinggi, berteriak",
+        "suara": "Teriakan 'Untuk Kertanegara! Untuk Singhasari! Maju!'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Wide shot",
+        "gerak": "Pasukan maju, tembok Kediri dihantam, gerbang hancur",
+        "suara": "Bunyi benturan, teriakan perang",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot Jayakatwang",
+        "gerak": "Jayakatwang di atas tembok, melihat pasukan hancur, wajah pucat",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Untuk Kertanegara! Untuk Singhasari! Maju!",
+        "logat": "Teriakan perang. Suara MENGGELEGAR. Menggunakan nama KERTANEGARA untuk LEGITIMASI. Tapi sebenarnya untuk DIRINYA SENDIRI.",
+        "gerak_saat_bicara": "Mengangkat pedang tinggi-tinggi dengan tangan kanan, tangan kiri terbuka ke arah pasukan (isyarat 'maju'), berdiri di atas kuda atau batu",
+        "ekspresi": "Mata berapi-api, wajah penuh ambisi, mulut terbuka lebar berteriak",
+        "catatan": "Wijaya menggunakan Kertanegara sebagai BENDERA. Tapi dia berperang untuk MAJAPAHIT-nya sendiri."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Kita salah menilai Wijaya. Dia bukan anak muda yang tak berpengalaman. Dia adalah ular yang bersarang di hutan Tarik, menunggu saat yang tepat untuk menggigit.",
+        "logat": "Bahasa raja yang sadar kalah. Suara tenang, hampir kagum. Menggunakan metafora 'ular' untuk Wijaya — SAMA seperti Mpu Raganatha menggunakan 'ular' untuk Jayakatwang.",
+        "gerak_saat_bicara": "Berdiri di atas tembok, tangan kanan memegang tongkat komando, tangan kiri terbuka ke arah pasukan yang hancur (isyarat 'lihatlah'), kepala sedikit menunduk",
+        "ekspresi": "Mata menunjukkan penyesalan, senyum pahit, wajah lelah",
+        "catatan": "Jayakatwang akhirnya MENGGUNAKAN metafora yang sama dengan Mpu Raganatha. Ironi: dia tidak mendengar peringatan, dan sekarang dia menjadi KORBAN peringatan yang sama."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: baju besi lengkap, kain poleng. Jayakatwang: pakaian raja Kadiri, tongkat komando.",
+      "makeup": "Wijaya: wajah bersemangat. Jayakatwang: wajah pucat, lelah.",
+      "properti": "Pedang, tembok Kediri, bendera, api",
+      "warna_dominan": "Abu-abu asap, merah api, coklat tanah",
+      "musik": "Gamelan perang epik, kendang, gong, gender barung"
+    }
+  },
+  "adegan_16_eksekusi_jayakatwang_ardharaja": {
+    "judul": "EKSEKUSI JAYAKATWANG & ARDHARAJA",
+    "lokasi": "Dek Kapal Kayu Mongol (Lokasi 14)",
+    "waktu": "Malam",
+    "durasi_estimasi": "4 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Malam di laut Jawa, dek kayu basah, tali dan layar, bulan purnama, Jayakatwang dan Ardharaja berlutut di dek",
+        "suara": "Suara ombak, angin laut",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Close up Ardharaja",
+        "gerak": "Ardharaja berlutut di samping ayahnya, menangis, tangan mengepal",
+        "suara": "Tangisan teredam",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Jayakatwang",
+        "gerak": "Jayakatwang menatap anaknya, tenang, tangan kanan meraih bahu Ardharaja",
+        "suara": "Suara tenang 'Tidak. Kau memilih sisi yang menang.'",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Ardharaja menatap Wijaya di kejauhan, mata penuh kebencian",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Jayakatwang",
+        "gerak": "Jayakatwang tertawa pahit, menatap langit",
+        "suara": "Tertawa pahit",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Wide shot",
+        "gerak": "Wijaya berdiri di kejauhan, menatap, bayangan bulan di belakangnya",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "ARDHARAJA",
+        "teks": "Ayah... aku menyesal. Aku seharusnya tidak membelot.",
+        "logat": "Bahasa anak yang menangis. Suara pecah, penuh penyesalan. Menghadapi kematian bersama ayah.",
+        "gerak_saat_bicara": "Berlutut di samping ayahnya, tangan kanan memegang tangan ayah, tangan kiri menutupi wajah, kepala menunduk",
+        "ekspresi": "Mata berkaca-kaca, air mata mengalir deras, wajah hancur",
+        "catatan": "Ardharaja menyesal MEMBELLOT. Tapi dia juga menyesal TIDAK MEMBELLOT lebih awal."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Tidak. Kau memilih sisi yang menang. Itu bukan kesalahan. Itu kebetulan saja kali ini kita kalah.",
+        "logat": "Bahasa raja yang menerima takdir. Suara tenang, hampak filosofis. TIDAK menyalahkan anaknya.",
+        "gerak_saat_bicara": "Menatap anaknya, tangan kanan meraih bahu Ardharaja dengan lembut, tangan kiri di lutut, kepala sedikit mengangguk",
+        "ekspresi": "Mata tenang, senyum pahit, wajah lega",
+        "catatan": "Jayakatwang MEMaafkan anaknya. Dia mengerti bahwa politik adalah PILIHAN sisi."
+      },
+      {
+        "karakter": "ARDHARAJA",
+        "teks": "Wijaya menggunakan Mongol. Dia bukan pahlawan. Dia adalah penipu yang lebih besar dari ayahmu.",
+        "logat": "Bahasa kebencian terakhir. Suara semakin keras, hampak berteriak. Menunjukkan Wijaya sebagai PENIPU.",
+        "gerak_saat_bicara": "Menatap Wijaya di kejauhan, tangan kanan menunjuk Wijaya, tangan kiri mengepal, tubuh bergetar",
+        "ekspresi": "Mata melotot penuh kebencian, mulut terbuka lebar, wajah memerah",
+        "catatan": "Ardharaja MELIHAT kebenaran: Wijaya adalah PENIPU yang lebih besar. Tapi sudah terlambat."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Pahlawan? Tidak ada pahlawan di politik, anakku. Hanya yang menang, dan yang mati. Ingatlah itu sebelum kau mati.",
+        "logat": "Bahasa filosofis terakhir. Suara tenang, hampak berbisik. FILOSOFI hidup dan mati.",
+        "gerak_saat_bicara": "Tertawa pahit, tangan kanan mengangkat ke arah langit (isyarat 'tidak ada pahlawan'), tangan kiri meraih bahu Ardharaja, menatap langit bulan purnama",
+        "ekspresi": "Senyum pahit yang melebar, mata menunjukkan kebijaksanaan terakhir, wajah tenang",
+        "catatan": "Ini adalah FILOSOFI TERAKHIR Jayakatwang. 'Tidak ada pahlawan di politik' adalah KUNCI tema cerita."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Jayakatwang: pakaian raja Kadiri yang compang-camping. Ardharaja: pakaian campuran, compang-camping.",
+      "makeup": "Jayakatwang: wajah lelah tapi tenang. Ardharaja: wajah hancur, air mata.",
+      "properti": "Dek kayu basah, tali, layar, bulan purnama, tongkat komando (jatuh)",
+      "warna_dominan": "Biru laut, putih bulan, coklat kayu",
+      "musik": "Gamelan nada kematian, gender slenthem sangat rendah, gong panjang, suara ombak"
+    }
+  },
+  "adegan_17_lahirnya_majapahit_gajah_mada": {
+    "judul": "LAHIRNYA MAJAPAHIT & GAJAH MADA",
+    "lokasi": "Bukit Majapahit (Lokasi 15) dan Desa Pandakan (Lokasi 10) — paralel",
+    "waktu": "Pagi",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot Bukit Majapahit",
+        "gerak": "Pagi, bukit hijau dengan pemukiman baru, api unggun besar, matahari terbit, kabut pagi, Wijaya berdiri di atas bukit",
+        "suara": "Suara burung pagi, api unggun",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya menatap pemukiman baru, tangan terbuka ke arah bawah",
+        "suara": "Suara Wijaya 'Di sini, kita membangun kembali...'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Cut to Desa Pandakan",
+        "gerak": "Gajah Pagon memegang bayi, menatap ke arah bukit Majapahit",
+        "suara": "Suara bayi",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Putri",
+        "gerak": "Putri tersenyum, menatap bayi",
+        "suara": "Suara lembut 'Mada?'",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Gajah Pagon",
+        "gerak": "Gajah Pagon menatap bayi, kemudian menatap ke arah bukit Majapahit",
+        "suara": "Suara tenang 'Dia akan menyatukan Nusantara. Aku melihatnya dalam matanya.'",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Di sini, kita membangun kembali. Bukan Singhasari, tapi sesuatu yang lebih besar. Sesuatu yang akan menguasai Nusantara. Majapahit.",
+        "logat": "Bahasa raja baru. Suara tegas, penuh VISI. Menggunakan 'Maju' dalam 'Majapahit' sebagai simbol kemajuan.",
+        "gerak_saat_bicara": "Berdiri di atas bukit, tangan kanan terbuka ke arah pemukiman (isyarat 'sesuatu yang lebih besar'), tangan kiri memegang pedang, mata menatap ke horizon",
+        "ekspresi": "Mata berapi-api penuh ambisi, wajah tegas, senyum tipis",
+        "catatan": "Ini adalah KELAHIRAN MAJAPAHIT. Wijaya bukan hanya membalas dendam — dia membangun KERAJAAN BARU."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Namanya Mada.",
+        "logat": "Bahasa ayah yang bangga. Suara tenang, penuh makna. Satu kata yang mengubah sejarah.",
+        "gerak_saat_bicara": "Memegang bayi dengan tangan kiri, tangan kanan menyentuh dahi bayi, menatap bayi dengan tulus",
+        "ekspresi": "Mata lembut tapi tajam, senyum kebanggaan, wajah tenang",
+        "catatan": "'Mada' berarti 'pahit' (dari buah maja yang pahit). Tapi juga berarti 'kuat' dan 'besar'."
+      },
+      {
+        "karakter": "PUTRI KEPALA DESA PANDAKAN",
+        "teks": "Mada?",
+        "logat": "Bahasa ibu yang penasaran. Suara lembut, hampak bertanya.",
+        "gerak_saat_bicara": "Menatap bayi, tangan kanan menyentuh pipi bayi, kepala sedikit miring",
+        "ekspresi": "Mata penasaran, senyum kecil, wajah lembut",
+        "catatan": "Kalimat pendek tapi PENUH harapan."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Dia akan menjadi sesuatu yang besar. Lebih besar dari lukaku. Lebih besar dari kekalahan kita. Dia akan menyatukan Nusantara. Aku melihatnya dalam matanya.",
+        "logat": "Bahasa nubuat ayah. Suara tenang tapi dalam. Setiap kata adalah RAMALAN.",
+        "gerak_saat_bicara": "Menatap bayi, kemudian menatap ke arah bukit Majapahit di kejauhan, tangan kanan meraih ke arah Majapahit (isyarat 'dia akan menyatukan'), mata kembali menatap bayi",
+        "ekspresi": "Mata tajam menunjukkan VISI, senyum tenang, wajah penuh keyakinan",
+        "catatan": "Ini adalah NUBUAT GAJAH MADA. Ayahnya melihat MASA DEPAN dalam mata bayinya."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian raja Majapahit baru. Gajah Pagon: pakaian sederhana. Putri: pakaian wanita desa.",
+      "makeup": "Wijaya: wajah penuh ambisi. Gajah Pagon: wajah tenang. Putri: wajah lembut.",
+      "properti": "Api unggun, pemukiman baru, kabut pagi, pohon maja, bayi",
+      "warna_dominan": "Hijau bukit, oranye matahari terbit, putih kabut",
+      "musik": "Gamelan nada harapan dan kelahiran, gender barung, gong panjang, suara alam"
+    }
+  },
+  "bagian_4_catatan_penting_untuk_ai_gemini": {
+    "catatan_1_karakter_fullbody": {
+      "judul": "KARAKTER FULLBODY STANDING POSE",
+      "deskripsi": "Semua karakter harus digambar dalam pose berdiri tegak (standing pose), tampak seluruh tubuh dari kepala sampai kaki, background putih polos tanpa detail. Ini adalah asset character design untuk render 3D/2D.",
+      "total_karakter": 19,
+      "daftar_karakter": [
+        "01. KERTANEGARA",
+        "02. JAYAKATWANG",
+        "03. RADEN WIJAYA",
+        "04. GAJAH PAGON",
+        "05. ARDHARAJA",
+        "06. ARIA WIRARAJA",
+        "07. MPU RAGANATHA",
+        "08. TURUKBALI",
+        "09. KEPALA DESA PANDAKAN",
+        "10. PUTRI KEPALA DESA PANDAKAN",
+        "11. JARAN GUYANG",
+        "12. KEBO MUNDARANG",
+        "13. IKE MESE",
+        "14. SHI BI",
+        "15. JAYAKATWANG KECIL",
+        "16. KEN AROK (BARU)",
+        "17. SASTRAJAYA (BARU)",
+        "18. PATIH DAHA (BARU)",
+        "19. PENDATANG (BARU)"
+      ]
+    },
+    "catatan_2_label_dialog": {
+      "judul": "LABEL DIALOG PENTING",
+      "deskripsi": "Setiap dialog HARUS diawali dengan [NAMA KARAKTER]: agar tidak tertukar. Contoh: [JAYAKATWANG]: 'dialog' — bukan hanya 'Jayakatwang berkata'.",
+      "perbaikan_yang_dilakukan": [
+        "[PUTRI] di adegan 10, 13, 17 diubah menjadi [PUTRI KEPALA DESA PANDAKAN]",
+        "[AYAH JAYAKATWANG] di adegan 01 diubah menjadi [SASTRAJAYA]",
+        "[PATIH DAHA] ditambahkan label di adegan 03",
+        "[PENDATANG] ditambahkan label di adegan 05"
+      ]
+    },
+    "catatan_3_bahasa": {
+      "judul": "BAHASA INDONESIA FORMAL",
+      "deskripsi": "Semua dialog menggunakan bahasa Indonesia formal/naskah, bukan bahasa sehari-hari. Hindari campuran bahasa.",
+      "contoh_perbaikan": {
+        "salah": "Jayakatwang bilang: 'Kita serang dari dua arah, bro!'",
+        "benar": "[JAYAKATWANG]: 'Kita serang dari dua arah. Jaran Guyang, kau memimpin pasukan umpan dari utara.'"
+      }
+    },
+    "catatan_4_karakter_yang_sering_keliru": {
+      "judul": "KARAKTER YANG SERING KELIRU",
+      "daftar": [
+        {
+          "pasangan": "JAYAKATWANG (raja tua Kadiri, 65 th) vs JAYAKATWANG KECIL (anak 8 th, 1222)",
+          "perbedaan": "Jayakatwang = raja tua, janggut putih, tongkat komando. Jayakatwang Kecil = anak kecil, pakaian sederhana, tidak bicara."
+        },
+        {
+          "pasangan": "KERTANEGARA (raja Singhasari, 1268-1292) vs KERTAJAYA (raja Kadiri terakhir, dikalahkan Ken Arok 1222)",
+          "perbedaan": "Kertanegara = janggut hitam, pakaian putih-emas, cangkir tuak. Kertajaya = TIDAK muncul di adegan (hanya disebut)."
+        },
+        {
+          "pasangan": "ARDHARAJA (putra Jayakatwang, menantu Kertanegara) vs WIJAYA (menantu Kertanegara, pendiri Majapahit)",
+          "perbedaan": "Ardharaja = wajah bimbang, pakaian campuran, membelot. Wijaya = wajah licik, pakaian prajurit, berpura-pura tunduk."
+        },
+        {
+          "pasangan": "GAJAH PAGON (ayah Gajah Mada, prajurit Singhasari) vs GAJAH MADA (bayi yang baru lahir, mahapatih Majapahit masa depan)",
+          "perbedaan": "Gajah Pagon = prajurit besar, baju besi, tombak. Gajah Mada = bayi, tidak bicara, dipegang ayahnya."
+        },
+        {
+          "pasangan": "ARIA WIRARAJA (penasihat Jayakatwang → membelot ke Wijaya) vs MPU RAGANATHA (patih Singhasari, gugur)",
+          "perbedaan": "Aria Wiraraja = pakaian petani, tongkat, penyesalan. Mpu Raganatha = pakaian menteri, destar putih, lontar, gugur."
+        },
+        {
+          "pasangan": "SASTRAJAYA (ayah Jayakatwang, adipati Gelanggelang) vs KERTAJAYA (kakek Jayakatwang, raja Kadiri terakhir)",
+          "perbedaan": "Sastrajaya = muncul di adegan 01, berlutut, menangis. Kertajaya = TIDAK muncul di adegan (sudah mati 1222)."
+        }
+      ]
+    },
+    "catatan_5_lokasi": {
+      "judul": "LOKASI HARUS SESUAI DESKRIPSI",
+      "deskripsi": "Setiap lokasi harus sesuai dengan deskripsi di Bagian 2. Jangan campuradukkan suasana lokasi.",
+      "contoh": {
+        "ruang_tahta_singhasari": "Megah, emas, putih, gamelan, dupa — BUKAN gelap dan mencekam",
+        "ruang_rahasia_daha": "Gelap, batu bata, lilin, peta kulit — BUKAN megah dan terang",
+        "hutan_tarik": "Gelap, hujan, tanah becek — BUKAN cerah dan hijau"
+      }
+    },
+    "catatan_6_referensi_historis": {
+      "judul": "REFERENSI HISTORIS",
+      "sumber_utama": [
+        "Pararaton",
+        "Nagarakretagama",
+        "Kidung Harsawijaya",
+        "Kidung Panji Wijayakrama",
+        "Yuan Shi"
+      ],
+      "catatan_kritis": [
+        "Jayakatwang lahir sekitar 1227-1230 (setelah kekalahan Kertajaya 1222). Jadi dia TIDAK bisa menyaksikan kekalahan Kertajaya secara langsung. Adegan 01 adalah FIKSI DRAMATIS.",
+        "Sastrajaya adalah ayah Jayakatwang (bukan Kertajaya). Silsilah: Kertajaya → Jayasabha → Sastrajaya → Jayakatwang.",
+        "Ike Mese adalah navigator Uyghur (bukan Mongol etnis).",
+        "Turukbali adalah istri Jayakatwang dan adik Kertanegara (menurut Prasasti Mula Malurung).",
+        "Jayakatwang memiliki hubungan tiga lapisan dengan Kertanegara: sepupu, ipar, besan."
+      ]
+    },
+    "catatan_7_logat_bahasa_kerajaan": {
+      "judul": "LOGAT BAHASA KERAJAAN",
+      "deskripsi": "Setiap kerajaan memiliki logat dan gaya bahasa yang berbeda:",
+      "logat_singhasari": {
+        "raja": "Menggunakan 'Paduka' untuk diri sendiri. Bahasa bijaksana tapi naif. Menggunakan metafora alam.",
+        "menteri": "Menggunakan 'Paduka' untuk raja. Bahasa penuh peringatan dan metafora.",
+        "prajurit": "Bahasa setia dan rendah hati. Menggunakan 'Raden' untuk bangsawan.",
+        "contoh": "[MPU RAGANATHA]: 'Macan ompong tetap punya taring, Paduka.'"
+      },
+      "logat_kadiri": {
+        "raja": "Bahasa penuh dendam dan strategi. Menggunakan metafora perang.",
+        "menteri": "Bahasa strategis dan licik.",
+        "prajurit": "Bahasa brutal dan rela berkorban.",
+        "contoh": "[JAYAKATWANG]: 'Ini bukan perang. Ini pembebasan.'"
+      },
+      "logat_mongol": {
+        "komandan": "Bahasa dingin dan profesional militer. Tidak percaya pada Jawa.",
+        "contoh": "[IKE MESE]: 'Dan setelah itu? Apakah kau akan tunduk pada Kaisar Kubilai Khan?'"
+      },
+      "logat_desa": {
+        "warga": "Bahasa sederhana tapi bijak. Tidak formal.",
+        "contoh": "[KEPALA DESA PANDAKAN]: 'Yang terluka adalah saudara. Di desa ini, tidak ada musuh — hanya manusia.'"
+      }
+    },
+    "catatan_8_detail_gerak_adegan": {
+      "judul": "DETAIL GERAK DALAM ADEGAN",
+      "deskripsi": "Setiap adegan harus memiliki detail gerak yang jelas:",
+      "komponen_gerak": [
+        "Shot (Wide, Medium, Close up, Tracking, etc.)",
+        "Gerak karakter (berjalan, berlutut, mengayunkan, menatap, etc.)",
+        "Suara (teriakan, bunyi, hening)",
+        "Durasi estimasi"
+      ],
+      "contoh": {
+        "adegan_01": "Wide shot → istana terbakar → Medium shot → Ken Arok siluet mengayunkan keris → Close up → Sastrajaya jatuh"
+      }
+    },
+    "catatan_9_kebesaran_raja": {
+      "judul": "KEBESARAN RAJA",
+      "deskripsi": "Setiap raja memiliki tanda kebesaran yang berbeda:",
+      "kertanegara": {
+        "tanda_kebesaran": "Singgasana emas, cangkir tuak emas, mahkota emas, pakaian putih-emas",
+        "kebesaran": "Megah, upacara, kebijaksanaan",
+        "kelemahan": "Naif, terlalu percaya"
+      },
+      "jayakatwang": {
+        "tanda_kebesaran": "Tongkat komando, mahkota sederhana Kadiri, pakaian merah tua-salem",
+        "kebesaran": "Strategis, berpengalaman, penuh dendam",
+        "kelemahan": "Meremehkan Wijaya"
+      },
+      "wijaya": {
+        "tanda_kebesaran": "Kain poleng hitam-putih, keris, baju besi ringan",
+        "kebesaran": "Licik, ambisius, survivor",
+        "kelemahan": "Tidak memiliki kebesaran fisik — kekuatannya adalah KEPALSUAN"
+      }
+    },
+    "catatan_10_adat_dan_pakaian": {
+      "judul": "ADAT DAN PAKAIAN",
+      "deskripsi": "Berdasarkan referensi historis dan relief candi:",
+      "pakaian_raja": "Pakaian sutera, bersepatu, perhiasan emas, rambut disanggul, mahkota",
+      "pakaian_menteri": "Destar (putih untuk Singhasari, merah untuk Kadiri), lontar, pakaian formal",
+      "pakaian_prajurit": "Baju zirah dengan motif ukiran logam, kain kemben, bertelanjang dada atau kain sederhana",
+      "pakaian_wanita": "Kemben kain wulang emas, selendang emas, rambut bergelombang atau disanggul",
+      "pakaian_desa": "Kain sederhana, tidak bersepatu, bertelanjang dada atau kain kemben",
+      "senjata": "Keris (pusaka), pedang, tombak, kapak, perisai, busur"
+    }
+  },
+  "adegan_01_prolog_dendam_leluhur": {
+    "judul": "PROLOG DENDAM LELUHUR — 1222 M & MASA KECIL JAYAKATWANG",
+    "lokasi": "Medan Perang Kadiri 1222 M (Lokasi 01)",
+    "waktu": "Malam",
+    "durasi_estimasi": "2 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Istana Kadiri terbakar di kejauhan, api berkobar, asap tebal naik ke langit malam",
+        "suara": "Gemuruh api, teriakan prajurit, bunyi pedang bertabrakan",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "KEN AROK (siluet) mengayunkan keris Mpu Gandring ke arah Sastrajaya yang berlutut",
+        "suara": "Bunyi keris mengiris udara",
+        "durasi": "5 detik",
+        "catatan": "KEN AROK hanya siluet, tidak terlihat wajahnya. Gerakan cepat dan tegas."
+      },
+      {
+        "shot": "Close up",
+        "gerak": "Sastrajaya jatuh ke lantai batu, tangan menutupi luka",
+        "suara": "Bunyi jatuh, napas terengah",
+        "durasi": "3 detik"
+      },
+      {
+        "shot": "Cut to",
+        "gerak": "JAYAKATWANG KECIL (8 tahun) melihat dari balik pilar, mata melebar ketakutan",
+        "suara": "Tangisan teredam",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Sastrajaya berlutut di puing istana, menatap anaknya, tangan berlumuran darah meraih Jayakatwang Kecil",
+        "suara": "Napas terengah-engah",
+        "durasi": "8 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "KEN AROK",
+        "teks": "(tidak bicara, hanya aksi — mengayunkan keris)",
+        "logat": "Tidak ada dialog",
+        "gerak_saat_bicara": "Siluet mengayunkan keris dengan satu tangan, postur tegap dan agresif",
+        "ekspresi": "Tidak terlihat (siluet)",
+        "catatan": "Gerakan harus cepat dan brutal, menunjukkan kekejaman pendiri Singhasari"
+      },
+      {
+        "karakter": "SASTRAJAYA",
+        "teks": "Suatu hari, Kadiri akan bangkit kembali. Ingatlah, anakku. Api yang padam hari ini akan menyala kembali dalam darahmu.",
+        "logat": "Bahasa Jawa Kuno formal, napas terengah-engah, suara lemah karena sekarat. Menggunakan metafora api = dendam.",
+        "gerak_saat_bicara": "Berlutut di puing istana, tangan kanan meraih bahu Jayakatwang Kecil, tangan kiri menutupi luka di perut, kepala sedikit terangkat menatap anaknya",
+        "ekspresi": "Mata berkaca-kaca, campuran kesedihan dan tekad, wajah pucat",
+        "catatan": "Ini adalah NASIHAT TERAKHIR. Setiap kata harus terasa berat. Jeda antara 'Ingatlah, anakku' dan kalimat berikutnya harus 2 detik."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Sastrajaya: pakaian adipati Kadiri yang robek dan berlumuran darah. Jayakatwang Kecil: pakaian pangeran kecil sederhana.",
+      "makeup": "Sastrajaya: darah di perut dan mulut, wajah pucat. Jayakatwang Kecil: air mata, wajah kotor abu.",
+      "properti": "Keris Mpu Gandring (untuk Ken Arok), puing batu, api latar belakang",
+      "warna_dominan": "Hitam, merah api, abu-abu",
+      "musik": "Gamelan nada rendah, gender slenthem, suara gong panjang saat Sastrajaya berbicara"
+    },
+    "catatan_historis": "KONDISI HISTORIS: Jayakatwang lahir sekitar 1227-1230, JADI dia TIDAK bisa menyaksikan kekalahan Kertajaya 1222 secara langsung. Ayahnya di adegan ini adalah Sastrajaya (bukan Kertajaya). Adegan ini adalah FIKSI DRAMATIS yang menggabungkan momen traumatis keturunan dengan nasihat ayah."
+  },
+  "adegan_02_kemegahan_singhasari": {
+    "judul": "KEMEGAHAN SINGHASARI — KERTANAGARA DI SINGGASANA",
+    "lokasi": "Ruang Tahta Singhasari (Lokasi 03)",
+    "waktu": "Sore",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Kertanegara duduk di singgasana emas, memegang cangkir tuak, cahaya emas dari jendela tinggi menyinari singgasana",
+        "suara": "Gamelan lembut, asap dupa",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Tracking shot",
+        "gerak": "Mpu Raganatha berjalan dengan tergesa-gesa dari pintu koridor, membawa lontar, wajah khawatir",
+        "suara": "Langkah kaki cepat di lantai marmer",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Mpu Raganatha berhenti di depan singgasana, membungkuk hormat, lontar di tangan",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Kertanegara",
+        "gerak": "Kertanegara tersenyum, mengangkat cangkir tuak, menyeruput",
+        "suara": "Bunyi menyeruput",
+        "durasi": "5 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "MPU RAGANATHA",
+        "teks": "Jayakatwang mengumpulkan pasukan di Daha, Paduka. Surat intel dari perbatasan Brantas mengabarkan gerakan pasukan Gelanggelang.",
+        "logat": "Bahasa Jawa Kuno formal tingkat menteri. Napas terengah karena berjalan cepat. Suara khawatir tapi tetap sopan. Menggunakan gelar 'Paduka' untuk raja.",
+        "gerak_saat_bicara": "Berdiri tegak tapi sedikit membungkuk, tangan kanan memegang lontar di dada, tangan kiri sedikit terangkat sebagai isyarat peringatan, kepala sedikit menunduk",
+        "ekspresi": "Mata khawatir, alis berkerut, bibir sedikit gemetar",
+        "catatan": "Gerakan tangan kiri yang terangkat menunjukkan URGENSI. Ini bukan laporan biasa, ini peringatan darurat."
+      },
+      {
+        "karakter": "KERTANEGARA",
+        "teks": "Dia adalah menantuku. Saudaraku. Dia mendapat kesenangan dari saya. Apakah aku harus curiga pada orang yang kubaiakan?",
+        "logat": "Bahasa Jawa Kuno formal tingkat raja. Suara tenang, hampir santai. Tertawa ringan di akhir. Menunjukkan keNAIFan raja yang terlalu percaya.",
+        "gerak_saat_bicara": "Duduk di singgasana, tangan kanan mengangkat cangkir tuak, tangan kiri terbuka ke arah Mpu Raganatha (isyarat 'tenang'), kepala sedikit miring, tersenyum",
+        "ekspresi": "Senyum naif, mata tidak menunjukkan kecurigaan, wajah rileks",
+        "catatan": "Kata 'saya' (bukan 'aku') menunjukkan jarak sosial raja dengan menteri. Tapi 'kubaiakan' menunjukkan kedekatan emosional yang salah."
+      },
+      {
+        "karakter": "MPU RAGANATHA",
+        "teks": "Macan ompong tetap punya taring, Paduka. Taring yang tumpul bisa diasah kembali. Jayakatwang bukanlah orang yang melupakan sejarah.",
+        "logat": "Bahasa Jawa Kuno formal, penuh metafora. Suara lebih tegas. Menggunakan pepatah 'Macan ompong' untuk menggambarkan Jayakatwang yang tua tapi berbahaya.",
+        "gerak_saat_bicara": "Menggelengkan kepala perlahan, tangan kanan memegang lontar lebih erat, tangan kiri terbuka ke depan (isyarat 'dengarkanlah'), mata menatap lurus Kertanegara",
+        "ekspresi": "Mata tajam menunjukkan kebenaran, bibir rapat setelah berbicara, wajah menunjukkan 'aku sudah memperingatkanmu'",
+        "catatan": "Metafora 'Macan ompong' adalah kunci. Gerakan menggelengkan kepala harus LAMBAT dan BERMAKNA."
+      },
+      {
+        "karakter": "KERTANEGARA",
+        "teks": "Taringnya sudah tumpul, Mpu. Lebih dari enam puluh tahun dia hidup dalam bayang-bayang Singhasari. Minumlah. Malam ini kita rayakan kebesaran Singhasari. Esok, pasukan Pamalayu akan membawa nama kita ke Sumatra.",
+        "logat": "Bahasa raja yang meremehkan bahaya. Suara lebih keras, hampir tertawa. Mengalihkan topik ke Pamalayu. Menunjukkan AMBISI besar raja.",
+        "gerak_saat_bicara": "Tertawa ringan, menyeruput tuak, tangan kanan mengangkat cangkir ke arah Mpu Raganatha (menawarkan minum), tangan kiri melambai ke arah gamelan (isyarat 'rayakan'), kemudian tangan kiri menunjuk ke arah peta Sumatra di dinding",
+        "ekspresi": "Senyum lebar, mata berbinar membayangkan Pamalayu, sama sekali tidak khawatir",
+        "catatan": "Transisi dari 'Jayakatwang' ke 'Pamalayu' menunjukkan PRIORITAS SALAH raja. Dia lebih sibuk dengan ekspansi daripada pertahanan."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Kertanegara: pakaian upacara putih-emas, mahkota emas, gelang emas. Mpu Raganatha: pakaian menteri tua, destar putih, lontar.",
+      "makeup": "Kertanegara: wajah berjanggut hitam panjang, ekspresi naif. Mpu Raganatha: wajah tua berjanggut putih, ekspresi khawatir.",
+      "properti": "Singgasana emas, cangkir tuak emas, lontar, peta Sumatra, gamelan, dupa",
+      "warna_dominan": "Emas, putih, coklat",
+      "musik": "Gamelan lembut di awal, berubah menjadi nada waspada saat Mpu Raganatha berbicara, kembali lembut saat Kertanegara menolak peringatan"
+    }
+  },
+  "adegan_03_perencanaan_di_daha": {
+    "judul": "PERENCANAAN DI DAHA — JAYAKATWANG & MAKARA-WYUHA",
+    "lokasi": "Ruang Rahasia Istana Daha (Lokasi 02)",
+    "waktu": "Malam",
+    "durasi_estimasi": "4 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Ruang gelap batu bata, lilin redup, Jayakatwang berdiri di depan meja kayu besar dengan peta Jawa dari kulit",
+        "suara": "Bunyi lilin menyala, suara angin",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Close up",
+        "gerak": "Jayakatwang membakar surat lontar di lilin, asap mengepul, bayangan bergerak di dinding",
+        "suara": "Bunyi api membakar lontar",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Patih Daha menunjuk peta kulit di meja, Jaran Guyang dan Kebo Mundarang berlutut di depan meja",
+        "suara": "Hening",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Jaran Guyang berlutut, tangan di dada, menunduk",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Kebo Mundarang mengepalkan tangan, suara menggelegar",
+        "suara": "Bunyi kepalan tangan ke dada",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Wide shot",
+        "gerak": "Jayakatwang berdiri, mengangkat tongkat komando, bayangan besar di dinding batu",
+        "suara": "Bunyi tongkat menghantam lantai batu",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "PATIH DAHA",
+        "teks": "Singhasari sedang kosong, Paduka. Pasukan terbaiknya di Pamalayu. Hanya prajurit istana yang tersisa di Tumapel.",
+        "logat": "Bahasa Jawa Kuno formal, suara rendah dan strategis. Menggunakan gelar 'Paduka'. Menunjukkan analisis militer yang tajam.",
+        "gerak_saat_bicara": "Berdiri di samping meja, tangan kanan menunjuk peta kulit di area Tumapel, tangan kiri di punggung, kepala sedikit menunduk ke arah Jayakatwang",
+        "ekspresi": "Mata tajam menganalisis peta, wajah licik tapi setia",
+        "catatan": "Gerakan menunjuk peta harus PRESISI. Ini adalah momen STRATEGI MILITER."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Surat ini adalah izin dari takdir. Siapkan pasukan. Kita serang dari dua arah. Jaran Guyang, kau memimpin pasukan umpan dari utara — buat mereka percaya serangan utama datang dari sana. Kebo Mundarang, kau membawa pasukan utama dari selatan, menyusuri hutan dan sungai Lekso. Makara-wyuha.",
+        "logat": "Bahasa raja tua, penuh otoritas. Suara tegas dan rendah. Menggunakan istilah militer 'Makara-wyuha' (formasi militer kuno). Setiap perintah harus terasa FINAL.",
+        "gerak_saat_bicara": "Membakar surat lontar di lilin (tangan kanan), asap mengepul di wajahnya, kemudian menunjuk Jaran Guyang dengan tongkat komando (tangan kiri), lalu menunjuk Kebo Mundarang, tongkat dihentakkan ke lantai saat mengucapkan 'Makara-wyuha'",
+        "ekspresi": "Mata berapi-api, wajah penuh tekad, bayangan di dinding membesar saat berbicara",
+        "catatan": "Kata 'Makara-wyuha' adalah FORMATION PERANG KUNO. Ucapkan dengan hentakan tongkat untuk efek DRAMATIS."
+      },
+      {
+        "karakter": "JARAN GUYANG",
+        "teks": "Aku siap menjadi umpan, Paduka. Biarkan darahku mengalir di Kedung Pluk.",
+        "logat": "Bahasa prajurit yang rela berkorban. Suara tegas tapi rendah. Menerima takdir dengan tenang.",
+        "gerak_saat_bicara": "Berlutut, tangan kanan di dada, kepala menunduk, kemudian mengangkat wajah menatap Jayakatwang dengan tekad",
+        "ekspresi": "Mata tenang, tidak ada ketakutan, hanya kesiapan mati",
+        "catatan": "Ini adalah PERMOHONAN UNTUK MATI. Ekspresi harus menunjukkan KESADARAN akan pengorbanan."
+      },
+      {
+        "karakter": "KEBO MUNDARANG",
+        "teks": "Istana Singhasari akan runtuh sebelum fajar. Aku akan membawa kepala Kertanegara ke hadapanmu.",
+        "logat": "Bahasa prajurit brutal. Suara menggelegar seperti dentuman. Penuh kebencian pada Singhasari.",
+        "gerak_saat_bicara": "Mengepalkan tangan kanan ke dada, tangan kiri memegang gagang pedang, berdiri tegap, dada membusung",
+        "ekspresi": "Wajah galak, mata melotot, bibir mengatup keras",
+        "catatan": "Gerakan kepalan tangan ke dada adalah SALUT MILITER KUNO. Suara harus MENGGELEGAR."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Ini bukan perang. Ini pembebasan. Bendera ini adalah simbol kemerdekaan Kadiri dari hegemoni Singhasari! Daha akan bangkit kembali!",
+        "logat": "Bahasa orasi raja. Suara semakin keras, hampir berteriak. Penuh EMOSI 70 tahun dendam. Transisi dari strategis ke EMOSIONAL.",
+        "gerak_saat_bicara": "Berdiri tegak, mengangkat tongkat komando tinggi-tinggi dengan tangan kanan, tangan kiri terbuka ke arah langit-langit (isyarat 'pembebasan'), tongkat dihentakkan ke lantai saat 'Daha akan bangkit kembali!'",
+        "ekspresi": "Wajah memerah, mata berkaca-kaca, mulut terbuka lebar saat berteriak, 70 tahun dendam meledak",
+        "catatan": "Ini adalah KLIMAK ADEGAN. Jayakatwang bukan hanya strategis, dia EMOSIONAL. 70 tahun dendam leluhur meledak di sini."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Jayakatwang: pakaian merah tua Kadiri, tongkat komando. Patih Daha: destar merah Kadiri. Jaran Guyang: pakaian prajurit Kadiri ringan. Kebo Mundarang: pakaian gelap prajurit elite.",
+      "makeup": "Jayakatwang: wajah tua berjanggut putih, mata tajam. Jaran Guyang: wajah tegas. Kebo Mundarang: wajah galak.",
+      "properti": "Meja kayu besar, peta Jawa dari kulit, surat lontar, lilin, tongkat komando, peta",
+      "warna_dominan": "Merah tua, hitam, oranye lilin",
+      "musik": "Gamelan nada rendah, gender slenthem, gong panjang saat Jayakatwang berteriak 'Daha akan bangkit!'"
+    }
+  },
+  "adegan_04_persahabatan_prajurit": {
+    "judul": "PERSAHABATAN PRAJURIT — GAJAH PAGON & WIJAYA",
+    "lokasi": "Halaman Latihan Istana (Lokasi 04)",
+    "waktu": "Sore",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Halaman terbuka dengan pilar batu kuno, tanah pasir, sinar matahari sore memanjangkan bayangan, Gajah Pagon dan Wijaya berlatih pedang",
+        "suara": "Bunyi pedang bertabrakan, suara angin sore",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya menghentikan pedang, tersenyum, mengusap keringat",
+        "suara": "Bunyi pedang dihentakkan ke tanah",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Gajah Pagon menyeka keringat, tersenyum rendah hati, meletakkan tangan di bahu Wijaya",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya menatap ke horizon, mata berkilau",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Gajah Pagon",
+        "gerak": "Gajah Pagon meletakkan tangan di bahu Wijaya, menatap lurus",
+        "suara": "Hening",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Extreme close up",
+        "gerak": "Gajah Pagon berbicara pada dirinya sendiri, suara lirih, mata menatap jauh",
+        "suara": "Suara lirih",
+        "durasi": "8 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Kau akan jadi legenda, Gajah Pagon. Aku melihat api dalam dirimu — api yang tidak padam oleh luka.",
+        "logat": "Bahasa prajurit muda, penuh hormat tapi akrab. Suara santai tapi tulus. Menggunakan metafora 'api'.",
+        "gerak_saat_bicara": "Menghentikan pedang, tangan kanan mengusap keringat di dahi, tangan kiri terbuka ke arah Gajah Pagon (isyarat 'kau hebat'), tersenyum lebar",
+        "ekspresi": "Senyum tulus, mata berbinar, wajah lega setelah latihan",
+        "catatan": "Ini adalah SAHABAT, bukan bawahan. Bahasanya santai tapi penuh hormat."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Aku hanya prajurit, Raden. Yang memimpin adalah kau. Darahku mengalir untuk melindungi, bukan untuk memerintah.",
+        "logat": "Bahasa prajurit setia, rendah hati. Suara rendah dan mantap. Menunjukkan pengabdian tanpa pamrih.",
+        "gerak_saat_bicara": "Menyeka keringat dengan lengan kanan, tangan kiri meletakkan pedang di tanah, kemudian tangan kanan diletakkan di bahu Wijaya dengan lembut",
+        "ekspresi": "Senyum rendah hati, mata tulus, tidak ada ambisi",
+        "catatan": "Kalimat 'Darahku mengalir untuk melindungi, bukan untuk memerintah' adalah DEFINISI karakter Gajah Pagon."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Aku belum pernah memimpin perang besar. Pamalayu adalah mertuaku. Aku hanya menantu yang berusaha membuktikan diri.",
+        "logat": "Bahasa pribadi, vulnerable. Suara lebih pelan, hampir berbisik. Menunjukkan keraguan tersembunyi Wijaya.",
+        "gerak_saat_bicara": "Menatap ke horizon, tangan kanan memegang gagang pedang, tangan kiri terbuka ke depan (isyarat 'aku belum siap'), bahu sedikit turun",
+        "ekspresi": "Mata menunjukkan keraguan, senyum pudar, wajah menunjukkan beban menantu",
+        "catatan": "Ini adalah SISI LEMBUT Wijaya yang jarang terlihat. Dia merasa tidak cukup sebagai menantu."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Maka aku akan berdiri di depanmu. Lihatlah punggungku. Jika aku masih berdiri, majulah. Jika aku jatuh, lari. Jangan mati sia-sia.",
+        "logat": "Bahasa prajurit, penuh pengorbanan. Suara tegas dan dalam. Setiap kata adalah JANJI HIDUP DAN MATI.",
+        "gerak_saat_bicara": "Berdiri tegak, membalik badan menunjukkan punggung ke Wijaya, tangan kanan menepuk punggung sendiri, kemudian berbalik menatap Wijaya",
+        "ekspresi": "Mata tajam menunjukkan tekad, wajah serius, tidak ada keraguan",
+        "catatan": "Ini adalah JANJI PRAJURIT. Gerakan menunjukkan punggung adalah SIMBOLIS: 'Aku akan jadi tamengmu.'"
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Luka adalah harta prajurit. Setiap bekas adalah bukti bahwa kita pernah hidup.",
+        "logat": "Bahasa lirih, hanya untuk dirinya sendiri. Suara sangat pelan, hampir tidak terdengar. FILOSOFI pribadi.",
+        "gerak_saat_bicara": "Menatap luka di lengan kirinya, tangan kanan menyentuh luka, mata menatap jauh ke horizon",
+        "ekspresi": "Senyum pahit, mata menunjukkan pengalaman perang, wajah tenang",
+        "catatan": "Ini adalah MONOLOG INTERNAL. Bukan untuk Wijaya, tapi untuk penonton. Menunjukkan KEDALAMAN karakter."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Wijaya: pakaian prajurit muda Singhasari ringan, baju besi ringan, kain poleng hitam-putih. Gajah Pagon: pakaian prajurit elite lengkap, baju besi, luka di dada.",
+      "makeup": "Wijaya: wajah tampan, muda. Gajah Pagon: wajah jujur, luka di lengan kiri.",
+      "properti": "Pedang latihan, perisai, pilar batu kuno, tanah pasir",
+      "warna_dominan": "Emas matahari sore, coklat tanah, abu-abu batu",
+      "musik": "Gamelan lembut, gender barung, nada persahabatan"
+    }
+  },
+  "adegan_05_pendatang_luka": {
+    "judul": "PERINGATAN YANG DIABAIKAN — PENDATANG LUKA MEMBANJIRI ISTANA",
+    "lokasi": "Ruang Tahta Singhasari (Lokasi 03)",
+    "waktu": "Malam",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Gerbang istana Singhasari, massa pendatang luka-luka dari utara membanjiri istana, teriakan panik",
+        "suara": "Teriakan panik, tangisan, langkah kaki berlarian",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Tracking shot",
+        "gerak": "Pendatang berlari dengan tangan berlumuran darah, wajah ketakutan",
+        "suara": "Teriakan 'Jayakatwang! Jayakatwang menyerang!'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Kertanegara",
+        "gerak": "Kertanegara bangkit dari singgasana, cangkir tuak jatuh ke lantai marmer, pecah",
+        "suara": "Bunyi cangkir pecah",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya masuk dengan baju besi lengkap, berlutut di depan Kertanegara, pedang di tangan",
+        "suara": "Bunyi baju besi berdentum, langkah kaki",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Two shot",
+        "gerak": "Kertanegara menatap Wijaya, mata berkaca-kaca, tangan terbuka ke arah Wijaya",
+        "suara": "Hening",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "PENDATANG",
+        "teks": "Jayakatwang! Jayakatwang menyerang! Desa kami dibakar! Pasukan dari utara... mereka membunuh semua!",
+        "logat": "Bahasa panik, tidak teratur, napas terengah-engah. Suara pecah, hampir menangis. TIDAK menggunakan bahasa formal.",
+        "gerak_saat_bicara": "Berlari dengan tangan kanan berlumuran darah, tangan kiri meraih ke arah Kertanegara, jatuh berlutut di depan singgasana, kepala menunduk",
+        "ekspresi": "Mata melotot ketakutan, mulut terbuka lebar, wajah kotor darah dan debu",
+        "catatan": "Ini adalah KARAKTER SIPIL, bukan bangsawan. Bahasanya HANCUR, penuh ketakutan."
+      },
+      {
+        "karakter": "KERTANEGARA",
+        "teks": "Tidak mungkin... Jayakatwang? Menantuku? Dia yang kuberi kedudukan di Daha?",
+        "logat": "Bahasa raja yang SHOCK. Suara bergetar, hampir tidak percaya. Mengulang 'Jayakatwang' tiga kali menunjukkan KETIDAKPERCAYAAN.",
+        "gerak_saat_bicara": "Bangkit dari singgasana dengan tangan kanan, tangan kiri terbuka ke arah pendatang (isyarat 'jelaskan'), cangkir tuak jatuh dari tangan kanan, tubuh sedikit goyah",
+        "ekspresi": "Mata melebar, mulut terbuka, wajah pucat, KESHOKAN total",
+        "catatan": "Ini adalah MOMEN KEBANGKRUTAN NAIFITAS raja. Semua peringatan Mpu Raganatha terbukti benar."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Aku akan kembali dengan kepalanya, Paduka. Berikan aku pasukan. Aku akan membalas kehinaan ini.",
+        "logat": "Bahasa prajurit muda, penuh amarah tapi terkontrol. Suara tegas, napas teratur. Menunjukkan KEberanian.",
+        "gerak_saat_bicara": "Masuk dari koridor dengan baju besi lengkap, berlutut di depan Kertanegara, tangan kanan memegang pedang di tanah, tangan kiri di dada, kepala menunduk kemudian mengangkat wajah",
+        "ekspresi": "Mata tajam penuh amarah, wajah tegas, bibir rapat",
+        "catatan": "Wijaya menggunakan momen ini untuk menunjukkan LOYALITAS. Tapi di baliknya, dia sudah merencanakan sesuatu."
+      },
+      {
+        "karakter": "KERTANEGARA",
+        "teks": "Jangan remehkan dia. Jayakatwang bukan musuh biasa. Dia adalah ular yang menyimpan bisa selama tujuh puluh tahun. Hati-hati, menantuku.",
+        "logat": "Bahasa raja yang akhirnya SADAR. Suara lemah tapi bijaksana. Menggunakan metafora 'ular' untuk Jayakatwang. Menunjukkan PENYESALAN.",
+        "gerak_saat_bicara": "Menatap Wijaya, tangan kanan meraih bahu Wijaya, tangan kiri terbuka ke arah Wijaya (isyarat 'hati-hati'), kepala sedikit menunduk",
+        "ekspresi": "Mata berkaca-kaca, campuran penyesalan dan kekhawatiran, wajah tua yang tiba-tiba terlihat",
+        "catatan": "Metafora 'ular yang menyimpan bisa selama tujuh puluh tahun' menunjukkan bahwa Kertanegara AKHIRNYA mengerti bahaya Jayakatwang. Tapi sudah terlambat."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Pendatang: pakaian sederhana robek, berlumuran darah. Wijaya: baju besi lengkap, siap perang. Kertanegara: pakaian upacara, cangkir tuak jatuh.",
+      "makeup": "Pendatang: darah di tangan dan wajah, wajah kotor. Kertanegara: wajah pucat karena shock.",
+      "properti": "Cangkir tuak emas (pecah), pedang Wijaya, darah di lantai marmer",
+      "warna_dominan": "Merah darah, emas, putih",
+      "musik": "Gamelan nada darurat, gong cepat, gender slenthem nada tinggi"
+    }
+  },
+  "adegan_06_pertempuran_utara": {
+    "judul": "PERTEMPURAN DI UTARA — KEDUNG PLUK & KAPULUNGAN",
+    "lokasi": "Medan Perang Kedung Pluk (Lokasi 05) dan Bukit Kapulungan (Lokasi 06)",
+    "waktu": "Siang",
+    "durasi_estimasi": "4 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Lapangan terbuka, rumput kering, debu beterbangan, matahari terik, pasukan Wijaya maju",
+        "suara": "Teriakan perang, bunyi pedang, debu",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya mengangkat pedang, berteriak, pasukan maju",
+        "suara": "Teriakan 'Maju! Jangan kasih kendor!'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Action shot",
+        "gerak": "Gajah Pagon melawan tiga prajurit Kadiri sekaligus, tombak berputar, perisai menangkis",
+        "suara": "Bunyi metal bertabrakan, teriakan 'Hiyaaa!'",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Wijaya melihat pasukan Kadiri mundur, pedang masih terangkat",
+        "suara": "Teriakan 'Mereka lari! Kita menang!'",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Over the shoulder",
+        "gerak": "Ardharaja muncul di belakang Wijaya, wajah bimbang, melihat ke arah selatan",
+        "suara": "Hening",
+        "durasi": "8 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "WIJAYA",
+        "teks": "Maju! Jangan kasih kendor! Jaran Guyang akan lari! Kita hancurkan pasukan umpan ini!",
+        "logat": "Bahasa komandan perang. Suara berteriak di tengah pertempuran. Tegas dan memotivasi.",
+        "gerak_saat_bicara": "Mengangkat pedang tinggi-tinggi dengan tangan kanan, tangan kiri terbuka ke arah pasukan (isyarat 'maju'), berdiri di atas batu",
+        "ekspresi": "Mata tajam, wajah bersemangat, teriakan perang",
+        "catatan": "Wijaya terlihat sebagai PEMIMPIN. Tapi ini adalah DIVERSI — dia tidak tahu serangan utama datang dari selatan."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Hiyaaa!",
+        "logat": "Teriakan perang prajurit. Suara menggelegar. TIDAK ada kata, hanya teriakan.",
+        "gerak_saat_bicara": "Melawan tiga prajurit Kadiri, tombak berputar di tangan kanan, perisai menangkis di tangan kiri, tubuh berputar",
+        "ekspresi": "Wajah galak, mata melotot, mulut terbuka lebar berteriak",
+        "catatan": "Ini adalah SHOWCASE kekuatan Gajah Pagon. Gerakan harus FLUID dan KUAT."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "Mereka lari! Kita menang!",
+        "logat": "Bahasa kemenangan. Suara gembira tapi terengah. Tidak menyadari bahwa ini adalah UMPAN.",
+        "gerak_saat_bicara": "Pedang masih terangkat, tangan kiri menunjuk pasukan Kadiri yang mundur, tersenyum lebar",
+        "ekspresi": "Senyum kemenangan, mata berbinar, wajah lega",
+        "catatan": "Ironi: Wijaya merasa menang, tapi dia sudah jatuh ke dalam PERANGKAP Jayakatwang."
+      },
+      {
+        "karakter": "ARDHARAJA",
+        "teks": "Ya... kita menang. (berbisik pada diri sendiri) Tapi kemenangan apa yang dibangun di atas pengkhianatan?",
+        "logat": "Bahasa bimbang. Suara pertama terdengar normal, kemudian BERBISIK. Transisi dari publik ke pribadi.",
+        "gerak_saat_bicara": "Muncul di belakang Wijaya, tangan kanan memegang pedang tapi tidak terangkat, tangan kiri terbuka ke arah Wijaya (isyarat 'ya, kita menang'), kemudian tangan kiri menutupi mulut saat berbisik, mata menatap ke arah selatan",
+        "ekspresi": "Wajah bimbang, mata berkaca-kaca, senyum palsu saat 'Ya... kita menang', wajah sedih saat berbisik",
+        "catatan": "Ini adalah KONFLIK BAWAH SADAR Ardharaja. Dia tahu ayahnya sedang menyerang dari selatan. Tapi dia tidak bisa memberitahu Wijaya."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Semua prajurit: pakaian perang lengkap, baju besi, debu. Wijaya: kain poleng hitam-putih. Gajah Pagon: baju besi elite.",
+      "makeup": "Semua: debu di wajah, keringat. Gajah Pagon: luka baru di lengan.",
+      "properti": "Pedang, tombak, perisai, mayat, debu",
+      "warna_dominan": "Kuning rumput kering, coklat debu, merah darah",
+      "musik": "Gamelan perang, kendang cepat, gender barung nada tinggi"
+    }
+  },
+  "adegan_07_serangan_selatan": {
+    "judul": "SERANGAN SELATAN — KEBO MUNDARANG MENEROBOS ISTANA",
+    "lokasi": "Koridor Istana Singhasari (Lokasi 08)",
+    "waktu": "Malam",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Gerbang istana Singhasari dihancurkan, Kebo Mundarang menerobos dengan kapak besar",
+        "suara": "Bunyi gerbang hancur, teriakan perang",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Action shot",
+        "gerak": "Kebo Mundarang menerobos gerbang, kapak mengayun, prajurit Singhasari terbang",
+        "suara": "Teriakan 'BUNUH SEMUA!'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Tracking shot",
+        "gerak": "Mpu Raganatha berlari ke arah Kertanegara, terkena tombak dari belakang",
+        "suara": "Bunyi tombak menusuk, teriakan 'Paduka... lari...!'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up",
+        "gerak": "Mpu Raganatha terjatuh, lontar jatuh dari tangan, gugur",
+        "suara": "Bunyi jatuh ke lantai batu",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Kertanegara terluka, menatap langit, jatuh ke singgasana",
+        "suara": "Napas terbata-bata",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "KEBO MUNDARANG",
+        "teks": "BUNUH SEMUA! Tidak ada yang hidup malam ini! Istana Singhasari akan menjadi kuburan!",
+        "logat": "Bahasa prajurit brutal. Suara MENGGELEGAR seperti monster. Setiap kata adalah AMARAH.",
+        "gerak_saat_bicara": "Menerobos gerbang dengan kapak besar di tangan kanan, tangan kiri mendorong prajurit Singhasari, tubuh besar menghancurkan segalanya",
+        "ekspresi": "Wajah galak, mata melotot, mulut terbuka lebar berteriak, gigi terlihat",
+        "catatan": "Kebo Mundarang adalah MESIN PERANG. Gerakan harus BRUTAL dan TANPA AMPUN."
+      },
+      {
+        "karakter": "MPU RAGANATHA",
+        "teks": "Paduka... lari...!",
+        "logat": "Bahasa terakhir. Suara terengah, hampir tidak terdengar. Setiap kata adalah usaha terakhir.",
+        "gerak_saat_bicara": "Berlari ke arah Kertanegara dengan tangan kanan meraih, tangan kiri memegang lontar, tubuh terkena tombak dari belakang, jatuh ke depan",
+        "ekspresi": "Mata menunjukkan kekhawatiran terakhir, mulut terbuka berteriak, wajah pucat",
+        "catatan": "Ini adalah KEMATIAN MPU RAGANATHA. Gerakan jatuh harus LAMBAT dan DRAMATIS."
+      },
+      {
+        "karakter": "KERTANEGARA",
+        "teks": "Jayakatwang... menantuku... kenapa...?",
+        "logat": "Bahasa terakhir raja. Suara terbata-bata, hampir tidak terdengar. Setiap kata adalah PENYESALAN.",
+        "gerak_saat_bicara": "Terluka di dada, tangan kanan menutupi luka, tangan kiri meraih ke arah langit (isyarat 'mengapa'), tubuh jatuh ke singgasana emas",
+        "ekspresi": "Mata menunjukkan keTIDAKPERCAYAAN terakhir, air mata, wajah pucat, mulut terbata-bata",
+        "catatan": "Ini adalah KEMATIAN KERTANEGARA. Kata 'menantuku... kenapa...?' menunjukkan bahwa dia MATI dengan pertanyaan yang tidak terjawab."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Kebo Mundarang: pakaian gelap prajurit elite. Mpu Raganatha: pakaian menteri, lontar. Kertanegara: pakaian upacara, berlumuran darah.",
+      "makeup": "Kebo Mundarang: wajah galak, darah di tangan. Mpu Raganatha: darah di punggung. Kertanegara: darah di dada, wajah pucat.",
+      "properti": "Kapak besar, tombak, lontar, singgasana emas, darah di lantai",
+      "warna_dominan": "Hitam, merah darah, oranye obor",
+      "musik": "Gamelan nada kematian, gender slenthem sangat rendah, gong panjang saat Kertanegara gugur"
+    }
+  },
+  "adegan_08_jayakatwang_menaklukkan": {
+    "judul": "JAYAKATWANG MENAKLUKKAN SINGHASARI",
+    "lokasi": "Ruang Tahta Singhasari (Lokasi 03)",
+    "waktu": "Dini hari",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Dini hari, ruang tahta, mayat Kertanegara dan Mpu Raganatha di lantai, Jayakatwang berjalan perlahan di antara mayat",
+        "suara": "Hening, suara langkah kaki di lantai marmer",
+        "durasi": "15 detik"
+      },
+      {
+        "shot": "Close up",
+        "gerak": "Jayakatwang berhenti di depan mayat Kertanegara, menatap wajah raja yang sudah mati",
+        "suara": "Hening",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Jayakatwang mengangkat tongkat komando, berteriak ke pasukan",
+        "suara": "Teriakan 'Ini bukan kehancuran. Ini kelahiran Kadiri yang baru!'",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Kertajaya telah membalas dendamnya, sepupuku. Tidak dengan pedangnya sendiri, tapi dengan keturunannya. Aku, Jayakatwang, cucu Kertajaya, telah mengembalikan tahta Daha.",
+        "logat": "Bahasa raja yang menang. Suara tenang tapi penuh EMOSI. Setiap kata adalah 70 tahun dendam yang terbalaskan. Menggunakan 'sepupuku' untuk Kertanegara (karena mereka sepupu melalui pernikahan).",
+        "gerak_saat_bicara": "Berjalan perlahan di antara mayat, tongkat komando di tangan kanan, tangan kiri terbuka ke arah mayat Kertanegara (isyarat 'lihatlah'), berhenti di depan mayat, menunduk sedikit",
+        "ekspresi": "Mata menunjukkan kelegaan, wajah tenang tapi mata berkaca-kaca, campuran kemenangan dan kesedihan",
+        "catatan": "Jayakatwang tidak TERTAWA. Dia MENANGIS dalam diam. 70 tahun dendam terbalaskan, tapi tidak ada kegembiraan."
+      },
+      {
+        "karakter": "JAYAKATWANG",
+        "teks": "Ini bukan kehancuran. Ini kelahiran Kadiri yang baru. Bendera! Kibarkan bendera Daha di setiap menara! Singhasari telah mati!",
+        "logat": "Bahasa orasi kemenangan. Suara semakin keras, hampir berteriak. Transisi dari pribadi ke publik. Dari kesedihan ke kebanggaan.",
+        "gerak_saat_bicara": "Mengangkat tongkat komando tinggi-tinggi dengan tangan kanan, tangan kiri terbuka ke arah pasukan (isyarat 'bangkit'), berdiri tegak di depan singgasana",
+        "ekspresi": "Wajah memerah, mata berkaca-kaca, mulut terbuka lebar saat berteriak, 70 tahun beban lepas",
+        "catatan": "Ini adalah KLIMAK KEMENANGAN. Tapi kemenangan ini akan SINGKAT. Jayakatwang tidak tahu bahwa Wijaya masih hidup."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Jayakatwang: pakaian raja Kadiri, tongkat komando. Mayat Kertanegara: pakaian upacara putih-emas, berlumuran darah.",
+      "makeup": "Jayakatwang: wajah lelah tapi puas. Mayat Kertanegara: wajah pucat, mata terbuka (mati dengan pertanyaan).",
+      "properti": "Tongkat komando, mayat, singgasana, bendera Daha",
+      "warna_dominan": "Merah tua, emas, hitam",
+      "musik": "Gamelan nada kemenangan tapi sedih, gender barung, gong panjang"
+    }
+  },
+  "adegan_09_bendera_di_rabut_carat": {
+    "judul": "BENDERA DI RABUT CARAT — PENGKHIANATAN ARDHARAJA",
+    "lokasi": "Rabut Carat (Lokasi 09)",
+    "waktu": "Sore",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Sore, area perkemahan di hutan, tanah kering, batu-batu besar, bendera merah-putih Jayakatwang terlihat dari kejauhan",
+        "suara": "Suara angin, suara burung sore",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Close up Ardharaja",
+        "gerak": "Ardharaja berbisik, mata berkaca-kaca, menatap bendera ayahnya",
+        "suara": "Suara lirih 'Ayah...'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Ardharaja menarik napas dalam, berteriak 'MUNDUR! SEMUANYA MUNDUR!'",
+        "suara": "Teriakan 'MUNDUR! SEMUANYA MUNDUR!'",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Close up Wijaya",
+        "gerak": "Wijaya terkejut, melihat ke arah Gajah Pagon",
+        "suara": "Teriakan 'GAJAH PAGON!'",
+        "durasi": "5 detik"
+      },
+      {
+        "shot": "Slow motion",
+        "gerak": "Gajah Pagon terluka parah, tersenyum pahit saat jatuh, mata menatap Wijaya",
+        "suara": "Suara lambat, bunyi jatuh",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "ARDHARAJA",
+        "teks": "Ayah... (berbisik, mata berkaca-kaca) MUNDUR! SEMUANYA MUNDUR! Jangan serang! Aku... aku membelot!",
+        "logat": "Bahasa bimbang yang meledak. Suara pertama BERBISIK penuh air mata, kemudian BERteriak dengan putus asa. Transisi dari anak yang mencintai ayah ke pengkhianat.",
+        "gerak_saat_bicara": "Berdiri tegak, tangan kanan memegang pedang tapi tidak terangkat, tangan kiri terbuka ke arah pasukan (isyarat 'mundur'), mata menatap bendera ayahnya, kemudian menatap Wijaya",
+        "ekspresi": "Mata berkaca-kaca, air mata mengalir, wajah bimbang yang meledak menjadi putus asa",
+        "catatan": "Ini adalah MOMEN PENGKHIANATAN. Ardharaja memilih Wijaya (mertua) daripada ayahnya sendiri."
+      },
+      {
+        "karakter": "WIJAYA",
+        "teks": "GAJAH PAGON!",
+        "logat": "Teriakan panik. Suara pecah, penuh ketakutan. Bukan perintah, tapi teriakan kehilangan.",
+        "gerak_saat_bicara": "Terkejut, tangan kanan terbuka ke arah Gajah Pagon, tangan kiri memegang pedang tapi tidak bergerak, mata melebar",
+        "ekspresi": "Mata melebar ketakutan, mulut terbuka lebar berteriak, wajah pucat",
+        "catatan": "Ini adalah MOMEN Wijaya kehilangan sahabatnya. Tapi dia tidak bisa berhenti — dia harus terus berlari."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "(tidak bicara — matanya menatap Wijaya dengan penyesalan)",
+        "logat": "TIDAK ADA DIALOG. Hanya EKSPRESI.",
+        "gerak_saat_bicara": "Terluka parah di dada, tangan kanan masih memegang tombak tapi lemah, tangan kiri meraih ke arah Wijaya, tubuh jatuh ke tanah dalam SLOW MOTION",
+        "ekspresi": "Senyum pahit, mata menunjukkan penyesalan ('aku gagal melindungimu'), air mata di sudut mata",
+        "catatan": "Ini adalah KEMATIAN GAJAH PAGON (sementara). TIDAK ADA KATA yang cukup. Hanya EKSPRESI."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Ardharaja: pakaian campuran Singhasari-Kadiri. Wijaya: baju besi ringan. Gajah Pagon: baju besi elite, darah di dada.",
+      "makeup": "Ardharaja: air mata. Gajah Pagon: darah banyak di dada, wajah pucat.",
+      "properti": "Bendera merah-putih Jayakatwang, pedang, tombak, batu-batu besar",
+      "warna_dominan": "Coklat tanah, merah darah, hijau hutan",
+      "musik": "Gamelan nada tragis, gender slenthem sangat rendah, gong panjang saat Gajah Pagon jatuh"
+    }
+  },
+  "adegan_10_gajah_pagon_diselamatkan": {
+    "judul": "GAJAH PAGON DISELAMATKAN DI DESA PANDAKAN",
+    "lokasi": "Desa Pandakan (Lokasi 10)",
+    "waktu": "Malam",
+    "durasi_estimasi": "3 menit",
+    "urutan_adegan": [
+      {
+        "shot": "Wide shot",
+        "gerak": "Malam, Desa Pandakan, rumah bambu dan jerami, Gajah Pagon terluka dibawa ke pondok dengan tandu",
+        "suara": "Suara jangkrik, suara air sungai",
+        "durasi": "10 detik"
+      },
+      {
+        "shot": "Medium shot",
+        "gerak": "Kepala Desa Pandakan membantu menurunkan Gajah Pagon dari tandu",
+        "suara": "Suara lirih 'Bawa ke pondokku'",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Gajah Pagon",
+        "gerak": "Gajah Pagon terengah, menatap langit jerami pondok",
+        "suara": "Napas terengah-engah",
+        "durasi": "8 detik"
+      },
+      {
+        "shot": "Close up Putri Kepala Desa Pandakan",
+        "gerak": "Putri menyeka darah di wajah Gajah Pagon dengan lembut, tangan kanan memegang kain basah",
+        "suara": "Suara lembut 'Kau hidup. Itu sudah cukup.'",
+        "durasi": "10 detik"
+      }
+    ],
+    "dialog": [
+      {
+        "karakter": "KEPALA DESA PANDAKAN",
+        "teks": "Bawa ke pondokku. Jangan tanyakan asalnya. Yang terluka adalah saudara. Di desa ini, tidak ada musuh — hanya manusia.",
+        "logat": "Bahasa desa sederhana tapi bijak. Suara tenang dan hangat. Tidak ada ketakutan, hanya kemanusiaan.",
+        "gerak_saat_bicara": "Membantu menurunkan Gajah Pagon dari tandu, tangan kanan menahan bahu Gajah Pagon, tangan kiri menunjuk ke arah pondok, kepala mengangguk",
+        "ekspresi": "Mata tenang, senyum hangat, wajah dermawan",
+        "catatan": "Ini adalah FILOSOFI DESA. 'Tidak ada musuh — hanya manusia' adalah KUNCI adegan ini."
+      },
+      {
+        "karakter": "GAJAH PAGON",
+        "teks": "Aku gagal melindungi rajaku. Aku gagal melindungi Raden Wijaya. Aku... tidak layak hidup.",
+        "logat": "Bahasa prajurit yang hancur. Suara terengah, hampir menangis. Penuh PENYESALAN.",
+        "gerak_saat_bicara": "Terbaring di tandu, tangan kanan menutupi wajah, tangan kiri mengepal di dada, menatap langit jerami",
+        "ekspresi": "Mata berkaca-kaca, wajah pucat, mulut gemetar, hampir menangis",
+        "catatan": "Gajah Pagon bukan takut mati. Dia MALU karena gagal. Ini adalah KEHANCURAN mental prajurit."
+      },
+      {
+        "karakter": "PUTRI KEPALA DESA PANDAKAN",
+        "teks": "Kau hidup. Itu sudah cukup. Kau masih punya tangan untuk memegang tombak, dan hati untuk berjuang. Istirahatlah. Besok adalah hari baru.",
+        "logat": "Bahasa ibu yang penyayang. Suara lembut tapi tegas. Setiap kata adalah PENYEMBUHAN.",
+        "gerak_saat_bicara": "Menyeka darah di wajah Gajah Pagon dengan kain basah di tangan kanan, tangan kiri memegang tangan Gajah Pagon, menatap mata Gajah Pagon",
+        "ekspresi": "Mata lembut tapi tajam, senyum kecil, wajah penuh kasih sayang",
+        "catatan": "Putri bukan hanya menyelamatkan tubuh Gajah Pagon. Dia menyelamatkan JIWANYA. Kalimat 'Besok adalah hari baru' adalah HARAPAN."
+      }
+    ],
+    "catatan_produksi": {
+      "kostum": "Kepala Desa Pandakan: pakaian desa sederhana. Gajah Pagon: baju besi dilepas, perban di dada. Putri: pakaian wanita desa sederhana.",
+      "makeup": "Gajah Pagon: darah di wajah dan dada, wajah pucat. Putri: wajah lembut, tangan bersih.",
+      "properti": "Tandu, kain basah, pondok bambu, perban",
+      "warna_dominan": "Coklat bambu, hijau sawah (di luar), putih perban",
+      "musik": "Gamelan lembut, gender barung nada rendah, suara alam"
+    }
+  }
+}

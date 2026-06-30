@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Menggunakan SQLite untuk environment development karena Docker/Postgres belum terinstal.
+// Untuk production bisa diubah ke "postgresql"
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("USER") // ADMIN atau USER
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  subscription Subscription?
+  recordings   Recording[]
+}
+
+model Plan {
+  id            String   @id @default(uuid())
+  name          String   @unique // FREE, BASIC, STARTER, PRO, BUSINESS
+  price         Int
+  storageLimit  Int      // dalam MB (misal 50GB = 50000)
+  orderLimit    Int      // limit per hari
+  retentionDays Int      // masa retensi file
+  
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  planId    String
+  plan      Plan     @relation(fields: [planId], references: [id])
+  status    String   @default("ACTIVE") // ACTIVE, EXPIRED, GRACE
+  startDate DateTime @default(now())
+  endDate   DateTime
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recording {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  resi        String
+  customer    String
+  marketplace String
+  items       String   // JSON string
+  status      String   @default("PROCESS") // PROCESS, DONE, FAILED
+  videoPath   String?
+  videoSize   Int?     // bytes
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

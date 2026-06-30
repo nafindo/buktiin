@@ -1,4 +1,32 @@
+import { useState, useEffect } from 'react';
+
 export default function LiveScanner() {
+  // State definitions: 'IDLE' -> 'SCANNED' -> 'RECORDING' -> 'SAVING'
+  const [scanState, setScanState] = useState<'IDLE' | 'SCANNED' | 'RECORDING' | 'SAVING'>('IDLE');
+
+  // Handle global Enter key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        
+        setScanState((prevState) => {
+          if (prevState === 'IDLE') return 'SCANNED';
+          if (prevState === 'SCANNED') return 'RECORDING';
+          if (prevState === 'RECORDING') {
+            // Briefly show saving, then back to IDLE
+            setTimeout(() => setScanState('IDLE'), 1500);
+            return 'SAVING';
+          }
+          return prevState;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="flex flex-col h-full min-h-full">
       {/* Layout: Bento Grid Style */}
@@ -6,87 +34,120 @@ export default function LiveScanner() {
         {/* Left: Webcam Area (Col 8) */}
         <div className="lg:col-span-8 space-y-md">
           <div className="relative aspect-video bg-black rounded-xl border-2 border-primary overflow-hidden shadow-sm group">
-            {/* Placeholder for Live Stream */}
-            <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
-              <div className="text-white/20 text-center">
-                <span className="material-symbols-outlined text-6xl">photo_camera</span>
-                <p className="font-label-caps text-label-caps mt-md">Connecting to Packing Camera...</p>
+            {scanState === 'IDLE' && (
+              <div className="absolute inset-0 bg-neutral-900 flex flex-col items-center justify-center">
+                <span className="material-symbols-outlined text-6xl text-white/40 mb-md">qr_code_scanner</span>
+                <p className="font-headline-md text-white font-bold">Siap untuk Scan Barcode</p>
+                <p className="font-body-md text-white/60 mt-xs">Arahkan scanner ke resi, sistem akan otomatis membaca (tekan Enter untuk simulasi).</p>
               </div>
-            </div>
-            {/* Video Background Image Injection */}
-            <div className="absolute inset-0 opacity-60 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZtJg3Wfzw1FYTH6r2L8VphHFkftmSPJnnIqyT8raIio7bzKl8_vxEk_-4gcfhzJj5UHJGUuCy4BxrSgFr8q5g9aHFub_Gy7BtB_ZGHziJtjLi3LiFO5tcFrqADf3-N7kUZYSI-CwJYm6VlKOxE0QOMz5Kr-jLHm1aHi_h-mWqtOodwTvcFgWRBHQBAi-5KqnuBN6zkMGlfVYgbqLJnQVcdaUCpKBBrmKcN_eZttyNpEtd4mQF5ynA')" }}></div>
-            {/* Technical Overlays */}
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-status-success shadow-[0_0_15px_#00C853] animate-[moveScan_3s_linear_infinite]"></div>
-            <div className="absolute top-md right-md flex items-center gap-sm bg-black/60 backdrop-blur-md px-md py-sm rounded-lg border border-white/10">
-              <span className="w-3 h-3 bg-error rounded-full animate-pulse"></span>
-              <span className="font-label-caps text-label-caps text-white">REC ● 00:42:15</span>
-            </div>
-            <div className="absolute bottom-md left-md p-md bg-black/60 backdrop-blur-md rounded-lg border border-white/10 text-white">
-              <div className="grid grid-cols-2 gap-x-lg gap-y-xs">
-                <span className="font-code-sm text-code-sm opacity-60 uppercase">Resolution</span>
-                <span className="font-code-sm text-code-sm">1920x1080 (HD)</span>
-                <span className="font-code-sm text-code-sm opacity-60 uppercase">Bitrate</span>
-                <span className="font-code-sm text-code-sm">4.2 Mbps</span>
-                <span className="font-code-sm text-code-sm opacity-60 uppercase">Station ID</span>
-                <span className="font-code-sm text-code-sm">STN-JKT-01</span>
-              </div>
-            </div>
+            )}
+
+            {scanState !== 'IDLE' && (
+              <>
+                {/* Video Background Image Injection (Simulate Camera On) */}
+                <div className="absolute inset-0 opacity-80 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZtJg3Wfzw1FYTH6r2L8VphHFkftmSPJnnIqyT8raIio7bzKl8_vxEk_-4gcfhzJj5UHJGUuCy4BxrSgFr8q5g9aHFub_Gy7BtB_ZGHziJtjLi3LiFO5tcFrqADf3-N7kUZYSI-CwJYm6VlKOxE0QOMz5Kr-jLHm1aHi_h-mWqtOodwTvcFgWRBHQBAi-5KqnuBN6zkMGlfVYgbqLJnQVcdaUCpKBBrmKcN_eZttyNpEtd4mQF5ynA')" }}></div>
+                
+                {scanState === 'SCANNED' && (
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-status-success shadow-[0_0_15px_#00C853] animate-[moveScan_3s_linear_infinite]"></div>
+                )}
+                
+                {scanState === 'RECORDING' && (
+                  <div className="absolute top-md right-md flex items-center gap-sm bg-black/60 backdrop-blur-md px-md py-sm rounded-lg border border-error">
+                    <span className="w-3 h-3 bg-error rounded-full animate-pulse"></span>
+                    <span className="font-label-caps text-label-caps text-white font-bold">REC ● 00:00:04</span>
+                  </div>
+                )}
+
+                {scanState === 'SAVING' && (
+                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10">
+                    <span className="material-symbols-outlined text-6xl text-status-success animate-bounce mb-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    <p className="font-headline-md text-white font-bold">Video Berhasil Disimpan!</p>
+                  </div>
+                )}
+
+                <div className="absolute bottom-md left-md p-md bg-black/60 backdrop-blur-md rounded-lg border border-white/10 text-white">
+                  <div className="grid grid-cols-2 gap-x-lg gap-y-xs">
+                    <span className="font-code-sm text-code-sm opacity-60 uppercase">Resolution</span>
+                    <span className="font-code-sm text-code-sm">1920x1080 (HD)</span>
+                    <span className="font-code-sm text-code-sm opacity-60 uppercase">Bitrate</span>
+                    <span className="font-code-sm text-code-sm">4.2 Mbps</span>
+                    <span className="font-code-sm text-code-sm opacity-60 uppercase">Station ID</span>
+                    <span className="font-code-sm text-code-sm">STN-JKT-01</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+          
           {/* Main Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-md items-stretch">
-            <button className="flex-1 bg-surface-container-highest border-2 border-primary text-primary font-bold py-md px-xl rounded-lg hover:bg-primary-container/20 transition-all active:scale-95 flex items-center justify-center gap-md">
-              <span className="material-symbols-outlined">videocam</span>
-              <span className="font-headline-md text-[18px]">Mulai Rekam</span>
-            </button>
-            <button className="flex-1 bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all active:scale-95 shadow-lg flex items-center justify-center gap-md">
-              <span className="material-symbols-outlined">check_circle</span>
-              <span className="font-headline-md text-[18px]">Selesai Packing</span>
-            </button>
+          <div className="flex flex-col sm:flex-row gap-md items-stretch h-14">
+            {scanState === 'SCANNED' && (
+              <button className="flex-1 bg-surface-container-highest border-2 border-primary text-primary font-bold py-md px-xl rounded-lg hover:bg-primary-container/20 transition-all flex items-center justify-center gap-md animate-[pulse_2s_infinite]">
+                <span className="material-symbols-outlined">videocam</span>
+                <span className="font-headline-md text-[18px]">Mulai Rekam (Tekan Enter)</span>
+              </button>
+            )}
+
+            {scanState === 'RECORDING' && (
+              <button className="flex-1 bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all shadow-lg flex items-center justify-center gap-md">
+                <span className="material-symbols-outlined">check_circle</span>
+                <span className="font-headline-md text-[18px]">Selesai Packing (Tekan Enter)</span>
+              </button>
+            )}
+            
+            {scanState === 'IDLE' && (
+              <div className="flex-1 border-2 border-dashed border-ui-divider rounded-lg flex items-center justify-center text-on-surface-variant font-label-caps">
+                MENUNGGU SCAN BARCODE...
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right: Sidebar Data (Col 4) */}
         <div className="lg:col-span-4 flex flex-col gap-lg">
-          {/* Order Detail Card (Auto-appears) */}
-          <div className="bg-surface-container-lowest border border-ui-divider rounded-xl shadow-sm p-md flex flex-col">
-            <div className="flex justify-between items-start mb-md">
-              <div>
-                <p className="font-label-caps text-label-caps text-on-surface-variant">Marketplace</p>
-                <div className="flex items-center gap-sm">
-                  <span className="w-6 h-6 bg-secondary-container rounded-full flex items-center justify-center text-white text-[10px] font-bold">S</span>
-                  <h2 className="font-headline-md text-headline-md text-secondary font-bold">Shopee</h2>
+          {/* Order Detail Card (Only appears if scanned or recording) */}
+          {scanState !== 'IDLE' ? (
+            <div className="bg-surface-container-lowest border border-ui-divider rounded-xl shadow-sm p-md flex flex-col animate-[fade-in_0.3s_ease-out]">
+              <div className="flex justify-between items-start mb-md">
+                <div>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant">Marketplace</p>
+                  <div className="flex items-center gap-sm">
+                    <span className="w-6 h-6 bg-secondary-container rounded-full flex items-center justify-center text-white text-[10px] font-bold">S</span>
+                    <h2 className="font-headline-md text-headline-md text-secondary font-bold">Shopee</h2>
+                  </div>
+                </div>
+                <span className="bg-primary-container text-on-primary-container px-sm py-xs font-label-caps text-[10px] rounded-lg">LIVE SCAN</span>
+              </div>
+              <div className="space-y-md border-y border-ui-divider py-md mb-md">
+                <div>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant">No. Resi</p>
+                  <p className="font-code-sm text-[18px] font-bold text-on-surface select-all">JX123456789</p>
+                </div>
+                <div>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant">Customer</p>
+                  <p className="font-body-md text-body-md font-bold">Budi Santoso</p>
                 </div>
               </div>
-              <span className="bg-primary-container text-on-primary-container px-sm py-xs font-label-caps text-[10px] rounded-lg">LIVE SCAN</span>
-            </div>
-            <div className="space-y-md border-y border-ui-divider py-md mb-md">
               <div>
-                <p className="font-label-caps text-label-caps text-on-surface-variant">No. Resi</p>
-                <p className="font-code-sm text-[18px] font-bold text-on-surface select-all">JX123456789</p>
+                <p className="font-label-caps text-label-caps text-on-surface-variant mb-sm">Items list (2)</p>
+                <ul className="space-y-sm">
+                  <li className="flex justify-between items-center bg-surface-container p-sm rounded-DEFAULT">
+                    <span className="font-body-md text-body-md">Kaos Polos - Navy</span>
+                    <span className="font-code-sm text-code-sm font-bold bg-white px-sm rounded">x1</span>
+                  </li>
+                  <li className="flex justify-between items-center bg-surface-container p-sm rounded-DEFAULT">
+                    <span className="font-body-md text-body-md">Celana Chino - Khaki</span>
+                    <span className="font-code-sm text-code-sm font-bold bg-white px-sm rounded">x1</span>
+                  </li>
+                </ul>
               </div>
-              <div>
-                <p className="font-label-caps text-label-caps text-on-surface-variant">Customer</p>
-                <p className="font-body-md text-body-md font-bold">Budi Santoso</p>
-              </div>
             </div>
-            <div>
-              <p className="font-label-caps text-label-caps text-on-surface-variant mb-sm">Items list (2)</p>
-              <ul className="space-y-sm">
-                <li className="flex justify-between items-center bg-surface-container p-sm rounded-DEFAULT">
-                  <span className="font-body-md text-body-md">Kaos Polos - Navy</span>
-                  <span className="font-code-sm text-code-sm font-bold bg-white px-sm rounded">x1</span>
-                </li>
-                <li className="flex justify-between items-center bg-surface-container p-sm rounded-DEFAULT">
-                  <span className="font-body-md text-body-md">Celana Chino - Khaki</span>
-                  <span className="font-code-sm text-code-sm font-bold bg-white px-sm rounded">x1</span>
-                </li>
-              </ul>
+          ) : (
+            <div className="bg-surface-container-lowest border border-dashed border-ui-divider rounded-xl p-xl flex flex-col items-center justify-center opacity-50">
+               <span className="material-symbols-outlined text-4xl mb-sm text-on-surface-variant">receipt_long</span>
+               <p className="font-label-caps text-center text-on-surface-variant">Data Order<br/>akan muncul di sini</p>
             </div>
-            <div className="mt-lg pt-md border-t border-dashed border-ui-divider">
-              <p className="font-label-caps text-label-caps text-on-surface-variant">Catatan Pembeli:</p>
-              <p className="italic text-on-surface-variant text-sm mt-xs">"Mohon cek jahitan, kak. Terima kasih!"</p>
-            </div>
-          </div>
+          )}
           
           {/* Storage Usage Indicator */}
           <div className="bg-surface-container-low border border-ui-divider rounded-xl p-md mt-auto">
@@ -101,7 +162,6 @@ export default function LiveScanner() {
               <div className="h-full bg-secondary-container w-[75%] rounded-full"></div>
             </div>
             <p className="font-code-sm text-[10px] mt-sm text-on-surface-variant text-right">37.5 GB / 50 GB</p>
-            <button className="w-full mt-md py-xs border border-secondary text-secondary rounded font-label-caps text-[12px] hover:bg-secondary-fixed transition-colors">UPGRADE STORAGE</button>
           </div>
         </div>
       </section>
