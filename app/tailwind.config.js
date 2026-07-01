@@ -74,7 +74,7 @@ export default {
         "xl": "32px",
         "gutter": "16px",
         "sm": "8px",
-        "container-max": "1280px",
+        "container-max": "1536px",
         "base": "4px"
       },
       "fontFamily": {

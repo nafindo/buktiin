@@ -4,13 +4,20 @@ import { prisma } from '../db';
 // Get Dashboard Stats
 export const getDashboardStats = async (req: Request, res: Response) => {
   try {
-    // For now we assume a single dummy user for development
-    const totalRecordings = await prisma.recording.count();
+    const userId = req.query.userId as string;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    const totalRecordings = await prisma.recording.count({ where: { userId } });
     const completedRecordings = await prisma.recording.count({
-      where: { status: 'DONE' }
+      where: { userId, status: 'DONE' }
     });
     const processRecordings = await prisma.recording.count({
-      where: { status: 'PROCESS' }
+      where: { userId, status: 'PROCESS' }
+    });
+    const failedRecordings = await prisma.recording.count({
+      where: { userId, status: 'FAILED' }
     });
 
     res.json({
@@ -19,7 +26,8 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         total: totalRecordings,
         completed: completedRecordings,
         process: processRecordings,
-        videoCount: completedRecordings, // Assuming completed means video is available
+        failed: failedRecordings,
+        videoCount: completedRecordings,
       }
     });
   } catch (error) {
@@ -31,8 +39,15 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 // Get History
 export const getHistory = async (req: Request, res: Response) => {
   try {
+    const userId = req.query.userId as string;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
     const history = await prisma.recording.findMany({
-      orderBy: { createdAt: 'desc' }
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 50 // Limit for now
     });
     res.json({ success: true, data: history });
   } catch (error) {
@@ -44,19 +59,10 @@ export const getHistory = async (req: Request, res: Response) => {
 // Create new recording entry
 export const saveRecording = async (req: Request, res: Response) => {
   try {
-    const { resi, customer, marketplace, items } = req.body;
+    const { resi, customer, marketplace, items, userId } = req.body;
     
-    // We need a dummy user for now
-    let user = await prisma.user.findFirst();
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email: 'admin@buktiin.id',
-          name: 'Admin',
-          password: 'hashedpassword',
-          role: 'ADMIN'
-        }
-      });
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
     }
 
     const recording = await prisma.recording.create({
@@ -65,7 +71,7 @@ export const saveRecording = async (req: Request, res: Response) => {
         customer,
         marketplace,
         items: JSON.stringify(items),
-        userId: user.id,
+        userId,
         status: 'PROCESS'
       }
     });

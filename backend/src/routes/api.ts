@@ -5,6 +5,14 @@ import {
   saveRecording,
   uploadVideo
 } from '../controllers/apiController';
+import {
+  setupIntegration,
+  syncOrderByResi
+} from '../controllers/integrationController';
+import {
+  createPayment,
+  activateSubscription
+} from '../controllers/paymentController';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -33,5 +41,13 @@ router.get('/dashboard', getDashboardStats);
 router.get('/history', getHistory);
 router.post('/recordings', saveRecording);
 router.post('/recordings/upload', upload.single('video'), uploadVideo);
+
+// Integrations
+router.post('/integrations/setup', setupIntegration);
+router.get('/orders/sync', syncOrderByResi);
+
+// Payments
+router.post('/pay', createPayment);
+router.post('/pay/activate', activateSubscription);
 
 export default router;

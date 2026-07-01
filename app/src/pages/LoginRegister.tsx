@@ -1,11 +1,43 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function LoginRegister() {
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate('/dashboard');
+      }
+    });
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/plans');
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        // Auto sign in or show message
+      }
+      navigate('/dashboard');
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,19 +88,34 @@ export default function LoginRegister() {
               <p className="text-on-surface-variant font-body-md">Lengkapi data untuk membuat akun gudang Anda.</p>
             </div>
             <form className="space-y-md" onSubmit={handleSubmit}>
-              <div className="space-y-xs">
-                <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
-                <div className="relative group">
-                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
-                  <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Masukkan nama lengkap" type="text"/>
+              {errorMsg && (
+                <div className="bg-error-container text-on-error-container p-sm rounded text-sm mb-md">
+                  {errorMsg}
                 </div>
-              </div>
+              )}
+              
+              {!isLogin && (
+                <div className="space-y-xs">
+                  <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
+                  <div className="relative group">
+                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Masukkan nama lengkap" type="text"/>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                 <div className="space-y-xs">
                   <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
                   <div className="relative group">
                     <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
-                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="email@toko.com" type="email"/>
+                    <input 
+                      className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                      placeholder="email@toko.com" 
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
                 <div className="space-y-xs">
@@ -90,7 +137,14 @@ export default function LoginRegister() {
                 <label className="font-label-caps text-label-caps text-on-surface-variant block">KATA SANDI</label>
                 <div className="relative group">
                   <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
-                  <input className="w-full pl-[48px] pr-[48px] py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Min. 8 Karakter" type="password"/>
+                  <input 
+                    className="w-full pl-[48px] pr-[48px] py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                    placeholder="Min. 8 Karakter" 
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                   <button className="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" type="button">
                     <span className="material-symbols-outlined">visibility</span>
                   </button>
@@ -102,15 +156,26 @@ export default function LoginRegister() {
                   Saya menyetujui <a className="text-primary font-bold hover:underline" href="#">Syarat & Ketentuan</a> serta <a className="text-primary font-bold hover:underline" href="#">Kebijakan Privasi</a> BUKTIIN.
                 </label>
               </div>
-              <button className="w-full py-md bg-primary-container hover:bg-primary text-on-primary font-bold rounded-DEFAULT flex items-center justify-center gap-sm transition-all active:scale-95 group relative overflow-hidden" type="submit">
+              <button 
+                disabled={loading}
+                className="w-full py-md bg-primary-container hover:bg-primary text-on-primary font-bold rounded-DEFAULT flex items-center justify-center gap-sm transition-all active:scale-95 group relative overflow-hidden" 
+                type="submit"
+              >
                 <span className="shimmer-bg absolute inset-0 pointer-events-none"></span>
-                <span className="relative z-10 uppercase tracking-wider">Daftar Sekarang</span>
+                <span className="relative z-10 uppercase tracking-wider">{loading ? 'Memproses...' : (isLogin ? 'Masuk' : 'Daftar Sekarang')}</span>
                 <span className="material-symbols-outlined relative z-10 transition-transform group-hover:translate-x-1">arrow_forward</span>
               </button>
             </form>
             <div className="pt-lg border-t border-ui-divider text-center">
               <p className="font-body-md text-on-surface-variant">
-                Sudah punya akun? <Link className="text-primary font-bold hover:underline" to="/dashboard">Masuk di sini</Link>
+                {isLogin ? 'Belum punya akun?' : 'Sudah punya akun?'} 
+                <button 
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-primary font-bold hover:underline ml-1"
+                >
+                  {isLogin ? 'Daftar di sini' : 'Masuk di sini'}
+                </button>
               </p>
             </div>
           </div>

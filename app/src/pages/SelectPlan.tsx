@@ -1,10 +1,88 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
 
 export default function SelectPlan() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
+  const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      setUserId(session.user.id);
+      
+      const { data } = await supabase.from('plans').select('*').order('price', { ascending: true });
+      if (data) setPlans(data.filter(p => p.name !== 'FREE'));
+      setLoading(false);
+    };
+    fetchPlans();
+  }, [navigate]);
 
   const toggleBilling = () => {
     setIsAnnual(!isAnnual);
+  };
+
+  const handlePay = async (plan: any) => {
+    if (paying) return;
+    setPaying(true);
+    try {
+      const res = await fetch('http://localhost:3001/api/pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: plan.id,
+          price: isAnnual ? plan.price * 10 : plan.price,
+          name: plan.name,
+          userId: userId
+        })
+      });
+      const data = await res.json();
+      
+      if (data.token) {
+        window.snap.pay(data.token, {
+          onSuccess: async (result: any) => {
+            await fetch('http://localhost:3001/api/pay/activate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, planId: plan.id, token: result.transaction_id })
+            });
+            window.location.href = '/#/dashboard';
+          },
+          onPending: () => {
+            alert('Menunggu pembayaran.');
+            setPaying(false);
+          },
+          onError: () => {
+            alert('Pembayaran gagal.');
+            setPaying(false);
+          },
+          onClose: () => {
+            setPaying(false);
+          }
+        });
+      } else {
+        alert('Gagal mendapatkan token pembayaran.');
+        setPaying(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Terjadi kesalahan koneksi.');
+      setPaying(false);
+    }
   };
 
   return (
@@ -35,151 +113,57 @@ export default function SelectPlan() {
         </div>
 
         {/* Pricing Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md items-stretch">
-          
-          {/* Basic Tier */}
-          <div className="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-xl relative overflow-hidden hover:-translate-y-1 transition-transform duration-200">
-            <div className="mb-md">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-xs">BASIC</h3>
-              <div className="flex items-baseline gap-1">
-                <span className="font-headline-md text-headline-md">Rp</span>
-                <span className="font-headline-lg text-headline-lg transition-transform duration-200">
-                  {isAnnual ? '40k' : '49k'}
-                </span>
-                <span className="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md items-stretch mt-xl">
+          {loading ? (
+            <div className="col-span-3 text-center py-xl text-on-surface-variant">Memuat daftar paket...</div>
+          ) : (
+            plans.map((plan) => (
+              <div key={plan.id} className={`pricing-card flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-lg' : 'border-ui-divider'} p-md rounded-xl relative overflow-hidden hover:-translate-y-1 transition-transform duration-200`}>
+                {plan.name === 'STARTER' && (
+                  <div className="absolute top-0 right-0">
+                    <span className="bg-primary text-white font-label-caps text-[10px] px-3 py-1 rounded-tr-lg rounded-bl-lg">RECOMMENDED</span>
+                  </div>
+                )}
+                <div className="mb-md">
+                  <h3 className={`font-label-caps text-label-caps ${plan.name === 'STARTER' ? 'text-primary mt-2' : 'text-on-surface-variant'} mb-xs`}>{plan.name}</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className={`font-headline-md text-headline-md ${plan.name === 'STARTER' ? 'text-on-surface' : ''}`}>Rp</span>
+                    <span className="font-headline-lg text-headline-lg transition-transform duration-200">
+                      {(isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
+                    </span>
+                    <span className="text-on-surface-variant font-code-sm text-code-sm">/{isAnnual ? 'yr' : 'mo'}</span>
+                  </div>
+                </div>
+                <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
+                  <ul className="space-y-sm">
+                    <li className="flex items-center gap-2 font-body-md text-[14px]">
+                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                      <span>{plan.storageLimit / 1000}GB Storage</span>
+                    </li>
+                    <li className="flex items-center gap-2 font-body-md text-[14px]">
+                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                      <span>{plan.orderLimit} Orders/day</span>
+                    </li>
+                    <li className="flex items-center gap-2 font-body-md text-[14px]">
+                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+                      <span>{plan.retentionDays} Days Retention</span>
+                    </li>
+                  </ul>
+                </div>
+                <button 
+                  onClick={() => handlePay(plan)}
+                  disabled={paying}
+                  className={`mt-xl w-full py-md font-bold rounded-DEFAULT transition-all ${
+                    plan.name === 'STARTER' 
+                      ? 'bg-primary text-white hover:opacity-90 active:scale-95' 
+                      : 'border border-on-surface text-on-surface hover:bg-surface-container'
+                  }`}
+                >
+                  {paying ? 'Memproses...' : `Pilih ${plan.name}`}
+                </button>
               </div>
-              <p className="text-[12px] text-on-surface-variant mt-xs">For solo sellers.</p>
-            </div>
-            <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
-              <ul className="space-y-sm">
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>20GB Storage</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>50 Orders/day</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>1 User Access</span>
-                </li>
-              </ul>
-            </div>
-            <button className="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Basic</button>
-          </div>
-
-          {/* Starter Tier (Recommended) */}
-          <div className="pricing-card flex flex-col bg-surface border-2 border-primary p-md rounded-xl relative shadow-lg hover:-translate-y-1 transition-transform duration-200">
-            <div className="absolute top-0 right-0">
-              <span className="bg-primary text-white font-label-caps text-[10px] px-3 py-1 rounded-tr-lg rounded-bl-lg">RECOMMENDED</span>
-            </div>
-            <div className="mb-md">
-              <h3 className="font-label-caps text-label-caps text-primary mb-xs mt-2">STARTER</h3>
-              <div className="flex items-baseline gap-1">
-                <span className="font-headline-md text-headline-md text-on-surface">Rp</span>
-                <span className="font-headline-lg text-headline-lg transition-transform duration-200">
-                  {isAnnual ? '82k' : '99k'}
-                </span>
-                <span className="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
-              </div>
-              <p className="text-[12px] text-on-surface-variant mt-xs">Perfect for growing stores.</p>
-            </div>
-            <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
-              <ul className="space-y-sm">
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span className="font-bold text-on-surface">100GB Storage</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>200 Orders/day</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>3 User Access</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>Priority Log History</span>
-                </li>
-              </ul>
-            </div>
-            <button className="mt-xl w-full py-md bg-primary text-white font-bold hover:opacity-90 active:scale-95 transition-all rounded-DEFAULT">Start Free Trial</button>
-          </div>
-
-          {/* Pro Tier */}
-          <div className="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-xl hover:-translate-y-1 transition-transform duration-200">
-            <div className="mb-md">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-xs">PRO</h3>
-              <div className="flex items-baseline gap-1">
-                <span className="font-headline-md text-headline-md">Rp</span>
-                <span className="font-headline-lg text-headline-lg transition-transform duration-200">
-                  {isAnnual ? '165k' : '199k'}
-                </span>
-                <span className="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
-              </div>
-              <p className="text-[12px] text-on-surface-variant mt-xs">Advanced warehouse needs.</p>
-            </div>
-            <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
-              <ul className="space-y-sm">
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>250GB Storage</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>500 Orders/day</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>10 User Access</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>Multi-station Sync</span>
-                </li>
-              </ul>
-            </div>
-            <button className="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Pro</button>
-          </div>
-
-          {/* Business Tier */}
-          <div className="pricing-card flex flex-col bg-surface border border-ui-divider p-md rounded-xl hover:-translate-y-1 transition-transform duration-200">
-            <div className="mb-md">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-xs">BUSINESS</h3>
-              <div className="flex items-baseline gap-1">
-                <span className="font-headline-md text-headline-md">Rp</span>
-                <span className="font-headline-lg text-headline-lg transition-transform duration-200">
-                  {isAnnual ? '331k' : '399k'}
-                </span>
-                <span className="text-on-surface-variant font-code-sm text-code-sm">/mo</span>
-              </div>
-              <p className="text-[12px] text-on-surface-variant mt-xs">Enterprise-grade scale.</p>
-            </div>
-            <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
-              <ul className="space-y-sm">
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>500GB Storage</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>Unlimited Orders</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>Unlimited Users</span>
-                </li>
-                <li className="flex items-center gap-2 font-body-md text-[14px]">
-                  <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                  <span>API Access</span>
-                </li>
-              </ul>
-            </div>
-            <button className="mt-xl w-full py-md border border-on-surface text-on-surface font-bold hover:bg-surface-container transition-all rounded-DEFAULT">Select Business</button>
-          </div>
-
+            ))
+          )}
         </div>
 
         {/* Trust Section (Bento Inspired) */}

@@ -1,8 +1,58 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function MainLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const path = location.pathname;
+  const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState('');
+  const [planName, setPlanName] = useState('No Plan');
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/login');
+        return;
+      }
+      
+      setUserEmail(session.user.email || 'User');
+
+      // Check subscription
+      const { data: subArray } = await supabase
+        .from('subscriptions')
+        .select('*, plans(*)')
+        .eq('user_id', session.user.id)
+        .eq('status', 'ACTIVE')
+        .limit(1);
+        
+      if (!subArray || subArray.length === 0) {
+        if (path !== '/plans') navigate('/plans');
+      } else {
+        const activeSub = subArray[0];
+        if (activeSub.plans) {
+          setPlanName(activeSub.plans.name + ' Plan');
+        }
+      }
+      
+      setLoading(false);
+    };
+    
+    checkAuth();
+  }, [navigate, path]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-surface text-on-surface">
+        <div className="flex flex-col items-center gap-4">
+          <span className="material-symbols-outlined animate-spin text-4xl text-primary">autorenew</span>
+          <p className="font-headline-sm">Memeriksa Lisensi & Keamanan...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-surface font-body-md text-on-surface">
@@ -19,8 +69,8 @@ export default function MainLayout() {
               <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>account_circle</span>
             </div>
             <div>
-              <p className="font-label-caps text-label-caps text-primary truncate max-w-[120px]">Budi Fashion</p>
-              <p className="font-code-sm text-code-sm text-on-surface-variant">Starter Plan</p>
+              <p className="font-label-caps text-label-caps text-primary truncate max-w-[120px]">{userEmail}</p>
+              <p className="font-code-sm text-code-sm text-on-surface-variant">{planName}</p>
             </div>
           </div>
         </div>
@@ -49,6 +99,13 @@ export default function MainLayout() {
             <span className="material-symbols-outlined">account_circle</span>
             <span className="font-label-caps text-label-caps">Profile</span>
           </Link>
+          <button 
+            onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }}
+            className="flex items-center gap-md p-md w-full transition-all rounded-DEFAULT text-error hover:bg-error-container hover:text-on-error-container mt-xs"
+          >
+            <span className="material-symbols-outlined">logout</span>
+            <span className="font-label-caps text-label-caps">Logout</span>
+          </button>
           <div className="px-md mt-sm">
             <p className="font-code-sm text-code-sm text-on-surface-variant">V 4.0.0</p>
           </div>

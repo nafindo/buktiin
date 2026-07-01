@@ -21,8 +21,36 @@ ChartJS.register(
   Legend,
   ArcElement
 );
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function Dashboard() {
+  const [stats, setStats] = useState({
+    total: 0,
+    completed: 0,
+    process: 0,
+    failed: 0,
+    videoCount: 0
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      try {
+        const response = await fetch(`http://localhost:3001/api/dashboard?userId=${session.user.id}`);
+        const result = await response.json();
+        if (result.success) {
+          setStats(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard stats:", error);
+      }
+    };
+    
+    fetchStats();
+  }, []);
   const lineChartData = {
     labels: ['01 May', '05 May', '10 May', '15 May', '20 May', '25 May', '30 May'],
     datasets: [
@@ -93,8 +121,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">320</p>
-            <p className="font-code-sm text-code-sm text-primary mt-xs">+12.5% from yesterday</p>
+            <p className="font-display-lg text-4xl font-bold">{stats.total}</p>
+            <p className="font-code-sm text-code-sm text-primary mt-xs">Total pesanan masuk</p>
           </div>
         </div>
 
@@ -107,8 +135,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">280</p>
-            <p className="font-code-sm text-code-sm text-status-success mt-xs">87.5% Success Rate</p>
+            <p className="font-display-lg text-4xl font-bold">{stats.completed}</p>
+            <p className="font-code-sm text-code-sm text-status-success mt-xs">Selesai di-packing</p>
           </div>
         </div>
 
@@ -121,8 +149,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">3</p>
-            <p className="font-code-sm text-code-sm text-on-surface-variant mt-xs">Awaiting packing</p>
+            <p className="font-display-lg text-4xl font-bold">{stats.process}</p>
+            <p className="font-code-sm text-code-sm text-on-surface-variant mt-xs">Menunggu rekaman</p>
           </div>
         </div>
 
@@ -135,8 +163,8 @@ export default function Dashboard() {
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">278</p>
-            <p className="font-code-sm text-code-sm text-primary mt-xs">99.2% Capture rate</p>
+            <p className="font-display-lg text-4xl font-bold">{stats.videoCount}</p>
+            <p className="font-code-sm text-code-sm text-primary mt-xs">Video berhasil direkam</p>
           </div>
         </div>
       </section>

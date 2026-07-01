@@ -1,0 +1,40 @@
+{
+  "name": "desktop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "Nafindo",
+  "license": "ISC",
+  "build": {
+    "appId": "com.buktiin.app",
+    "productName": "Buktiin",
+    "win": {
+      "target": "dir",
+      "icon": "build/icon.ico"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": ["**/*", "!node_modules/.cache"]
+      },
+      {
+        "from": "../app/dist",
+        "to": "frontend"
+      }
+    ]
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^43.0.0",
+    "electron-builder": "^26.15.3"
+  }
+}

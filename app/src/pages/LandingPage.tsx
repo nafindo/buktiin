@@ -1,19 +1,73 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function LandingPage() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const videoId = searchParams.get('v');
+
+  // If a video ID is provided in the URL, render the Customer Promo Player instead
+  if (videoId) {
+    return (
+      <div className="bg-background text-on-surface font-body-md industrial-pattern min-h-screen flex flex-col items-center">
+        {/* Simple Header */}
+        <header className="w-full bg-surface border-b border-ui-divider flex justify-center sticky top-0 z-50">
+          <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
+            <Link to="/" className="flex items-center gap-sm">
+              <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
+            </Link>
+            <Link to="/login" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
+              Mulai Gunakan BUKTIIN
+            </Link>
+          </nav>
+        </header>
+
+        {/* Video Player Section */}
+        <main className="w-full max-w-3xl px-md py-xl flex-1 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md">
+            <span className="material-symbols-outlined text-status-processing text-3xl">verified_user</span>
+          </div>
+          <h1 className="font-headline-lg text-headline-lg mb-sm">Bukti Packing Pesanan Anda</h1>
+          <p className="text-on-surface-variant mb-lg">
+            Penjual Anda menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi dan keamanan pengemasan pesanan Anda.
+          </p>
+
+          {/* Embedded Google Drive Player */}
+          <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative">
+            <iframe 
+              src={`https://drive.google.com/file/d/${videoId}/preview`} 
+              width="100%" 
+              height="100%" 
+              allow="autoplay" 
+              className="absolute inset-0"
+            ></iframe>
+          </div>
+
+          {/* Promo Banner */}
+          <div className="mt-xl bg-primary/10 border-2 border-primary border-dashed rounded-xl p-lg w-full">
+            <h2 className="font-headline-md text-headline-md text-primary mb-xs">Anda juga seorang Penjual Online?</h2>
+            <p className="text-body-md text-on-surface mb-md">Lindungi bisnis e-commerce Anda dari komplain palsu dengan bukti video otomatis.</p>
+            <Link to="/register" className="inline-block bg-primary text-white font-bold px-xl py-md rounded-DEFAULT hover:opacity-90 transition-opacity">
+              Daftar Gratis Sekarang
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background text-on-surface font-body-md industrial-pattern selection:bg-primary-container selection:text-on-primary-container min-h-screen">
       {/* TopNavBar */}
       <header className="fixed top-0 left-0 w-full z-50 bg-surface border-b border-ui-divider flex justify-center">
         <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
-          <div className="flex items-center gap-sm">
+          <Link to="/" className="flex items-center gap-sm">
             <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
-          </div>
+          </Link>
           <div className="hidden md:flex items-center gap-xl">
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#features">Fitur</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#benefits">Manfaat</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#pricing">Harga</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-body-md" href="#">Bantuan</a>
+            <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Fitur</button>
+            <button onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Manfaat</button>
+            <button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Harga</button>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
           </div>
           <div className="flex items-center gap-md">
             <Link to="/login" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
@@ -25,7 +79,7 @@ export default function LandingPage() {
 
       <main className="pt-20">
         {/* Hero Section */}
-        <section className="relative min-h-[819px] flex items-center justify-center overflow-hidden py-xl px-gutter">
+        <section className="relative flex items-center justify-center overflow-hidden py-16 md:py-24 px-gutter min-h-[calc(100vh-80px)]">
           <div className="max-w-container-max w-full grid grid-cols-1 lg:grid-cols-2 gap-xl items-center relative z-10">
             <div className="space-y-md">
               <div className="inline-flex items-center gap-sm bg-primary-container/10 border border-primary-container px-sm py-1">
