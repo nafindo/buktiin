@@ -3,7 +3,11 @@ import {
   getDashboardStats,
   getHistory,
   saveRecording,
-  uploadVideo
+  uploadVideo,
+  checkLimits,
+  getSubAccounts,
+  addSubAccount,
+  deleteSubAccount
 } from '../controllers/apiController';
 import {
   setupIntegration,
@@ -39,8 +43,15 @@ const upload = multer({ storage: storage });
 // Routes
 router.get('/dashboard', getDashboardStats);
 router.get('/history', getHistory);
+// Recordings
+router.post('/check-limits', checkLimits);
 router.post('/recordings', saveRecording);
 router.post('/recordings/upload', upload.single('video'), uploadVideo);
+
+// SubAccounts
+router.get('/subaccounts', getSubAccounts);
+router.post('/subaccounts', addSubAccount);
+router.delete('/subaccounts/:id', deleteSubAccount);
 
 // Integrations
 router.post('/integrations/setup', setupIntegration);

@@ -16,6 +16,7 @@ import ScanHistory from './pages/ScanHistory';
 import StorageManagement from './pages/StorageManagement';
 import ProfileSettings from './pages/ProfileSettings';
 import SelectPlan from './pages/SelectPlan';
+import SubAccounts from './pages/SubAccounts';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboard';
@@ -49,6 +50,7 @@ function App() {
           <Route path="/storage" element={<StorageManagement />} />
           <Route path="/profile" element={<ProfileSettings />} />
           <Route path="/plans" element={<SelectPlan />} />
+          <Route path="/subaccounts" element={<SubAccounts />} />
         </Route>
 
         {/* Admin Routes */}

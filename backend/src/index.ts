@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import apiRoutes from './routes/api';
 import driveRoutes from './routes/drive';
 import { processPendingUploads } from './services/driveService';
+import { cleanupService } from './services/cleanupService';
 
 dotenv.config();
 
@@ -36,4 +37,6 @@ app.listen(port, () => {
   setInterval(() => {
     processPendingUploads();
   }, 60000);
+
+  cleanupService.start();
 });

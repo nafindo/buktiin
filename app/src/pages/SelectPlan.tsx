@@ -8,16 +8,36 @@ declare global {
   }
 }
 
+const planDescriptions: Record<string, string> = {
+  'FREE': 'Trial',
+  'BASIC': 'Seller pemula',
+  'STARTER': 'Seller growing',
+  'PRO': 'Seller established',
+  'BUSINESS': 'Tim/Warehouse',
+  'ENTERPRISE': 'Large ops'
+};
+
+const planDevices: Record<string, string> = {
+  'FREE': '1 Akun (Tidak bisa tambah staf)',
+  'BASIC': '1 Akun (Tidak bisa tambah staf)',
+  'STARTER': 'Maksimal 3 Akun',
+  'PRO': 'Maksimal 10 Akun',
+  'BUSINESS': 'Maksimal 50 Akun',
+  'ENTERPRISE': 'Custom Multi-Akun'
+};
+
 export default function SelectPlan() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
   const [userId, setUserId] = useState('');
+  const [isSubAccount, setIsSubAccount] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlans = async () => {
+      setIsSubAccount(localStorage.getItem('isSubAccount') === 'true');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate('/login');
@@ -26,7 +46,8 @@ export default function SelectPlan() {
       setUserId(session.user.id);
       
       const { data } = await supabase.from('plans').select('*').order('price', { ascending: true });
-      if (data) setPlans(data.filter(p => p.name !== 'FREE'));
+      // Show all plans including FREE at the front, and ENTERPRISE at the back.
+      if (data) setPlans(data);
       setLoading(false);
     };
     fetchPlans();
@@ -113,12 +134,12 @@ export default function SelectPlan() {
         </div>
 
         {/* Pricing Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md items-stretch mt-xl">
+        <div className="flex flex-wrap justify-center gap-md mt-xl">
           {loading ? (
-            <div className="col-span-3 text-center py-xl text-on-surface-variant">Memuat daftar paket...</div>
+            <div className="w-full text-center py-xl text-on-surface-variant">Memuat daftar paket...</div>
           ) : (
             plans.map((plan) => (
-              <div key={plan.id} className={`pricing-card flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-lg' : 'border-ui-divider'} p-md rounded-xl relative overflow-hidden hover:-translate-y-1 transition-transform duration-200`}>
+              <div key={plan.id} className={`pricing-card w-full sm:w-[320px] lg:w-[300px] flex-shrink-0 flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-lg' : 'border-ui-divider'} p-md rounded-xl relative overflow-hidden hover:-translate-y-1 transition-transform duration-200`}>
                 {plan.name === 'STARTER' && (
                   <div className="absolute top-0 right-0">
                     <span className="bg-primary text-white font-label-caps text-[10px] px-3 py-1 rounded-tr-lg rounded-bl-lg">RECOMMENDED</span>
@@ -126,41 +147,75 @@ export default function SelectPlan() {
                 )}
                 <div className="mb-md">
                   <h3 className={`font-label-caps text-label-caps ${plan.name === 'STARTER' ? 'text-primary mt-2' : 'text-on-surface-variant'} mb-xs`}>{plan.name}</h3>
+                  <p className="font-body-sm text-[13px] text-on-surface-variant mb-sm">{planDescriptions[plan.name] || 'Pilihan terbaik untuk bisnis Anda'}</p>
                   <div className="flex items-baseline gap-1">
-                    <span className={`font-headline-md text-headline-md ${plan.name === 'STARTER' ? 'text-on-surface' : ''}`}>Rp</span>
+                    {plan.name !== 'ENTERPRISE' && (
+                      <span className={`font-headline-md text-headline-md ${plan.name === 'STARTER' ? 'text-on-surface' : ''}`}>Rp</span>
+                    )}
                     <span className="font-headline-lg text-headline-lg transition-transform duration-200">
-                      {(isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
+                      {plan.name === 'ENTERPRISE' ? 'Custom' : (isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
                     </span>
-                    <span className="text-on-surface-variant font-code-sm text-code-sm">/{isAnnual ? 'yr' : 'mo'}</span>
+                    {plan.name !== 'ENTERPRISE' && (
+                      <span className="text-on-surface-variant font-code-sm text-code-sm">/{isAnnual ? 'yr' : 'mo'}</span>
+                    )}
                   </div>
                 </div>
                 <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
                   <ul className="space-y-sm">
                     <li className="flex items-center gap-2 font-body-md text-[14px]">
                       <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.storageLimit / 1000}GB Storage</span>
+                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : ((plan.storageLimit || plan.storagelimit) / 1000) + 'GB'} Storage</span>
                     </li>
                     <li className="flex items-center gap-2 font-body-md text-[14px]">
                       <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.orderLimit} Orders/day</span>
+                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : (plan.orderLimit || plan.orderlimit)} Orders/day</span>
                     </li>
                     <li className="flex items-center gap-2 font-body-md text-[14px]">
                       <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.retentionDays} Days Retention</span>
+                      <span>{plan.retentionDays || plan.retentiondays} Days Retention</span>
+                    </li>
+                    <li className="flex items-center gap-2 font-body-md text-[14px]">
+                      <span className="material-symbols-outlined text-status-success text-[18px]">devices</span>
+                      <span>{planDevices[plan.name]}</span>
                     </li>
                   </ul>
                 </div>
-                <button 
-                  onClick={() => handlePay(plan)}
-                  disabled={paying}
-                  className={`mt-xl w-full py-md font-bold rounded-DEFAULT transition-all ${
-                    plan.name === 'STARTER' 
-                      ? 'bg-primary text-white hover:opacity-90 active:scale-95' 
-                      : 'border border-on-surface text-on-surface hover:bg-surface-container'
-                  }`}
-                >
-                  {paying ? 'Memproses...' : `Pilih ${plan.name}`}
-                </button>
+                {isSubAccount ? (
+                  <button 
+                    disabled
+                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all bg-surface-container text-on-surface-variant cursor-not-allowed"
+                  >
+                    Tidak Ada Akses (Akun Staf)
+                  </button>
+                ) : plan.name === 'ENTERPRISE' ? (
+                  <button 
+                    onClick={() => {
+                      alert('Silakan hubungi tim Customer Service kami (0812-XXXX-XXXX) untuk menyesuaikan fasilitas dan harga yang Anda butuhkan.');
+                    }}
+                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all border border-on-surface text-on-surface hover:bg-surface-container"
+                  >
+                    Hubungi Customer Service
+                  </button>
+                ) : plan.name === 'FREE' ? (
+                  <button 
+                    disabled
+                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all bg-surface-container text-on-surface-variant cursor-not-allowed"
+                  >
+                    Paket Saat Ini
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => handlePay(plan)}
+                    disabled={paying}
+                    className={`mt-xl w-full py-md font-bold rounded-DEFAULT transition-all ${
+                      plan.name === 'STARTER' 
+                        ? 'bg-primary text-white hover:opacity-90 active:scale-95' 
+                        : 'border border-on-surface text-on-surface hover:bg-surface-container'
+                    }`}
+                  >
+                    {paying ? 'Memproses...' : `Pilih ${plan.name}`}
+                  </button>
+                )}
               </div>
             ))
           )}

@@ -6,34 +6,44 @@ export default function StorageManagement() {
   const navigate = useNavigate();
   const [totalStorageBytes, setTotalStorageBytes] = useState(0);
   const [planName, setPlanName] = useState('FREE');
-  const [maxStorageMB, setMaxStorageMB] = useState(1000); // Default to Free (1000 MB)
+  const [maxStorageMB, setMaxStorageMB] = useState(5000); // Default to Free (5000 MB)
 
   useEffect(() => {
     const fetchStorage = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
+      // Fetch user plan (Independent from API)
+      try {
+        const { data: subArray } = await supabase
+          .from('subscriptions')
+          .select('status, plans ( name, storagelimit )')
+          .eq('user_id', user.id)
+          .eq('status', 'ACTIVE')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (subArray && subArray.length > 0) {
+          const subData = subArray[0];
+          const planData = Array.isArray(subData.plans) ? subData.plans[0] : subData.plans;
+          if (planData) {
+            setPlanName(planData.name);
+            setMaxStorageMB(planData.storagelimit);
+          }
+        }
+      } catch (err) {
+        console.error('Supabase subscription fetch error:', err);
+      }
+
+      // Fetch storage usage (Independent from Supabase)
       try {
         const res = await fetch(`http://localhost:3001/api/dashboard?userId=${user.id}`);
         const result = await res.json();
         if (result.success && result.data.totalStorageBytes !== undefined) {
           setTotalStorageBytes(result.data.totalStorageBytes);
         }
-        // Fetch user plan
-        const { data: subData } = await supabase
-          .from('subscriptions')
-          .select('status, plans ( name, storageLimit )')
-          .eq('user_id', user.id)
-          .eq('status', 'ACTIVE')
-          .single();
-
-        if (subData && subData.plans) {
-          // @ts-ignore
-          setPlanName(subData.plans.name);
-          // @ts-ignore
-          setMaxStorageMB(subData.plans.storageLimit);
-        }
       } catch (err) {
-        console.error(err);
+        console.error('Backend dashboard fetch error:', err);
       }
     };
     fetchStorage();

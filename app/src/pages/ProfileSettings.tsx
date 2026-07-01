@@ -8,11 +8,26 @@ export default function ProfileSettings() {
   const [planName, setPlanName] = useState('Free Plan');
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
+  
+  const [userProfile, setUserProfile] = useState({ full_name: 'Admin Gudang', phone: '-', avatar_url: '' });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({ full_name: '', phone: '' });
+  const [videoQuality, setVideoQuality] = useState(localStorage.getItem('buktiin_video_quality') || '720p');
+  const [syncShopee, setSyncShopee] = useState(localStorage.getItem('buktiin_sync_shopee') !== 'false');
+  const [syncTokopedia, setSyncTokopedia] = useState(localStorage.getItem('buktiin_sync_tokopedia') !== 'false');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setUserEmail(session.user.email || '');
+        const meta = session.user.user_metadata || {};
+        const profile = {
+          full_name: meta.full_name || 'Admin Gudang',
+          phone: meta.phone || '-',
+          avatar_url: meta.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK'
+        };
+        setUserProfile(profile);
+        setEditForm({ full_name: profile.full_name, phone: profile.phone });
         
         supabase
           .from('subscriptions')
@@ -47,14 +62,39 @@ export default function ProfileSettings() {
     setSelectedCamera(val);
     localStorage.setItem('buktiin_camera_id', val);
   };
+
+  const handleSaveProfile = async () => {
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: editForm.full_name, phone: editForm.phone }
+    });
+    if (error) {
+      alert("Gagal mengupdate profil: " + error.message);
+    } else {
+      setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone }));
+      setShowEditModal(false);
+      alert("Profil berhasil diupdate!");
+    }
+  };
+
+  const handleQualityChange = (quality: string) => {
+    setVideoQuality(quality);
+    localStorage.setItem('buktiin_video_quality', quality);
+  };
+
+  const handleSyncChange = (platform: 'shopee' | 'tokopedia', checked: boolean) => {
+    if (platform === 'shopee') {
+      setSyncShopee(checked);
+      localStorage.setItem('buktiin_sync_shopee', checked.toString());
+    } else {
+      setSyncTokopedia(checked);
+      localStorage.setItem('buktiin_sync_tokopedia', checked.toString());
+    }
+    alert(`Sinkronisasi ${platform} ${checked ? 'diaktifkan' : 'dinonaktifkan'}.`);
+  };
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
-  };
-
-  const handleAction = (msg: string) => {
-    alert(msg);
   };
 
   return (
@@ -71,9 +111,13 @@ export default function ProfileSettings() {
           
           {/* Profile Card */}
           <section className="md:col-span-8 bg-surface-container-lowest border border-ui-divider p-xl rounded-xl flex flex-col md:flex-row gap-xl hover:border-primary transition-colors duration-200">
-            <div className="relative group cursor-pointer w-32 h-32 flex-shrink-0">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary-container shadow-sm">
-                <img className="w-full h-full object-cover" alt="Profile Picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK" />
+            <div className="relative group cursor-pointer w-32 h-32 flex-shrink-0" onClick={() => setShowEditModal(true)}>
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary-container shadow-sm bg-surface-variant flex items-center justify-center">
+                {userProfile.avatar_url ? (
+                  <img className="w-full h-full object-cover" alt="Profile Picture" src={userProfile.avatar_url} />
+                ) : (
+                  <span className="text-4xl text-on-surface-variant font-bold">{userProfile.full_name.charAt(0)}</span>
+                )}
               </div>
               <div className="absolute bottom-0 right-0 bg-primary text-white p-xs rounded-full border-2 border-white shadow-md">
                 <span className="material-symbols-outlined !text-sm">edit</span>
@@ -81,7 +125,7 @@ export default function ProfileSettings() {
             </div>
             <div className="flex-1 space-y-md">
               <div>
-                <h2 className="font-headline-md text-headline-md font-bold">Admin Gudang</h2>
+                <h2 className="font-headline-md text-headline-md font-bold">{userProfile.full_name}</h2>
                 <p className="text-on-surface-variant opacity-80 font-code-sm text-code-sm uppercase tracking-widest">Master Operator • Station 01</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
@@ -96,13 +140,13 @@ export default function ProfileSettings() {
                   <label className="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
                   <div className="flex items-center gap-sm px-md py-sm bg-surface-container-low border border-ui-divider rounded">
                     <span className="material-symbols-outlined text-on-surface-variant !text-lg">call</span>
-                    <span className="font-body-md text-body-md truncate">-</span>
+                    <span className="font-body-md text-body-md truncate">{userProfile.phone}</span>
                   </div>
                 </div>
               </div>
               <div className="pt-md">
                 <button 
-                  onClick={() => handleAction('Fitur Edit Profil akan segera hadir di versi selanjutnya.')}
+                  onClick={() => setShowEditModal(true)}
                   className="px-lg py-sm bg-primary text-white font-bold hover:opacity-90 transition-opacity rounded-DEFAULT border-b-2 border-primary-fixed-dim active:scale-95 duration-150">
                   Update Personal Info
                 </button>
@@ -178,17 +222,17 @@ export default function ProfileSettings() {
               </div>
 
               {/* Video Quality Settings */}
-              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200 opacity-50 cursor-not-allowed">
+              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
                 <div className="flex items-center gap-sm text-primary">
                   <span className="material-symbols-outlined">settings_overscan</span>
-                  <span className="font-label-caps text-label-caps">Video Quality (WIP)</span>
+                  <span className="font-label-caps text-label-caps">Video Quality</span>
                 </div>
                 <div className="grid grid-cols-2 gap-sm">
-                  <button disabled className="px-md py-md border-2 border-ui-divider text-on-surface-variant transition-all rounded-DEFAULT flex flex-col items-center gap-xs">
+                  <button onClick={() => handleQualityChange('720p')} className={`px-md py-md border-2 transition-all rounded-DEFAULT flex flex-col items-center gap-xs ${videoQuality === '720p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant hover:border-primary/50'}`}>
                     <span className="font-bold">720p</span>
                     <span className="text-[10px] font-code-sm">STANDARD</span>
                   </button>
-                  <button disabled className="px-md py-md border-2 border-primary bg-primary-container text-on-primary-container transition-all rounded-DEFAULT flex flex-col items-center gap-xs">
+                  <button onClick={() => handleQualityChange('1080p')} className={`px-md py-md border-2 transition-all rounded-DEFAULT flex flex-col items-center gap-xs ${videoQuality === '1080p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant hover:border-primary/50'}`}>
                     <span className="font-bold">1080p</span>
                     <span className="text-[10px] font-code-sm">HIGH-DEF</span>
                   </button>
@@ -208,14 +252,14 @@ export default function ProfileSettings() {
                       <div className="w-8 h-8 rounded-sm bg-orange-100 flex items-center justify-center text-orange-600 font-bold">S</div>
                       <span className="font-body-md text-body-md">Shopee Integration</span>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" />
+                    <input type="checkbox" checked={syncShopee} onChange={e => handleSyncChange('shopee', e.target.checked)} className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary cursor-pointer" />
                   </label>
                   <label className="flex items-center justify-between p-sm border border-ui-divider hover:bg-surface-container-low transition-colors cursor-pointer group rounded">
                     <div className="flex items-center gap-md">
                       <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center text-green-600 font-bold">T</div>
                       <span className="font-body-md text-body-md">Tokopedia Sync</span>
                     </div>
-                    <input type="checkbox" defaultChecked className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" />
+                    <input type="checkbox" checked={syncTokopedia} onChange={e => handleSyncChange('tokopedia', e.target.checked)} className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary cursor-pointer" />
                   </label>
                 </div>
               </div>
@@ -253,6 +297,53 @@ export default function ProfileSettings() {
           </a>
         </div>
       </footer>
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex flex-col items-center justify-center p-lg backdrop-blur-sm">
+          <div className="w-full max-w-md bg-surface rounded-xl overflow-hidden shadow-xl border border-ui-divider flex flex-col p-lg gap-md">
+            <h3 className="font-headline-md font-bold text-on-surface">Update Personal Info</h3>
+            
+            <div className="space-y-md mt-sm">
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
+                <input 
+                  type="text"
+                  value={editForm.full_name}
+                  onChange={e => setEditForm(prev => ({ ...prev, full_name: e.target.value }))}
+                  className="w-full px-md py-sm bg-surface-container-lowest border border-ui-divider rounded-DEFAULT focus:border-primary outline-none transition-colors font-body-md text-on-surface"
+                  placeholder="Masukkan nama lengkap"
+                />
+              </div>
+              
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
+                <input 
+                  type="text"
+                  value={editForm.phone}
+                  onChange={e => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
+                  className="w-full px-md py-sm bg-surface-container-lowest border border-ui-divider rounded-DEFAULT focus:border-primary outline-none transition-colors font-body-md text-on-surface"
+                  placeholder="Contoh: 081234567890"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-sm mt-md">
+              <button 
+                onClick={() => setShowEditModal(false)}
+                className="flex-1 py-sm bg-surface-container border border-ui-divider text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleSaveProfile}
+                className="flex-1 py-sm bg-primary text-white font-bold rounded-DEFAULT hover:opacity-90 transition-opacity"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

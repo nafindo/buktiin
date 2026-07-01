@@ -57,3 +57,20 @@ model DriveIntegration {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String   @unique // 1 active device per user initially (Free plan)
+  deviceId  String   // The unique ID from frontend localStorage
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubAccount {
+  id        String   @id @default(uuid())
+  childId   String   @unique // Supabase user ID of the staff
+  parentId  String   // Supabase user ID of the main account
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

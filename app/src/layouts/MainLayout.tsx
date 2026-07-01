@@ -9,6 +9,18 @@ export default function MainLayout() {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState('');
   const [planName, setPlanName] = useState('No Plan');
+  const [isSubAccount, setIsSubAccount] = useState(false);
+  const [deviceLimitsError, setDeviceLimitsError] = useState(false);
+
+  // Initialize or get deviceId
+  const getDeviceId = () => {
+    let id = localStorage.getItem('buktiin_device_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('buktiin_device_id', id);
+    }
+    return id;
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -38,10 +50,84 @@ export default function MainLayout() {
       }
       
       setLoading(false);
+
+      // Perform initial check-limits
+      const deviceId = getDeviceId();
+      try {
+        const response = await fetch('http://localhost:3001/api/check-limits', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: session.user.id, deviceId, forceLogin: true, accessToken: session.access_token })
+        });
+        const result = await response.json();
+        if (result.success) {
+          setIsSubAccount(result.data.isSubAccount);
+          localStorage.setItem('isSubAccount', result.data.isSubAccount ? 'true' : 'false');
+        } else if (!result.success && result.message === 'DEVICE_LIMIT_REACHED') {
+          // This should technically not happen with forceLogin=true, but we handle just in case
+          setDeviceLimitsError(true);
+        }
+      } catch (err) {
+        console.error('Failed to check limits:', err);
+      }
     };
     
     checkAuth();
   }, [navigate, path]);
+
+  // Periodic Heartbeat
+  useEffect(() => {
+    let intervalId: number;
+    const checkHeartbeat = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      
+      const deviceId = getDeviceId();
+      try {
+        const response = await fetch('http://localhost:3001/api/check-limits', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: session.user.id, deviceId, forceLogin: false, accessToken: session.access_token }) // false so we get kicked if someone else logged in
+        });
+        const result = await response.json();
+        
+        if (response.status === 403 && result.message === 'DEVICE_LIMIT_REACHED') {
+          // Kick user
+          setDeviceLimitsError(true);
+          await supabase.auth.signOut();
+        }
+      } catch (err) {
+        // ignore network errors
+      }
+    };
+
+    if (!loading && !deviceLimitsError) {
+      intervalId = window.setInterval(checkHeartbeat, 15000); // Check every 15 seconds
+    }
+    return () => {
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, [loading, deviceLimitsError]);
+
+  if (deviceLimitsError) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-surface text-on-surface">
+        <div className="flex flex-col items-center gap-4 bg-surface-container-low p-xl rounded-xl border-2 border-error text-center max-w-md">
+          <span className="material-symbols-outlined text-6xl text-error mb-2">devices</span>
+          <p className="font-headline-md font-bold text-error">Sesi Habis</p>
+          <p className="font-body-md text-on-surface-variant">
+            Akun Anda (Paket Free) hanya mengizinkan 1 perangkat. Seseorang baru saja login dengan akun Anda di perangkat lain, sehingga Anda otomatis di-logout.
+          </p>
+          <button 
+            onClick={() => navigate('/login')}
+            className="mt-lg w-full bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all"
+          >
+            Kembali ke Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -58,8 +144,8 @@ export default function MainLayout() {
     <div className="flex min-h-screen bg-surface font-body-md text-on-surface">
       {/* SideNavBar */}
       <aside className="hidden md:flex flex-col h-screen w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-ui-divider dark:border-outline-variant p-md space-y-sm shrink-0">
-        <div className="flex items-center gap-2 mb-xl">
-          <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>inventory_2</span>
+        <div className="flex items-center gap-3 mb-xl">
+          <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
           <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
         </div>
         
@@ -92,6 +178,12 @@ export default function MainLayout() {
             <span className="material-symbols-outlined">inventory_2</span>
             <span className="font-label-caps text-label-caps">Storage</span>
           </Link>
+          {!isSubAccount && planName !== 'FREE Plan' && planName !== 'BASIC Plan' && (
+            <Link to="/subaccounts" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/subaccounts' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
+              <span className="material-symbols-outlined">group</span>
+              <span className="font-label-caps text-label-caps">Manajemen Staf</span>
+            </Link>
+          )}
         </nav>
         
         <div className="mt-auto border-t border-ui-divider pt-sm pb-md">
@@ -118,7 +210,10 @@ export default function MainLayout() {
         <header className="flex justify-between items-center w-full px-lg py-md border-b border-ui-divider bg-surface dark:bg-inverse-surface z-10 shrink-0">
           <div className="flex items-center gap-md md:hidden">
             <span className="material-symbols-outlined text-primary">menu</span>
-            <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
+            <div className="flex items-center gap-2">
+              <img src="/logo.jpg" alt="Buktiin Logo" className="w-7 h-7 rounded shadow-sm" />
+              <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
+            </div>
           </div>
           <div className="hidden md:block">
             <h1 className="font-headline-md text-headline-md font-bold text-on-surface">BUKTIIN App</h1>

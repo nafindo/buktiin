@@ -5,18 +5,17 @@ import { MarketplaceFactory } from '../services/marketplace/MarketplaceFactory';
 // Setup Marketplace API Key
 export const setupIntegration = async (req: Request, res: Response) => {
   try {
-    const { marketplaceName, appId, appSecret } = req.body;
+    const { marketplaceName, appId, appSecret, userId } = req.body;
     
-    let user = await prisma.user.findFirst();
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'Missing userId' });
     }
 
     // Upsert the integration
     const integration = await prisma.marketplaceIntegration.upsert({
       where: {
         userId_marketplaceName: {
-          userId: user.id,
+          userId: userId as string,
           marketplaceName: marketplaceName.toUpperCase()
         }
       },
@@ -26,7 +25,7 @@ export const setupIntegration = async (req: Request, res: Response) => {
         isActive: true
       },
       create: {
-        userId: user.id,
+        userId: userId as string,
         marketplaceName: marketplaceName.toUpperCase(),
         appId,
         appSecret,
@@ -44,20 +43,15 @@ export const setupIntegration = async (req: Request, res: Response) => {
 // Sync Order by Resi
 export const syncOrderByResi = async (req: Request, res: Response) => {
   try {
-    const { resi, marketplace } = req.query;
-    if (!resi || !marketplace) {
-      return res.status(400).json({ success: false, message: 'Missing resi or marketplace' });
-    }
-
-    let user = await prisma.user.findFirst();
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    const { resi, marketplace, userId } = req.query;
+    if (!resi || !marketplace || !userId) {
+      return res.status(400).json({ success: false, message: 'Missing resi, marketplace, or userId' });
     }
 
     const integration = await prisma.marketplaceIntegration.findUnique({
       where: {
         userId_marketplaceName: {
-          userId: user.id,
+          userId: userId as string,
           marketplaceName: (marketplace as string).toUpperCase()
         }
       }

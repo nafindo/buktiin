@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder --dir && xcopy /E /I /Y ..\\backend\\node_modules dist\\win-unpacked\\resources\\backend\\node_modules && node -e \"setTimeout(()=>{}, 5000)\" && electron-builder --prepackaged dist\\win-unpacked"
   },
   "keywords": [],
   "author": "Nafindo",
@@ -14,8 +14,8 @@
     "appId": "com.buktiin.app",
     "productName": "Buktiin",
     "win": {
-      "target": "dir",
-      "icon": "build/icon.ico"
+      "target": "nsis",
+      "icon": "build/icon.png"
     },
     "directories": {
       "output": "dist"
@@ -24,7 +24,7 @@
       {
         "from": "../backend",
         "to": "backend",
-        "filter": ["**/*", "!node_modules/.cache"]
+        "filter": ["**/*", "node_modules/**/*"]
       },
       {
         "from": "../app/dist",

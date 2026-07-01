@@ -18,6 +18,7 @@ export default function LiveScanner() {
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
   const [actualResolution, setActualResolution] = useState('1920x1080');
   const [cameraReady, setCameraReady] = useState(false);
+  const [limitPopup, setLimitPopup] = useState<{show: boolean, title: string, message: string}>({show: false, title: '', message: ''});
 
   // Get user session
   useEffect(() => {
@@ -196,6 +197,7 @@ export default function LiveScanner() {
         setScanState('SCANNED');
         
         try {
+          const { data: { session } } = await supabase.auth.getSession();
           const response = await fetch('http://localhost:3001/api/recordings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -204,12 +206,34 @@ export default function LiveScanner() {
               customer: 'Pelanggan Walk-in',
               marketplace: 'OFFLINE',
               items: [{ name: 'Barang Campuran', quantity: 1 }],
-              userId: userId
+              userId: userId,
+              accessToken: session?.access_token
             })
           });
           const result = await response.json();
           if (result.success) {
             setCurrentRecordingId(result.data.id);
+          } else if (response.status === 403) {
+            // Handle quota reached
+            if (result.message === 'LIMIT_EXCEEDED_ORDER') {
+              setLimitPopup({
+                show: true,
+                title: 'Batas Upload Harian Tercapai',
+                message: `Anda telah mencapai batas maksimal upload paket Anda (${result.limit} order/hari). Harap tunggu besok, atau upgrade paket Anda sekarang.`
+              });
+            } else if (result.message === 'LIMIT_EXCEEDED_STORAGE') {
+              setLimitPopup({
+                show: true,
+                title: 'Penyimpanan Penuh',
+                message: `Ruang penyimpanan Anda telah habis (Batas: ${result.limit}MB). Silakan upgrade paket Anda untuk kapasitas lebih besar.`
+              });
+            } else {
+              alert('Terjadi kesalahan limit: ' + result.message);
+            }
+            setScanState('IDLE');
+          } else {
+            console.error('Failed to create recording in DB:', result.message);
+            setScanState('IDLE');
           }
         } catch (error) {
           console.error('Failed to create recording in DB:', error);
@@ -368,6 +392,37 @@ export default function LiveScanner() {
           </div>
         </div>
       </section>
+
+      {/* Quota Limit Popup */}
+      {limitPopup.show && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-md">
+          <div className="bg-surface rounded-2xl max-w-md w-full p-xl border border-error/20 shadow-2xl animate-[fade-in_0.2s_ease-out]">
+            <div className="flex flex-col items-center text-center mb-lg">
+              <span className="material-symbols-outlined text-6xl text-error mb-sm">error</span>
+              <h2 className="font-headline-md text-headline-md font-bold text-on-surface">{limitPopup.title}</h2>
+              <p className="font-body-md text-on-surface-variant mt-sm">{limitPopup.message}</p>
+            </div>
+            <div className="flex flex-col gap-sm">
+              <button 
+                onClick={() => {
+                  setLimitPopup({show: false, title: '', message: ''});
+                  // Here we could navigate to Pricing using window.location or navigate if imported
+                  window.location.hash = '#/plans';
+                }}
+                className="w-full bg-primary text-white font-bold py-md rounded-lg hover:bg-on-primary-container transition-all"
+              >
+                Upgrade Paket Sekarang
+              </button>
+              <button 
+                onClick={() => setLimitPopup({show: false, title: '', message: ''})}
+                className="w-full bg-surface-variant text-on-surface-variant font-bold py-md rounded-lg hover:bg-outline/20 transition-all"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Real-time Status Bar (Sticky Bottom) */}
       <footer className="bg-surface-container-lowest border-t border-ui-divider px-lg py-md flex flex-col md:flex-row items-center justify-between gap-md mt-auto sticky bottom-0">

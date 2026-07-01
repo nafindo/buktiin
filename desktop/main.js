@@ -47,11 +47,18 @@ function startBackend() {
   
   console.log(`Starting backend in: ${backendDir}`);
   
-  // We use npx.cmd tsx in dev, but in prod we should ideally run node. 
-  // For this quick prototype, running npm.cmd run start works if node_modules are intact.
-  backendProcess = spawn('npm.cmd', ['run', 'start'], {
+  const indexJsPath = path.join(backendDir, 'dist', 'index.js');
+  const env = { ...process.env, ELECTRON_RUN_AS_NODE: '1' };
+  
+  const cmd = isPackaged ? process.execPath : 'npm.cmd';
+  const args = isPackaged ? [indexJsPath] : ['run', 'start'];
+  
+  console.log(`Starting backend with: ${cmd} ${args.join(' ')}`);
+
+  backendProcess = spawn(cmd, args, {
     cwd: backendDir,
-    shell: true
+    shell: true,
+    env: isPackaged ? env : undefined
   });
 
   backendProcess.stdout.on('data', (data) => {

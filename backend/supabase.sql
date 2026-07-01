@@ -11,10 +11,12 @@ CREATE TABLE public.plans (
 -- Insert data paket awal
 INSERT INTO public.plans (name, price, storageLimit, orderLimit, retentionDays)
 VALUES 
-  ('FREE', 0, 1000, 50, 3),
-  ('BASIC', 49000, 5000, 500, 7),
-  ('STARTER', 99000, 15000, 2500, 14),
-  ('PRO', 199000, 50000, 10000, 30);
+  ('FREE', 0, 5000, 10, 7),
+  ('BASIC', 49000, 20000, 30, 7),
+  ('STARTER', 99000, 50000, 100, 14),
+  ('PRO', 199000, 150000, 300, 30),
+  ('BUSINESS', 399000, 500000, 1000, 30),
+  ('ENTERPRISE', 0, 10000000, 10000, 30);
 
 -- Buat tabel Subscription
 CREATE TABLE public.subscriptions (

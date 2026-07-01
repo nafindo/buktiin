@@ -14,7 +14,8 @@ export default function LandingPage() {
         {/* Simple Header */}
         <header className="w-full bg-surface border-b border-ui-divider flex justify-center sticky top-0 z-50">
           <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
-            <Link to="/" className="flex items-center gap-sm">
+            <Link to="/" className="flex items-center gap-2">
+              <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
               <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
             </Link>
             <Link to="/login" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
@@ -85,7 +86,8 @@ export default function LandingPage() {
       {/* TopNavBar */}
       <header className="fixed top-0 left-0 w-full z-50 bg-surface border-b border-ui-divider flex justify-center">
         <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
-          <Link to="/" className="flex items-center gap-sm">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
             <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
           </Link>
           <div className="hidden md:flex items-center gap-xl">

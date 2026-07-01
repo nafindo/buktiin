@@ -8,6 +8,8 @@ export default function ScanHistory() {
   const [endDate, setEndDate] = useState('');
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   const handlePlayVideo = (videoPath: string) => {
     const filename = videoPath.split(/[\/\\]/).pop();
@@ -26,7 +28,7 @@ export default function ScanHistory() {
         alert('Gagal menyalin tautan. URL: ' + shareUrl);
       });
     } else {
-      alert('Video masih dalam proses sinkronisasi ke Cloud Storage (Google Drive).\nMohon tunggu beberapa saat agar link Share tersedia.');
+      alert('Video masih dalam proses sinkronisasi ke Enterprise Cloud Storage.\nMohon tunggu beberapa saat agar link Share tersedia.');
     }
   };
 
@@ -67,6 +69,14 @@ export default function ScanHistory() {
      return matchSearch && matchDate;
   });
 
+  const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE) || 1;
+  const paginatedHistory = filteredHistory.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, startDate, endDate]);
+
   const handleExportCSV = () => {
      if (filteredHistory.length === 0) return alert('Tidak ada data untuk diexport');
      const header = ['Tanggal', 'Resi', 'Customer', 'Status'];
@@ -93,25 +103,25 @@ export default function ScanHistory() {
         {/* Bento Search & Filter Panel */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-md mb-lg">
           {/* Search Section */}
-          <div className="lg:col-span-6 bg-surface-container-lowest border border-ui-divider p-md flex flex-col justify-center">
+          <div className="lg:col-span-6 flex flex-col justify-center">
             <label className="font-label-caps text-code-sm text-on-surface-variant mb-xs">Cari Resi atau Nama Customer</label>
             <div className="relative group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
-              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-md py-sm bg-surface border border-ui-divider focus:border-2 focus:border-primary outline-none font-body-md transition-all" placeholder="Contoh: RESI-012345678" type="text"/>
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pl-10 pr-md py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-2 focus:border-primary outline-none font-body-md transition-all" placeholder="Contoh: RESI-012345678" type="text"/>
             </div>
           </div>
           {/* Date Range Filter */}
-          <div className="lg:col-span-4 bg-surface-container-lowest border border-ui-divider p-md flex flex-col justify-center">
+          <div className="lg:col-span-4 flex flex-col justify-center">
             <label className="font-label-caps text-code-sm text-on-surface-variant mb-xs">Filter Rentang Tanggal</label>
-            <div className="flex items-center gap-2">
-              <input value={startDate} onChange={e => setStartDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider focus:border-primary outline-none font-code-sm" type="date"/>
-              <span className="text-on-surface-variant">to</span>
-              <input value={endDate} onChange={e => setEndDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider focus:border-primary outline-none font-code-sm" type="date"/>
+            <div className="flex items-center gap-sm">
+              <input value={startDate} onChange={e => setStartDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
+              <span className="text-on-surface-variant text-sm font-bold">to</span>
+              <input value={endDate} onChange={e => setEndDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
             </div>
           </div>
           {/* Export CTA */}
-          <div className="lg:col-span-2 bg-surface-container-lowest border border-ui-divider p-md flex flex-col items-stretch justify-center">
-            <button onClick={handleExportCSV} className="w-full h-full bg-on-surface text-surface py-md font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-on-surface-variant transition-colors active:scale-95 duration-150">
+          <div className="lg:col-span-2 flex flex-col items-stretch justify-end">
+            <button onClick={handleExportCSV} className="w-full py-sm bg-primary/10 text-primary border border-primary hover:bg-primary hover:text-white rounded-DEFAULT font-label-caps text-label-caps flex items-center justify-center gap-2 transition-all active:scale-95 duration-150">
               <span className="material-symbols-outlined text-md">download</span>
               Export CSV
             </button>
@@ -133,12 +143,12 @@ export default function ScanHistory() {
               </tr>
             </thead>
             <tbody className="divide-y divide-ui-divider">
-              {filteredHistory.length === 0 ? (
+              {paginatedHistory.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-md text-on-surface-variant font-code-sm">Belum ada riwayat rekaman</td>
                 </tr>
               ) : (
-                filteredHistory.map((record, index) => (
+                paginatedHistory.map((record, index) => (
                   <tr key={record.id || index} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-md py-md font-code-sm whitespace-nowrap">{new Date(record.createdAt).toLocaleString()}</td>
                     <td className="px-md py-md font-code-sm font-bold whitespace-nowrap">{record.resi}</td>
@@ -180,17 +190,54 @@ export default function ScanHistory() {
           
           {/* Pagination Utility */}
           <div className="px-lg py-md bg-surface-container border-t border-ui-divider flex flex-col md:flex-row justify-between items-center gap-md">
-            <p className="font-code-sm text-code-sm text-on-surface-variant">Showing 1-{filteredHistory.length} of {filteredHistory.length} results</p>
+            <p className="font-code-sm text-code-sm text-on-surface-variant">
+              Showing {filteredHistory.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredHistory.length)} of {filteredHistory.length} results
+            </p>
             <div className="flex items-center gap-xs">
-              <button className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95">
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span className="material-symbols-outlined">chevron_left</span>
               </button>
-              <button className="w-10 h-10 flex items-center justify-center border border-primary bg-primary text-white font-label-caps text-label-caps shadow-sm">1</button>
-              <button className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">2</button>
-              <button className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">3</button>
-              <span className="px-2 text-on-surface-variant">...</span>
-              <button className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high font-label-caps text-label-caps">48</button>
-              <button className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95">
+              
+              {/* Show up to 3 pages around current page */}
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const pageNum = i + 1;
+                // Simple logic: show first, last, current, and +/- 1 from current
+                if (
+                  pageNum === 1 || 
+                  pageNum === totalPages || 
+                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                ) {
+                  return (
+                    <button 
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-10 h-10 flex items-center justify-center border transition-colors font-label-caps text-label-caps ${
+                        currentPage === pageNum 
+                          ? 'border-primary bg-primary text-white shadow-sm' 
+                          : 'border-ui-divider bg-surface hover:bg-surface-container-high'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                }
+                
+                // Show ellipsis if there's a gap
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return <span key={pageNum} className="px-2 text-on-surface-variant">...</span>;
+                }
+                
+                return null;
+              })}
+
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="w-10 h-10 flex items-center justify-center border border-ui-divider bg-surface hover:bg-surface-container-high transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span className="material-symbols-outlined">chevron_right</span>
               </button>
             </div>

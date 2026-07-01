@@ -25,12 +25,16 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<any>({
     total: 0,
     completed: 0,
     process: 0,
     failed: 0,
-    videoCount: 0
+    pendingUploads: 0,
+    videoCount: 0,
+    orderTrends: { labels: [], data: [] },
+    marketplaceDistribution: { labels: [], data: [] },
+    storageMetrics: { totalVideosThisMonth: 0, totalSizeThisMonth: 0, avgSizeBytes: 0 }
   });
 
   useEffect(() => {
@@ -52,11 +56,11 @@ export default function Dashboard() {
     fetchStats();
   }, []);
   const lineChartData = {
-    labels: ['01 May', '05 May', '10 May', '15 May', '20 May', '25 May', '30 May'],
+    labels: stats.orderTrends?.labels || ['-'],
     datasets: [
       {
         label: 'Daily Orders',
-        data: [150, 185, 160, 240, 280, 210, 320],
+        data: stats.orderTrends?.data || [0],
         borderColor: '#006e2a',
         backgroundColor: 'rgba(0, 110, 42, 0.05)',
         fill: true,
@@ -87,12 +91,20 @@ export default function Dashboard() {
     },
   };
 
+  // Dynamic colors for marketplace distribution
+  const mpColors = stats.marketplaceDistribution?.labels.map((lbl: string) => {
+    if (lbl === 'SHOPEE') return '#ee4d2d';
+    if (lbl === 'TOKOPEDIA') return '#00aa5b';
+    if (lbl === 'TIKTOK') return '#000000';
+    return '#005ac1'; // default color
+  }) || [];
+
   const pieChartData = {
-    labels: ['Shopee', 'Tokopedia', 'TikTok'],
+    labels: stats.marketplaceDistribution?.labels || ['No Data'],
     datasets: [
       {
-        data: [60, 25, 15],
-        backgroundColor: ['#006e2a', '#a04100', '#005ac1'],
+        data: stats.marketplaceDistribution?.data?.length ? stats.marketplaceDistribution.data : [100],
+        backgroundColor: mpColors.length ? mpColors : ['#e0e0e0'],
         borderWidth: 0,
         hoverOffset: 10,
       },
@@ -143,14 +155,14 @@ export default function Dashboard() {
         {/* Proses */}
         <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg flex flex-col justify-between border-b-4 border-b-status-processing rounded-xl">
           <div className="flex justify-between items-start mb-md">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Proses</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Proses / Pending</span>
             <div className="bg-surface-container p-sm rounded">
-              <span className="material-symbols-outlined text-status-processing" style={{ fontVariationSettings: "'FILL' 1" }}>pending</span>
+              <span className="material-symbols-outlined text-status-processing" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">{stats.process}</p>
-            <p className="font-code-sm text-code-sm text-on-surface-variant mt-xs">Menunggu rekaman</p>
+            <p className="font-display-lg text-4xl font-bold">{stats.pendingUploads}</p>
+            <p className="font-code-sm text-code-sm text-on-surface-variant mt-xs">Menunggu video diupload</p>
           </div>
         </div>
 
@@ -195,42 +207,41 @@ export default function Dashboard() {
             <Doughnut data={pieChartData} options={pieChartOptions as any} />
           </div>
           <div className="grid grid-cols-3 gap-xs mt-md">
-            <div className="text-center">
-              <p className="font-label-caps text-[10px] text-on-surface-variant">SHOPEE</p>
-              <p className="font-bold text-primary">60%</p>
-            </div>
-            <div className="text-center">
-              <p className="font-label-caps text-[10px] text-on-surface-variant">TOKOPEDIA</p>
-              <p className="font-bold text-secondary">25%</p>
-            </div>
-            <div className="text-center">
-              <p className="font-label-caps text-[10px] text-on-surface-variant">TIKTOK</p>
-              <p className="font-bold text-tertiary">15%</p>
-            </div>
+            {stats.marketplaceDistribution?.labels.map((lbl: string, i: number) => {
+              const total = stats.marketplaceDistribution.data.reduce((a: number, b: number) => a + b, 0);
+              const val = stats.marketplaceDistribution.data[i];
+              const pct = total ? Math.round((val / total) * 100) : 0;
+              return (
+                <div key={lbl} className="text-center">
+                  <p className="font-label-caps text-[10px] text-on-surface-variant truncate">{lbl}</p>
+                  <p className="font-bold text-primary">{pct}%</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Revenue & Activity Section */}
+      {/* Storage & Security Section */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-lg flex-1">
-        {/* Revenue Stats */}
+        {/* Storage Stats */}
         <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-5 relative overflow-hidden rounded-xl">
           <div className="relative z-10">
-            <h3 className="font-headline-md text-headline-md font-bold mb-md">Revenue Statistics</h3>
+            <h3 className="font-headline-md text-headline-md font-bold mb-md">Storage & Efficiency</h3>
             <p className="font-label-caps text-label-caps text-on-surface-variant mb-xl">LAST 30 DAYS</p>
             <div className="space-y-lg">
               <div>
-                <p className="font-body-md text-on-surface-variant">Total Managed Value</p>
-                <p className="font-display-lg text-3xl font-bold text-primary">Rp 124.500.000</p>
+                <p className="font-body-md text-on-surface-variant">Total Videos Uploaded</p>
+                <p className="font-display-lg text-3xl font-bold text-primary">{stats.storageMetrics?.totalVideosThisMonth || 0} Videos</p>
               </div>
               <div className="grid grid-cols-2 gap-md">
                 <div className="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-status-success">
-                  <p className="font-code-sm text-code-sm text-on-surface-variant">Net Profit</p>
-                  <p className="font-bold">Rp 18.2M</p>
+                  <p className="font-code-sm text-code-sm text-on-surface-variant">Total Size</p>
+                  <p className="font-bold">{((stats.storageMetrics?.totalSizeThisMonth || 0) / (1024*1024)).toFixed(2)} MB</p>
                 </div>
                 <div className="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-primary">
-                  <p className="font-code-sm text-code-sm text-on-surface-variant">Tax Ded.</p>
-                  <p className="font-bold">Rp 1.4M</p>
+                  <p className="font-code-sm text-code-sm text-on-surface-variant">Avg Size/Vid</p>
+                  <p className="font-bold">{((stats.storageMetrics?.avgSizeBytes || 0) / (1024*1024)).toFixed(2)} MB</p>
                 </div>
               </div>
             </div>
@@ -239,50 +250,42 @@ export default function Dashboard() {
           <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: "radial-gradient(#006e2a 0.5px, transparent 0.5px)", backgroundSize: "16px 16px" }}></div>
         </div>
 
-        {/* Recent Activity */}
+        {/* Security & Compliance */}
         <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-7 flex flex-col rounded-xl">
           <div className="flex justify-between items-center mb-lg">
-            <h3 className="font-headline-md text-headline-md font-bold">Recent Activity</h3>
-            <button className="font-label-caps text-label-caps text-primary hover:underline">[ VIEW ALL ]</button>
+            <h3 className="font-headline-md text-headline-md font-bold">Security & Compliance</h3>
           </div>
+          <p className="text-body-md text-on-surface-variant mb-md">
+            Sistem BUKTIIN dilengkapi dengan infrastruktur standar enterprise untuk memastikan keamanan data dan video bukti toko Anda 100% terjaga.
+          </p>
           <div className="space-y-md flex-1">
-            {/* Activity Item 1 */}
-            <div className="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
-              <div className="w-10 h-10 bg-status-success/10 rounded-full flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-status-success">videocam</span>
+            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
+                <span className="material-symbols-outlined text-primary text-[24px]">lock</span>
               </div>
-              <div className="flex-1">
-                <p className="font-body-md text-on-surface font-semibold">Video proof uploaded for #ORD-8921</p>
-                <p className="font-code-sm text-code-sm text-on-surface-variant">2 minutes ago • Packing Station 01</p>
-              </div>
-              <div className="text-right">
-                <span className="px-md py-xs bg-status-success text-on-primary font-label-caps text-[10px] rounded-full">SELESAI</span>
+              <div>
+                <p className="font-bold text-on-surface">AES-256 Cloud Encryption</p>
+                <p className="text-sm text-on-surface-variant">Semua video dan data transaksi dienkripsi menggunakan standar militer.</p>
               </div>
             </div>
-            {/* Activity Item 2 */}
-            <div className="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
-              <div className="w-10 h-10 bg-tertiary/10 rounded-full flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-tertiary">workspace_premium</span>
+            
+            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
+                <span className="material-symbols-outlined text-status-success text-[24px]">verified_user</span>
               </div>
-              <div className="flex-1">
-                <p className="font-body-md text-on-surface font-semibold">Warehouse "Store A" upgraded to Enterprise</p>
-                <p className="font-code-sm text-code-sm text-on-surface-variant">15 minutes ago • Admin Action</p>
-              </div>
-              <div className="text-right">
-                <span className="px-md py-xs border border-tertiary text-tertiary font-label-caps text-[10px] rounded-full">UPGRADE</span>
+              <div>
+                <p className="font-bold text-on-surface">OAuth 2.0 Secure Authorization</p>
+                <p className="text-sm text-on-surface-variant">Sistem terhubung langsung ke jaringan Secure Cloud Server Enterprise (No-Knowledge Protocol).</p>
               </div>
             </div>
-            {/* Activity Item 3 */}
-            <div className="flex items-center gap-md p-md hover:bg-surface-variant transition-colors rounded-DEFAULT border border-transparent hover:border-ui-divider">
-              <div className="w-10 h-10 bg-status-processing/10 rounded-full flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-status-processing">sync</span>
+            
+            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
+                <span className="material-symbols-outlined text-secondary text-[24px]">dns</span>
               </div>
-              <div className="flex-1">
-                <p className="font-body-md text-on-surface font-semibold">API Syncing with Shopee Warehouse</p>
-                <p className="font-code-sm text-code-sm text-on-surface-variant">45 minutes ago • System</p>
-              </div>
-              <div className="text-right">
-                <span className="px-md py-xs bg-status-processing text-on-primary font-label-caps text-[10px] rounded-full">PROSES</span>
+              <div>
+                <p className="font-bold text-on-surface">Tier 3 Data Center (99.9% Uptime)</p>
+                <p className="text-sm text-on-surface-variant">Infrastruktur server andal memastikan API tidak pernah <i>down</i> saat sedang merekam.</p>
               </div>
             </div>
           </div>

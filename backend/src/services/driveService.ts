@@ -47,7 +47,8 @@ export const processPendingUploads = async () => {
         const payload = {
            fileName: fileName,
            mimeType: 'video/webm',
-           fileData: base64Data
+           fileData: base64Data,
+           folderId: '1RzzoTN6TAWdjzchTclguyaExAbuM3q0O'
         };
 
         const response = await fetch(GAS_URL, {

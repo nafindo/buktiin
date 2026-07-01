@@ -50,8 +50,8 @@ export default function LoginRegister() {
             <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB5fO_W_UzmtUje6OHgiFtjgbqrdCWmGsbtRiYFlyd-T4PTIVNbM4OKO4vEApf6TP_ix6sK_YV4KwheDgMYMIyIctfxntLZyKpOJ1asXra31nT8HOopGB2MO18XMjifuAYrXSHkU_jBQj7mfBSpDGZlfOUfyQ4g2qoRAYGmhMd8frcZhGsQghdgIUWmdnE7bsLk21yqFMoHPbBgX6ozdJcE6Z0Kgy_y1wNg1Ycnjn1iWX3ya0ADcHLE')" }}></div>
           </div>
           <div className="relative z-10">
-            <div className="flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary-fixed">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>package_2</span>
+            <div className="flex items-center gap-3 font-headline-md text-headline-md font-bold text-primary-fixed">
+              <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
               BUKTIIN
             </div>
             <div className="mt-md">
@@ -80,8 +80,8 @@ export default function LoginRegister() {
         <div className="flex-grow flex items-center justify-center p-md md:p-xl">
           <div className="w-full max-w-md space-y-xl">
             <div className="space-y-sm">
-              <div className="md:hidden flex items-center gap-2 font-headline-md text-headline-md font-bold text-primary mb-lg">
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>package_2</span>
+              <div className="md:hidden flex items-center gap-3 font-headline-md text-headline-md font-bold text-primary mb-lg">
+                <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
                 BUKTIIN
               </div>
               <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg">Mulai Sekarang</h2>
