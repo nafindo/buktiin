@@ -21,35 +21,86 @@ export default function LandingPage() {
           </nav>
         </header>
 
-        {/* Video Player Section */}
-        <main className="w-full max-w-3xl px-md py-xl flex-1 flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md">
-            <span className="material-symbols-outlined text-status-processing text-3xl">verified_user</span>
-          </div>
-          <h1 className="font-headline-lg text-headline-lg mb-sm">Bukti Packing Pesanan Anda</h1>
-          <p className="text-on-surface-variant mb-lg">
-            Penjual Anda menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi dan keamanan pengemasan pesanan Anda.
-          </p>
+        {/* Main Grid Layout */}
+        <main className="w-full max-w-[1400px] px-lg py-xl flex-1 flex flex-col lg:flex-row gap-xl items-stretch justify-center mx-auto">
+          
+          {/* Left Sidebar: Masalah */}
+          <aside className="w-full lg:w-1/4 flex flex-col gap-md">
+            <div className="bg-error/10 border-2 border-error/20 rounded-xl p-lg h-full">
+              <div className="flex items-center gap-sm mb-md">
+                <span className="material-symbols-outlined text-error text-3xl">warning</span>
+                <h2 className="font-headline-sm text-headline-sm text-error font-bold leading-tight">Lelah dengan Komplain Palsu?</h2>
+              </div>
+              <p className="text-body-md text-on-surface-variant mb-md">Sebagai seller online, Anda mungkin sering mengalami:</p>
+              <ul className="space-y-sm text-body-sm text-on-surface">
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
+                  <span>Pembeli nakal mengklaim barang kurang/rusak tanpa bukti.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
+                  <span>Rugi finansial akibat retur fiktif yang disetujui marketplace.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
+                  <span>Reputasi toko turun drastis karena ulasan bintang 1.</span>
+                </li>
+              </ul>
+            </div>
+          </aside>
 
-          {/* Embedded Google Drive Player */}
-          <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative">
-            <iframe 
-              src={`https://drive.google.com/file/d/${videoId}/preview`} 
-              width="100%" 
-              height="100%" 
-              allow="autoplay" 
-              className="absolute inset-0"
-            ></iframe>
-          </div>
+          {/* Center: Video Player */}
+          <section className="w-full lg:w-2/4 flex flex-col items-center text-center">
+            <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md">
+              <span className="material-symbols-outlined text-status-processing text-3xl">verified_user</span>
+            </div>
+            <h1 className="font-headline-lg text-headline-lg mb-sm">Bukti Packing Pesanan Anda</h1>
+            <p className="text-on-surface-variant mb-lg">
+              Penjual Anda menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi dan keamanan pengemasan pesanan Anda.
+            </p>
 
-          {/* Promo Banner */}
-          <div className="mt-xl bg-primary/10 border-2 border-primary border-dashed rounded-xl p-lg w-full">
-            <h2 className="font-headline-md text-headline-md text-primary mb-xs">Anda juga seorang Penjual Online?</h2>
-            <p className="text-body-md text-on-surface mb-md">Lindungi bisnis e-commerce Anda dari komplain palsu dengan bukti video otomatis.</p>
-            <Link to="/register" className="inline-block bg-primary text-white font-bold px-xl py-md rounded-DEFAULT hover:opacity-90 transition-opacity">
-              Daftar Gratis Sekarang
-            </Link>
-          </div>
+            <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative">
+              <iframe 
+                src={`https://drive.google.com/file/d/${videoId}/preview`} 
+                width="100%" 
+                height="100%" 
+                allow="autoplay" 
+                className="absolute inset-0"
+              ></iframe>
+            </div>
+
+            <div className="mt-xl bg-primary/5 border border-primary/20 rounded-xl p-md w-full">
+              <p className="text-body-md text-primary font-bold">Pelanggan merasa aman, seller pun tenang berbisnis.</p>
+            </div>
+          </section>
+
+          {/* Right Sidebar: Kelebihan */}
+          <aside className="w-full lg:w-1/4 flex flex-col gap-md">
+            <div className="bg-primary/10 border-2 border-primary/20 rounded-xl p-lg h-full flex flex-col">
+              <div className="flex items-center gap-sm mb-md">
+                <span className="material-symbols-outlined text-primary text-3xl">shield</span>
+                <h2 className="font-headline-sm text-headline-sm text-primary font-bold leading-tight">Lindungi Toko Anda Sekarang!</h2>
+              </div>
+              <p className="text-body-md text-on-surface-variant mb-md">Gunakan BUKTIIN dan nikmati kelebihannya:</p>
+              <ul className="space-y-sm text-body-sm text-on-surface mb-lg flex-1">
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
+                  <span>Otomatisasi rekam packing cukup dengan *scan barcode*.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
+                  <span>Video langsung tersimpan di *Cloud* tanpa menghabiskan memori HP/PC.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
+                  <span>Sangat efektif untuk memenangkan banding / *dispute* di marketplace.</span>
+                </li>
+              </ul>
+              <Link to="/register" className="w-full bg-primary text-white text-center font-bold px-md py-sm rounded-DEFAULT hover:opacity-90 transition-opacity mt-auto">
+                Daftar Gratis BUKTIIN
+              </Link>
+            </div>
+          </aside>
         </main>
       </div>
     );
