@@ -1,4 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
+import imgProblem from '../assets/images/promo-problem.png';
+import imgSolution from '../assets/images/promo-solution.png';
 
 export default function LandingPage() {
   const location = useLocation();
@@ -26,78 +28,50 @@ export default function LandingPage() {
           
           {/* Left Sidebar: Masalah */}
           <aside className="w-full lg:w-1/4 flex flex-col gap-md">
-            <div className="bg-error/10 border-2 border-error/20 rounded-xl p-lg h-full">
-              <div className="flex items-center gap-sm mb-md">
-                <span className="material-symbols-outlined text-error text-3xl">warning</span>
-                <h2 className="font-headline-sm text-headline-sm text-error font-bold leading-tight">Lelah dengan Komplain Palsu?</h2>
-              </div>
-              <p className="text-body-md text-on-surface-variant mb-md">Sebagai seller online, Anda mungkin sering mengalami:</p>
-              <ul className="space-y-sm text-body-sm text-on-surface">
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
-                  <span>Pembeli nakal mengklaim barang kurang/rusak tanpa bukti.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
-                  <span>Rugi finansial akibat retur fiktif yang disetujui marketplace.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-error text-sm mt-0.5">close</span>
-                  <span>Reputasi toko turun drastis karena ulasan bintang 1.</span>
-                </li>
-              </ul>
+            <div className="bg-error/10 border-2 border-error/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
+              <img src={imgProblem} alt="Seller Stress" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
+              <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight mb-2">Sering Kena Retur Fiktif?</h2>
+              <p className="text-body-md text-on-surface-variant font-medium leading-snug">
+                Pembeli nakal klaim barang kurang atau rusak? Anda bisa <strong>rugi uang & reputasi toko anjlok!</strong>
+              </p>
             </div>
           </aside>
 
           {/* Center: Video Player */}
           <section className="w-full lg:w-2/4 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md">
+            <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md shadow-lg shadow-status-processing/20">
               <span className="material-symbols-outlined text-status-processing text-3xl">verified_user</span>
             </div>
-            <h1 className="font-headline-lg text-headline-lg mb-sm">Bukti Packing Pesanan Anda</h1>
-            <p className="text-on-surface-variant mb-lg">
-              Penjual Anda menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi dan keamanan pengemasan pesanan Anda.
+            <h1 className="font-headline-lg text-headline-lg mb-sm font-extrabold">Bukti Packing Pesanan Anda</h1>
+            <p className="text-on-surface-variant mb-lg font-medium">
+              Penjual menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi pengemasan pesanan Anda.
             </p>
 
-            <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative">
+            <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative group">
               <iframe 
                 src={`https://drive.google.com/file/d/${videoId}/preview`} 
                 width="100%" 
                 height="100%" 
                 allow="autoplay" 
-                className="absolute inset-0"
+                className="absolute inset-0 z-10"
               ></iframe>
             </div>
 
-            <div className="mt-xl bg-primary/5 border border-primary/20 rounded-xl p-md w-full">
-              <p className="text-body-md text-primary font-bold">Pelanggan merasa aman, seller pun tenang berbisnis.</p>
+            <div className="mt-xl bg-primary-container border-2 border-primary/30 rounded-xl p-md w-full shadow-md">
+              <p className="text-body-md text-on-primary-container font-bold">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
             </div>
           </section>
 
           {/* Right Sidebar: Kelebihan */}
           <aside className="w-full lg:w-1/4 flex flex-col gap-md">
-            <div className="bg-primary/10 border-2 border-primary/20 rounded-xl p-lg h-full flex flex-col">
-              <div className="flex items-center gap-sm mb-md">
-                <span className="material-symbols-outlined text-primary text-3xl">shield</span>
-                <h2 className="font-headline-sm text-headline-sm text-primary font-bold leading-tight">Lindungi Toko Anda Sekarang!</h2>
-              </div>
-              <p className="text-body-md text-on-surface-variant mb-md">Gunakan BUKTIIN dan nikmati kelebihannya:</p>
-              <ul className="space-y-sm text-body-sm text-on-surface mb-lg flex-1">
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
-                  <span>Otomatisasi rekam packing cukup dengan *scan barcode*.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
-                  <span>Video langsung tersimpan di *Cloud* tanpa menghabiskan memori HP/PC.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">check_circle</span>
-                  <span>Sangat efektif untuk memenangkan banding / *dispute* di marketplace.</span>
-                </li>
-              </ul>
-              <Link to="/register" className="w-full bg-primary text-white text-center font-bold px-md py-sm rounded-DEFAULT hover:opacity-90 transition-opacity mt-auto">
-                Daftar Gratis BUKTIIN
+            <div className="bg-primary/10 border-2 border-primary/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
+              <img src={imgSolution} alt="Seller Happy" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
+              <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight mb-2">Menangkan Tiap Sengketa!</h2>
+              <p className="text-body-md text-on-surface-variant font-medium leading-snug mb-md flex-1">
+                Scan barcode, video otomatis direkam & tersimpan di <strong>Cloud</strong>. Bukti kuat 100% aman tanpa kuras memori!
+              </p>
+              <Link to="/register" className="w-full bg-primary text-white font-extrabold px-md py-md rounded-xl hover:opacity-90 hover:shadow-lg transition-all mt-auto animate-pulse-slow">
+                Daftar BUKTIIN (Gratis)
               </Link>
             </div>
           </aside>

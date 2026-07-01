@@ -20,6 +20,14 @@ export const getDashboardStats = async (req: Request, res: Response) => {
       where: { userId, status: 'FAILED' }
     });
 
+    const totalStorageAgg = await prisma.recording.aggregate({
+      where: { userId },
+      _sum: {
+        videoSize: true
+      }
+    });
+    const totalStorageBytes = totalStorageAgg._sum.videoSize || 0;
+
     res.json({
       success: true,
       data: {
@@ -28,6 +36,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
         process: processRecordings,
         failed: failedRecordings,
         videoCount: completedRecordings,
+        totalStorageBytes: totalStorageBytes,
       }
     });
   } catch (error) {
