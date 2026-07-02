@@ -9,6 +9,7 @@ export default function LoginRegister() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -42,6 +43,7 @@ export default function LoginRegister() {
           options: {
             data: {
               full_name: fullName,
+              company_name: companyName,
               phone: phone
             }
           }
@@ -114,15 +116,29 @@ export default function LoginRegister() {
               {!isLogin && (
                 <>
                   <div className="space-y-xs">
-                    <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP / TOKO</label>
+                    <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
+                    <div className="relative group">
+                      <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+                      <input 
+                        className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                        placeholder="Contoh: Budi Santoso" 
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-xs">
+                    <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA TOKO / PERUSAHAAN</label>
                     <div className="relative group">
                       <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">store</span>
                       <input 
                         className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
-                        placeholder="Contoh: Budi (Gudang Jakarta)" 
+                        placeholder="Contoh: Gudang Elektronik" 
                         type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
                         required={!isLogin}
                       />
                     </div>

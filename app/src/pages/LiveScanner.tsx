@@ -30,7 +30,9 @@ export default function LiveScanner() {
       if (session) {
         setUserId(session.user.id);
         const { data: userMetadata } = await supabase.auth.getUser();
-        if (userMetadata?.user?.user_metadata?.full_name) {
+        if (userMetadata?.user?.user_metadata?.company_name) {
+          setCompanyName(userMetadata.user.user_metadata.company_name);
+        } else if (userMetadata?.user?.user_metadata?.full_name) {
           setCompanyName(userMetadata.user.user_metadata.full_name);
         }
       }
