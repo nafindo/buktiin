@@ -8,6 +8,8 @@ export default function LoginRegister() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -26,7 +28,7 @@ export default function LoginRegister() {
     setErrorMsg('');
 
     try {
-      if (!termsAccepted) {
+      if (!isLogin && !termsAccepted) {
         throw new Error("Anda wajib menyetujui Syarat & Ketentuan serta Kebijakan Privasi.");
       }
 
@@ -34,7 +36,16 @@ export default function LoginRegister() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              phone: phone
+            }
+          }
+        });
         if (error) throw error;
         // Auto sign in or show message
       }
@@ -100,6 +111,39 @@ export default function LoginRegister() {
                 </div>
               )}
               
+              {!isLogin && (
+                <>
+                  <div className="space-y-xs">
+                    <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP / TOKO</label>
+                    <div className="relative group">
+                      <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">store</span>
+                      <input 
+                        className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                        placeholder="Contoh: Budi (Gudang Jakarta)" 
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-xs">
+                    <label className="font-label-caps text-label-caps text-on-surface-variant block">NO. TELEPON</label>
+                    <div className="relative group">
+                      <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">call</span>
+                      <input 
+                        className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                        placeholder="0812..." 
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required={!isLogin}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+              
               <div className="space-y-xs">
                 <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
                 <div className="relative group">
@@ -131,18 +175,21 @@ export default function LoginRegister() {
                   </button>
                 </div>
               </div>
-              <div className="flex items-start gap-sm py-sm">
-                <input 
-                  className="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" 
-                  id="terms" 
-                  type="checkbox"
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                />
-                <label className="font-body-md text-on-surface-variant leading-tight" htmlFor="terms">
-                  Saya menyetujui <Link to="/terms" className="text-primary font-bold hover:underline" target="_blank">Syarat & Ketentuan</Link> serta <Link to="/privacy" className="text-primary font-bold hover:underline" target="_blank">Kebijakan Privasi</Link> BUKTIIN.
-                </label>
-              </div>
+              
+              {!isLogin && (
+                <div className="flex items-start gap-sm py-sm">
+                  <input 
+                    className="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" 
+                    id="terms" 
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                  />
+                  <label className="font-body-md text-on-surface-variant leading-tight" htmlFor="terms">
+                    Saya menyetujui <Link to="/terms" className="text-primary font-bold hover:underline" target="_blank">Syarat & Ketentuan</Link> serta <Link to="/privacy" className="text-primary font-bold hover:underline" target="_blank">Kebijakan Privasi</Link> BUKTIIN.
+                  </label>
+                </div>
+              )}
               <button 
                 disabled={loading}
                 className="w-full py-md bg-primary-container hover:bg-primary text-on-primary font-bold rounded-DEFAULT flex items-center justify-center gap-sm transition-all active:scale-95 group relative overflow-hidden" 
