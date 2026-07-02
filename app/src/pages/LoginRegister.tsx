@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import logoImg from '../assets/images/logo.jpg';
 
 export default function LoginRegister() {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ export default function LoginRegister() {
           </div>
           <div className="relative z-10">
             <div className="flex items-center gap-3 font-headline-md text-headline-md font-bold text-primary-fixed">
-              <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+              <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
               BUKTIIN
             </div>
             <div className="mt-md">
@@ -81,7 +82,7 @@ export default function LoginRegister() {
           <div className="w-full max-w-md space-y-xl">
             <div className="space-y-sm">
               <div className="md:hidden flex items-center gap-3 font-headline-md text-headline-md font-bold text-primary mb-lg">
-                <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+                <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
                 BUKTIIN
               </div>
               <h2 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg">Mulai Sekarang</h2>

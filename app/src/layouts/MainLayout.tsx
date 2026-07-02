@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import logoImg from '../assets/images/logo.jpg';
 
 export default function MainLayout() {
   const location = useLocation();
@@ -145,7 +146,7 @@ export default function MainLayout() {
       {/* SideNavBar */}
       <aside className="hidden md:flex flex-col h-screen w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-ui-divider dark:border-outline-variant p-md space-y-sm shrink-0">
         <div className="flex items-center gap-3 mb-xl">
-          <img src="/logo.jpg" alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+          <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
           <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
         </div>
         
@@ -211,7 +212,7 @@ export default function MainLayout() {
           <div className="flex items-center gap-md md:hidden">
             <span className="material-symbols-outlined text-primary">menu</span>
             <div className="flex items-center gap-2">
-              <img src="/logo.jpg" alt="Buktiin Logo" className="w-7 h-7 rounded shadow-sm" />
+              <img src={logoImg} alt="Buktiin Logo" className="w-7 h-7 rounded shadow-sm" />
               <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
             </div>
           </div>
