@@ -101,9 +101,9 @@ export default function ScanHistory() {
       {/* Page Body */}
       <section className="p-lg flex-1">
         {/* Bento Search & Filter Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md mb-lg">
+        <div className="flex flex-col md:flex-row items-end gap-md mb-lg">
           {/* Search Section */}
-          <div className="lg:col-span-6 flex flex-col justify-center">
+          <div className="w-full md:flex-1 flex flex-col justify-center">
             <label className="font-label-caps text-code-sm text-on-surface-variant mb-xs">Cari Resi atau Nama Customer</label>
             <div className="relative group">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
@@ -111,19 +111,19 @@ export default function ScanHistory() {
             </div>
           </div>
           {/* Date Range Filter */}
-          <div className="lg:col-span-4 flex flex-col justify-center">
+          <div className="w-full md:w-auto flex flex-col justify-center">
             <label className="font-label-caps text-code-sm text-on-surface-variant mb-xs">Filter Rentang Tanggal</label>
             <div className="flex items-center gap-sm">
-              <input value={startDate} onChange={e => setStartDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
+              <input value={startDate} onChange={e => setStartDate(e.target.value)} className="w-32 md:w-auto px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
               <span className="text-on-surface-variant text-sm font-bold">to</span>
-              <input value={endDate} onChange={e => setEndDate(e.target.value)} className="flex-1 px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
+              <input value={endDate} onChange={e => setEndDate(e.target.value)} className="w-32 md:w-auto px-sm py-sm bg-surface border border-ui-divider rounded-DEFAULT focus:border-primary outline-none font-code-sm" type="date"/>
             </div>
           </div>
           {/* Export CTA */}
-          <div className="lg:col-span-2 flex flex-col items-stretch justify-end">
-            <button onClick={handleExportCSV} className="w-full py-sm bg-primary/10 text-primary border border-primary hover:bg-primary hover:text-white rounded-DEFAULT font-label-caps text-label-caps flex items-center justify-center gap-2 transition-all active:scale-95 duration-150">
+          <div className="w-full md:w-auto flex flex-col items-stretch justify-end">
+            <button onClick={handleExportCSV} className="w-full md:w-32 py-sm bg-primary/10 text-primary border border-primary hover:bg-primary hover:text-white rounded-DEFAULT font-label-caps text-label-caps flex items-center justify-center gap-2 transition-all active:scale-95 duration-150">
               <span className="material-symbols-outlined text-md">download</span>
-              Export CSV
+              Export
             </button>
           </div>
         </div>

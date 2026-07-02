@@ -11,7 +11,7 @@ export default function ProfileSettings() {
   
   const [userProfile, setUserProfile] = useState({ full_name: 'Admin Gudang', phone: '-', avatar_url: '' });
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editForm, setEditForm] = useState({ full_name: '', phone: '' });
+  const [editForm, setEditForm] = useState({ full_name: '', phone: '', avatar_url: '' });
   const [videoQuality, setVideoQuality] = useState(localStorage.getItem('buktiin_video_quality') || '720p');
   const [syncShopee, setSyncShopee] = useState(localStorage.getItem('buktiin_sync_shopee') !== 'false');
   const [syncTokopedia, setSyncTokopedia] = useState(localStorage.getItem('buktiin_sync_tokopedia') !== 'false');
@@ -27,7 +27,7 @@ export default function ProfileSettings() {
           avatar_url: meta.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK'
         };
         setUserProfile(profile);
-        setEditForm({ full_name: profile.full_name, phone: profile.phone });
+        setEditForm({ full_name: profile.full_name, phone: profile.phone, avatar_url: profile.avatar_url });
         
         supabase
           .from('subscriptions')
@@ -63,14 +63,37 @@ export default function ProfileSettings() {
     localStorage.setItem('buktiin_camera_id', val);
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 250;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setEditForm(prev => ({ ...prev, avatar_url: dataUrl }));
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSaveProfile = async () => {
     const { error } = await supabase.auth.updateUser({
-      data: { full_name: editForm.full_name, phone: editForm.phone }
+      data: { full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url }
     });
     if (error) {
       alert("Gagal mengupdate profil: " + error.message);
     } else {
-      setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone }));
+      setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url }));
       setShowEditModal(false);
       alert("Profil berhasil diupdate!");
     }
@@ -304,6 +327,20 @@ export default function ProfileSettings() {
             <h3 className="font-headline-md font-bold text-on-surface">Update Personal Info</h3>
             
             <div className="space-y-md mt-sm">
+              <div className="flex flex-col items-center gap-sm mb-md">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-surface-variant border-2 border-primary flex items-center justify-center">
+                  {editForm.avatar_url ? (
+                    <img src={editForm.avatar_url} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-4xl text-on-surface-variant">person</span>
+                  )}
+                </div>
+                <label className="cursor-pointer bg-surface-container border border-ui-divider px-md py-xs rounded text-sm hover:bg-primary-container hover:text-on-primary-container transition-colors font-bold">
+                  Upload Foto
+                  <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
+                </label>
+              </div>
+
               <div className="space-y-xs">
                 <label className="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
                 <input 
