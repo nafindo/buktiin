@@ -8,6 +8,8 @@ import LandingPage from './pages/LandingPage';
 import LoginRegister from './pages/LoginRegister';
 import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // App Pages
 import Dashboard from './pages/Dashboard';
@@ -41,6 +43,10 @@ function App() {
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
+
+        {/* Public Routes without topnav (Legal Pages) */}
+        <Route path="/terms" element={<TermsAndConditions />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         {/* Main App Routes (Logged in User) */}
         <Route element={<MainLayout />}>

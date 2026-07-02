@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import logoImg from '../assets/images/logo.jpg';
 
@@ -10,6 +10,7 @@ export default function LoginRegister() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -25,6 +26,10 @@ export default function LoginRegister() {
     setErrorMsg('');
 
     try {
+      if (!termsAccepted) {
+        throw new Error("Anda wajib menyetujui Syarat & Ketentuan serta Kebijakan Privasi.");
+      }
+
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
@@ -95,43 +100,18 @@ export default function LoginRegister() {
                 </div>
               )}
               
-              {!isLogin && (
-                <div className="space-y-xs">
-                  <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA LENGKAP</label>
-                  <div className="relative group">
-                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
-                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Masukkan nama lengkap" type="text"/>
-                  </div>
-                </div>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <div className="space-y-xs">
-                  <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
-                  <div className="relative group">
-                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
-                    <input 
-                      className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
-                      placeholder="email@toko.com" 
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-xs">
-                  <label className="font-label-caps text-label-caps text-on-surface-variant block">NO. TELEPON</label>
-                  <div className="relative group">
-                    <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">call</span>
-                    <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="0812..." type="tel"/>
-                  </div>
-                </div>
-              </div>
               <div className="space-y-xs">
-                <label className="font-label-caps text-label-caps text-on-surface-variant block">NAMA TOKO / GUDANG</label>
+                <label className="font-label-caps text-label-caps text-on-surface-variant block">EMAIL</label>
                 <div className="relative group">
-                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">warehouse</span>
-                  <input className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" placeholder="Contoh: Gudang Utama Jakarta" type="text"/>
+                  <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+                  <input 
+                    className="w-full pl-[48px] pr-md py-md bg-surface border border-ui-divider rounded-DEFAULT focus:ring-0 focus:border-primary focus:border-2 transition-all font-body-md outline-none" 
+                    placeholder="email@toko.com" 
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
               <div className="space-y-xs">
@@ -152,9 +132,15 @@ export default function LoginRegister() {
                 </div>
               </div>
               <div className="flex items-start gap-sm py-sm">
-                <input className="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" id="terms" type="checkbox"/>
+                <input 
+                  className="mt-1 w-4 h-4 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary" 
+                  id="terms" 
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                />
                 <label className="font-body-md text-on-surface-variant leading-tight" htmlFor="terms">
-                  Saya menyetujui <a className="text-primary font-bold hover:underline" href="#">Syarat & Ketentuan</a> serta <a className="text-primary font-bold hover:underline" href="#">Kebijakan Privasi</a> BUKTIIN.
+                  Saya menyetujui <Link to="/terms" className="text-primary font-bold hover:underline" target="_blank">Syarat & Ketentuan</Link> serta <Link to="/privacy" className="text-primary font-bold hover:underline" target="_blank">Kebijakan Privasi</Link> BUKTIIN.
                 </label>
               </div>
               <button 
