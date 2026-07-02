@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { BrowserMultiFormatReader } from '@zxing/library';
+import logoImg from '../assets/images/logo.jpg';
 
 export default function LiveScanner() {
   const [scanState, setScanState] = useState<'IDLE' | 'SCANNED' | 'RECORDING' | 'SAVING'>('IDLE');
@@ -8,8 +9,11 @@ export default function LiveScanner() {
   const [currentResi, setCurrentResi] = useState<string>('');
   const [userId, setUserId] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [companyName, setCompanyName] = useState('Pelanggan');
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const logoImageRef = useRef<HTMLImageElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
@@ -22,9 +26,21 @@ export default function LiveScanner() {
 
   // Get user session
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setUserId(session.user.id);
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session) {
+        setUserId(session.user.id);
+        const { data: userMetadata } = await supabase.auth.getUser();
+        if (userMetadata?.user?.user_metadata?.full_name) {
+          setCompanyName(userMetadata.user.user_metadata.full_name);
+        }
+      }
     });
+
+    const img = new Image();
+    img.src = logoImg;
+    img.onload = () => {
+      logoImageRef.current = img;
+    };
   }, []);
 
   // Init Camera
@@ -132,6 +148,58 @@ export default function LiveScanner() {
       if (timerRef.current) window.clearInterval(timerRef.current);
     };
   }, [scanState]);
+
+  // Canvas Rendering Loop for Watermarks
+  useEffect(() => {
+    let animationFrameId: number;
+    const renderLoop = () => {
+      if (scanState === 'RECORDING' && videoRef.current && canvasRef.current) {
+        const ctx = canvasRef.current.getContext('2d');
+        if (ctx) {
+          const w = canvasRef.current.width;
+          const h = canvasRef.current.height;
+          
+          // Draw webcam feed
+          ctx.drawImage(videoRef.current, 0, 0, w, h);
+          
+          // Timestamp & Company Name (Bottom Left)
+          const now = new Date();
+          const timestamp = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+          const textBottom = `${companyName} - ${timestamp}`;
+          
+          ctx.font = "bold 20px 'Inter', sans-serif";
+          const textBottomWidth = ctx.measureText(textBottom).width;
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.fillRect(15, h - 45, textBottomWidth + 20, 35);
+          ctx.fillStyle = "white";
+          ctx.fillText(textBottom, 25, h - 20);
+
+          // Logo & Text (Top Right)
+          const textTop = "BUKTIIN";
+          ctx.font = "bold 24px 'Inter', sans-serif";
+          const textTopWidth = ctx.measureText(textTop).width;
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          // Box for text + logo
+          ctx.fillRect(w - textTopWidth - 80, 15, textTopWidth + 70, 40);
+          
+          if (logoImageRef.current) {
+             ctx.drawImage(logoImageRef.current, w - textTopWidth - 75, 20, 30, 30);
+          }
+          ctx.fillStyle = "white";
+          ctx.fillText(textTop, w - textTopWidth - 35, 43);
+        }
+      }
+      animationFrameId = requestAnimationFrame(renderLoop);
+    };
+
+    if (scanState === 'RECORDING') {
+      renderLoop();
+    }
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
+  }, [scanState, companyName]);
 
   // Format time MM:SS
   const formatTime = (seconds: number) => {
@@ -241,9 +309,17 @@ export default function LiveScanner() {
         }
       } else if (scanState === 'SCANNED') {
         // Start Recording
-        if (streamRef.current) {
+        if (streamRef.current && canvasRef.current) {
           chunksRef.current = [];
-          mediaRecorderRef.current = new MediaRecorder(streamRef.current, { mimeType: 'video/webm' });
+          
+          const canvasStream = canvasRef.current.captureStream(30);
+          const quality = localStorage.getItem('buktiin_video_quality') || '720p';
+          const videoBitsPerSecond = quality === '1080p' ? 1200000 : (quality === '480p' ? 400000 : 800000);
+
+          mediaRecorderRef.current = new MediaRecorder(canvasStream, { 
+            mimeType: 'video/webm',
+            videoBitsPerSecond
+          });
           
           mediaRecorderRef.current.ondataavailable = (e) => {
             if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -285,6 +361,8 @@ export default function LiveScanner() {
               muted 
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${scanState === 'IDLE' ? 'opacity-40' : 'opacity-100'}`}
             />
+            {/* Hidden Canvas for Watermark Processing */}
+            <canvas ref={canvasRef} width={1280} height={720} className="hidden" />
             
             {scanState === 'IDLE' && (
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
