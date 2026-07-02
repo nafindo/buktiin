@@ -150,7 +150,7 @@ export default function ScanHistory() {
               ) : (
                 paginatedHistory.map((record, index) => (
                   <tr key={record.id || index} className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-md py-md font-code-sm whitespace-nowrap">{new Date(record.createdAt).toLocaleString()}</td>
+                    <td className="px-md py-md font-code-sm whitespace-nowrap">{new Date(record.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}</td>
                     <td className="px-md py-md font-code-sm font-bold whitespace-nowrap">{record.resi}</td>
                     <td className="px-md py-md font-body-md whitespace-nowrap">{record.customer || '-'}</td>
                     <td className="px-md py-md font-body-md min-w-[200px]">
@@ -180,6 +180,11 @@ export default function ScanHistory() {
                       )}
                     </td>
                     <td className="px-md py-md text-right whitespace-nowrap">
+                      {record.videoPath && (
+                        <a href={`http://localhost:3001${record.videoPath}`} download className="text-primary font-code-sm opacity-80 hover:opacity-100 hover:underline mr-md">
+                          [ Download ]
+                        </a>
+                      )}
                       <button onClick={() => setSelectedRecord(record)} className="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
                     </td>
                   </tr>

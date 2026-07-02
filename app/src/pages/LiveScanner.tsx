@@ -167,28 +167,33 @@ export default function LiveScanner() {
           // Timestamp & Company Name (Bottom Left)
           const now = new Date();
           const timestamp = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
-          const textBottom = `${companyName} - ${timestamp}`;
           
-          ctx.font = "bold 20px 'Inter', sans-serif";
-          const textBottomWidth = ctx.measureText(textBottom).width;
-          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-          ctx.fillRect(15, h - 45, textBottomWidth + 20, 35);
+          ctx.font = "bold 24px 'Inter', sans-serif";
           ctx.fillStyle = "white";
-          ctx.fillText(textBottom, 25, h - 20);
+          ctx.shadowColor = "rgba(0,0,0,0.8)";
+          ctx.shadowBlur = 4;
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+
+          // Nama Perusahaan di atas (Bold)
+          ctx.fillText(companyName, 20, h - 50);
+          
+          // Tanggal di bawah (Normal)
+          ctx.font = "20px 'Inter', sans-serif";
+          ctx.fillText(timestamp, 20, h - 20);
 
           // Logo & Text (Top Right)
           const textTop = "BUKTIIN";
           ctx.font = "bold 24px 'Inter', sans-serif";
           const textTopWidth = ctx.measureText(textTop).width;
-          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-          // Box for text + logo
-          ctx.fillRect(w - textTopWidth - 80, 15, textTopWidth + 70, 40);
           
           if (logoImageRef.current) {
-             ctx.drawImage(logoImageRef.current, w - textTopWidth - 75, 20, 30, 30);
+             ctx.drawImage(logoImageRef.current, w - textTopWidth - 65, 20, 30, 30);
           }
-          ctx.fillStyle = "white";
-          ctx.fillText(textTop, w - textTopWidth - 35, 43);
+          ctx.fillText(textTop, w - textTopWidth - 25, 43);
+          
+          // Reset shadow
+          ctx.shadowColor = "transparent";
         }
       }
       animationFrameId = requestAnimationFrame(renderLoop);
@@ -408,16 +413,20 @@ export default function LiveScanner() {
           
           <div className="flex flex-col sm:flex-row gap-md items-stretch h-14">
             {scanState === 'SCANNED' && (
-              <button className="flex-1 bg-surface-container-highest border-2 border-primary text-primary font-bold py-md px-xl rounded-lg hover:bg-primary-container/20 transition-all flex items-center justify-center gap-md animate-[pulse_2s_infinite]">
+              <button 
+                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))}
+                className="flex-1 bg-surface-container-highest border-2 border-primary text-primary font-bold py-md px-xl rounded-lg hover:bg-primary-container/20 transition-all flex items-center justify-center gap-md animate-[pulse_2s_infinite]">
                 <span className="material-symbols-outlined">videocam</span>
-                <span className="font-headline-md text-[18px]">Mulai Rekam (Tekan Enter)</span>
+                <span className="font-headline-md text-[18px]">Mulai Rekam (Tekan Enter atau Klik)</span>
               </button>
             )}
 
             {scanState === 'RECORDING' && (
-              <button className="flex-1 bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all shadow-lg flex items-center justify-center gap-md">
+              <button 
+                onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))}
+                className="flex-1 bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all shadow-lg flex items-center justify-center gap-md">
                 <span className="material-symbols-outlined">check_circle</span>
-                <span className="font-headline-md text-[18px]">Selesai Packing (Tekan Enter)</span>
+                <span className="font-headline-md text-[18px]">Selesai Packing (Tekan Enter atau Klik)</span>
               </button>
             )}
             
