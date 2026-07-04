@@ -28,47 +28,47 @@ export default function LandingPage() {
         </header>
 
         {/* Main Grid Layout */}
-        <main className="w-full max-w-[1400px] px-lg py-xl flex-1 flex flex-col lg:flex-row gap-xl items-stretch justify-center mx-auto">
+        <main className="w-full max-w-[1400px] px-2 md:px-lg py-4 md:py-xl flex-1 flex flex-row gap-2 md:gap-xl items-stretch justify-center mx-auto overflow-hidden">
           
           {/* Left Sidebar: Masalah */}
-          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
-            <div className="relative bg-error/10 border-2 border-error/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
+          <aside className="w-[25%] lg:w-[15%] flex flex-col gap-1 md:gap-md">
+            <div className="relative bg-error/10 border border-error/20 rounded-lg md:rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-1 md:p-3 min-h-[180px] md:min-h-[400px]">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
                 <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
-                <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-1 md:px-2 py-1 md:py-3 rounded md:rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="text-[9px] md:text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
               </div>
 
               {/* Permasalahan Seller (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto space-y-3 border border-error/20 shadow-lg">
-                <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
-                  <span className="text-xs font-bold text-on-surface leading-snug">Klaim barang kurang/rusak tanpa bukti</span>
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-1 md:p-3 rounded md:rounded-lg mt-auto space-y-1 md:space-y-3 border border-error/20 shadow-lg">
+                <div className="flex items-start gap-1 text-left">
+                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
+                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Klaim barang kurang/rusak tanpa bukti</span>
                 </div>
-                <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
-                  <span className="text-xs font-bold text-on-surface leading-snug">Rugi uang & barang melayang</span>
+                <div className="flex items-start gap-1 text-left">
+                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
+                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Rugi uang & barang melayang</span>
                 </div>
-                <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
-                  <span className="text-xs font-bold text-on-surface leading-snug">Reputasi & rating toko anjlok</span>
+                <div className="flex items-start gap-1 text-left">
+                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
+                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Reputasi & rating toko anjlok</span>
                 </div>
               </div>
             </div>
           </aside>
 
           {/* Center: Video Player */}
-          <section className="w-full lg:w-[70%] flex flex-col items-center text-center">
-            <h1 className="font-headline-lg text-headline-lg mb-sm font-extrabold">Bukti Packing Pesanan Anda</h1>
-            <p className="text-on-surface-variant mb-lg font-medium">
-              Penjual menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi pengemasan pesanan Anda.
+          <section className="w-[50%] lg:w-[70%] flex flex-col items-center justify-center text-center">
+            <h1 className="text-[10px] md:text-headline-lg mb-1 md:mb-sm font-extrabold leading-tight">Bukti Packing Pesanan Anda</h1>
+            <p className="text-[8px] md:text-body-md text-on-surface-variant mb-2 md:mb-lg font-medium leading-tight">
+              Penjual menggunakan <strong>BUKTIIN</strong> untuk menjamin pesanan Anda.
             </p>
 
-            <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative group">
+            <div className="w-full bg-black rounded-lg md:rounded-xl overflow-hidden shadow-2xl border-2 md:border-4 border-surface border-ui-divider aspect-video relative group">
               <iframe 
                 src={`https://drive.google.com/file/d/${videoId}/preview`} 
                 width="100%" 
@@ -78,41 +78,41 @@ export default function LandingPage() {
               ></iframe>
             </div>
 
-            <div className="mt-xl bg-primary-container border-2 border-primary/30 rounded-xl p-md w-full shadow-md">
-              <p className="text-body-md text-on-primary-container font-bold">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
+            <div className="mt-2 md:mt-xl bg-primary-container border md:border-2 border-primary/30 rounded-lg md:rounded-xl p-1 md:p-md w-full shadow-sm md:shadow-md">
+              <p className="text-[8px] md:text-body-md text-on-primary-container font-bold leading-tight">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
             </div>
           </section>
 
           {/* Right Sidebar: Kelebihan */}
-          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
-            <div className="relative bg-primary/10 border-2 border-primary/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
+          <aside className="w-[25%] lg:w-[15%] flex flex-col gap-1 md:gap-md">
+            <div className="relative bg-primary/10 border border-primary/20 rounded-lg md:rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-1 md:p-3 min-h-[180px] md:min-h-[400px]">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
                 <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
-                <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-1 md:px-2 py-1 md:py-3 rounded md:rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="text-[9px] md:text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
               </div>
 
               {/* Solusi (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto flex flex-col gap-3 border border-primary/20 shadow-lg">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
-                    <span className="text-xs font-bold text-on-surface leading-snug">Rekam otomatis via scan barcode</span>
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-1 md:p-3 rounded md:rounded-lg mt-auto flex flex-col gap-1 md:gap-3 border border-primary/20 shadow-lg">
+                <div className="flex flex-col gap-1 md:gap-2">
+                  <div className="flex items-start gap-1 text-left">
+                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
+                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Rekam otomatis via scan barcode</span>
                   </div>
-                  <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
-                    <span className="text-xs font-bold text-on-surface leading-snug">Video aman di Cloud (memori lega)</span>
+                  <div className="flex items-start gap-1 text-left">
+                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
+                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Video aman di Cloud (memori lega)</span>
                   </div>
-                  <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
-                    <span className="text-xs font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
+                  <div className="flex items-start gap-1 text-left">
+                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
+                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Punya bukti kuat 100% akurat</span>
                   </div>
                 </div>
-                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-2 px-1 text-[13px] rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow">
+                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-1 md:py-2 px-1 text-[7px] md:text-[13px] rounded md:rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow leading-tight">
                   Daftar Gratis
                 </Link>
               </div>
