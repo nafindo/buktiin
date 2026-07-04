@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import imgProblem from '../assets/images/promo-problem.png';
 import imgSolution from '../assets/images/promo-solution.png';
-import logoImg from '../assets/images/logo.jpg';
+import logoImg from '../assets/images/logo.png';
 
 export default function LandingPage() {
   const location = useLocation();

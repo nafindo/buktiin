@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import logoImg from '../assets/images/logo.png';
 
-export default function LiveScanner() {
+export default function UnboxingScanner() {
   const [scanState, setScanState] = useState<'IDLE' | 'SCANNED' | 'RECORDING' | 'SAVING'>('IDLE');
   const [currentRecordingId, setCurrentRecordingId] = useState<string | null>(null);
   const [currentResi, setCurrentResi] = useState<string>('');
@@ -296,7 +296,7 @@ export default function LiveScanner() {
               customer: 'Pelanggan Walk-in',
               marketplace: 'OFFLINE',
               items: [{ name: 'Barang Campuran', quantity: 1 }],
-              scanType: 'PACKING',
+              scanType: 'UNBOXING',
               userId: userId,
               accessToken: session?.access_token
             })
@@ -375,6 +375,13 @@ export default function LiveScanner() {
 
   return (
     <div className="flex flex-col h-full min-h-full">
+      {/* Page Header */}
+      <div className="px-lg py-xl flex justify-between items-end">
+        <div>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Unboxing Retur</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant">Scan barcode, record unboxing proof, and secure your evidence automatically.</p>
+        </div>
+      </div>
       <section className="flex-1 p-md lg:p-lg grid grid-cols-1 lg:grid-cols-12 gap-lg">
         {/* Left: Webcam Area (Col 8) */}
         <div className="lg:col-span-8 space-y-md">
@@ -444,7 +451,7 @@ export default function LiveScanner() {
                 onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))}
                 className="flex-1 bg-primary text-white font-bold py-md px-xl rounded-lg hover:bg-on-primary-container transition-all shadow-lg flex items-center justify-center gap-md">
                 <span className="material-symbols-outlined">check_circle</span>
-                <span className="font-headline-md text-[18px]">Selesai Packing (Tekan Enter atau Klik)</span>
+                <span className="font-headline-md text-[18px]">Selesai Unboxing (Tekan Enter atau Klik)</span>
               </button>
             )}
             
@@ -462,10 +469,10 @@ export default function LiveScanner() {
             <div className="bg-surface-container-lowest border border-ui-divider rounded-xl shadow-sm p-md flex flex-col animate-[fade-in_0.3s_ease-out]">
               <div className="flex justify-between items-start mb-md">
                 <div>
-                  <p className="font-label-caps text-label-caps text-on-surface-variant">Marketplace</p>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant">Proses</p>
                   <div className="flex items-center gap-sm">
-                    <span className="w-6 h-6 bg-secondary-container rounded-full flex items-center justify-center text-white text-[10px] font-bold">O</span>
-                    <h2 className="font-headline-md text-headline-md text-secondary font-bold">Offline</h2>
+                    <span className="w-6 h-6 bg-secondary-container rounded-full flex items-center justify-center text-white text-[10px] font-bold">U</span>
+                    <h2 className="font-headline-md text-headline-md text-secondary font-bold">Unboxing</h2>
                   </div>
                 </div>
                 <span className="bg-primary-container text-on-primary-container px-sm py-xs font-label-caps text-[10px] rounded-lg">LIVE SCAN</span>

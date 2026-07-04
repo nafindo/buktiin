@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import logoImg from '../assets/images/logo.jpg';
+import logoImg from '../assets/images/logo.png';
 
 export default function TermsAndConditions() {
   return (
