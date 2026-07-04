@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import imgProblem from '../assets/images/promo-problem.png';
 import imgSolution from '../assets/images/promo-solution.png';
 import logoImg from '../assets/images/logo.png';
@@ -123,26 +124,7 @@ export default function LandingPage() {
 
   return (
     <div className="bg-background text-on-surface font-body-md industrial-pattern selection:bg-primary-container selection:text-on-primary-container min-h-screen">
-      {/* TopNavBar */}
-      <header className="fixed top-0 left-0 w-full z-50 bg-surface border-b border-ui-divider flex justify-center">
-        <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
-            <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-xl">
-            <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Fitur</button>
-            <button onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Manfaat</button>
-            <button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Harga</button>
-            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
-          </div>
-          <div className="flex items-center gap-md">
-            <Link to="/download" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
-              Mulai Sekarang
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="pt-20">
         {/* Hero Section */}

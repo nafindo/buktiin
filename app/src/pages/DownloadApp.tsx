@@ -1,15 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 const DownloadApp: React.FC = () => {
   return (
     <div className="bg-background text-on-surface font-body-md min-h-screen flex flex-col industrial-pattern">
-      <header className="w-full bg-surface border-b border-ui-divider flex justify-center py-md px-lg">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-3xl">verified_user</span>
-          <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
-        </Link>
-      </header>
+      <Navbar />
 
       <main className="flex-1 flex flex-col items-center justify-center p-xl gap-xl max-w-container-max mx-auto w-full">
         <div className="text-center space-y-sm max-w-2xl">
