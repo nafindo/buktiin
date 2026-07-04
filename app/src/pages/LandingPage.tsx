@@ -29,7 +29,7 @@ export default function LandingPage() {
         <main className="w-full max-w-[1400px] px-lg py-xl flex-1 flex flex-col lg:flex-row gap-xl items-stretch justify-center mx-auto">
           
           {/* Left Sidebar: Masalah */}
-          <aside className="w-full lg:w-1/4 flex flex-col gap-md">
+          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
             <div className="bg-error/10 border-2 border-error/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
               <img src={imgProblem} alt="Seller Stress" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
               <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight mb-2">Sering Kena Retur Fiktif?</h2>
@@ -40,7 +40,7 @@ export default function LandingPage() {
           </aside>
 
           {/* Center: Video Player */}
-          <section className="w-full lg:w-2/4 flex flex-col items-center text-center">
+          <section className="w-full lg:w-[70%] flex flex-col items-center text-center">
             <h1 className="font-headline-lg text-headline-lg mb-sm font-extrabold">Bukti Packing Pesanan Anda</h1>
             <p className="text-on-surface-variant mb-lg font-medium">
               Penjual menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi pengemasan pesanan Anda.
@@ -62,7 +62,7 @@ export default function LandingPage() {
           </section>
 
           {/* Right Sidebar: Kelebihan */}
-          <aside className="w-full lg:w-1/4 flex flex-col gap-md">
+          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
             <div className="bg-primary/10 border-2 border-primary/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
               <img src={imgSolution} alt="Seller Happy" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
               <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight mb-2">Menangkan Tiap Sengketa!</h2>
