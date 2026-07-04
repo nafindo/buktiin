@@ -69,8 +69,8 @@ export default function LandingPage() {
               Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
             </p>
 
-            {/* Container Video: Kembali menggunakan iframe Google Drive karena direct-stream diblokir oleh sistem keamanan Google. Diberikan min-height agar UI Play tidak tertumpuk */}
-            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider min-h-[260px] md:min-h-[auto] md:aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
+            {/* Container Video: Kembali menggunakan iframe Google Drive karena direct-stream diblokir oleh sistem keamanan Google. Diberikan aspect ratio 4/3 di mobile agar UI Play tidak tertumpuk navigasi */}
+            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-[4/3] md:aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
               <iframe 
                 src={`https://drive.google.com/file/d/${videoId}/preview`} 
                 width="100%" 
