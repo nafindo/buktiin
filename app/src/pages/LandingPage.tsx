@@ -28,47 +28,48 @@ export default function LandingPage() {
         </header>
 
         {/* Main Grid Layout */}
-        <main className="w-full max-w-[1400px] px-2 md:px-lg py-4 md:py-xl flex-1 flex flex-row gap-2 md:gap-xl items-stretch justify-center mx-auto overflow-hidden">
+        <main className="w-full max-w-[1400px] px-4 lg:px-lg py-6 lg:py-xl flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch mx-auto">
           
-          {/* Left Sidebar: Masalah */}
-          <aside className="w-[25%] lg:w-[15%] flex flex-col gap-1 md:gap-md">
-            <div className="relative bg-error/10 border border-error/20 rounded-lg md:rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-1 md:p-3 min-h-[180px] md:min-h-[400px]">
+          {/* Left Sidebar: Masalah (Order 2 on Mobile, 1 on Desktop) */}
+          <aside className="order-2 lg:order-1 col-span-1 md:col-span-1 lg:col-span-2 flex flex-col h-full">
+            <div className="relative bg-error/10 border-2 border-error/20 rounded-2xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-4 min-h-[350px] lg:min-h-[400px] group hover:border-error/40 transition-colors">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
-                <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-90" />
+                <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-b from-error/10 to-background/90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-1 md:px-2 py-1 md:py-3 rounded md:rounded-lg w-full mt-1 border border-white/50 shadow-sm">
-                <h2 className="text-[9px] md:text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
+              <div className="relative z-[2] bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl w-full mt-2 border border-error/20 shadow-lg transform -translate-y-1">
+                <h2 className="text-sm lg:text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
               </div>
 
               {/* Permasalahan Seller (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-1 md:p-3 rounded md:rounded-lg mt-auto space-y-1 md:space-y-3 border border-error/20 shadow-lg">
-                <div className="flex items-start gap-1 text-left">
-                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
-                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Klaim barang kurang/rusak tanpa bukti</span>
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-xl p-3 lg:p-4 rounded-xl mt-auto space-y-3 border border-error/20 shadow-xl">
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
+                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Klaim barang kurang/rusak tanpa bukti</span>
                 </div>
-                <div className="flex items-start gap-1 text-left">
-                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
-                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Rugi uang & barang melayang</span>
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
+                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Rugi uang & barang melayang</span>
                 </div>
-                <div className="flex items-start gap-1 text-left">
-                  <span className="material-symbols-outlined text-error text-[10px] md:text-lg mt-0.5">cancel</span>
-                  <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Reputasi & rating toko anjlok</span>
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
+                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Reputasi & rating toko anjlok</span>
                 </div>
               </div>
             </div>
           </aside>
 
-          {/* Center: Video Player */}
-          <section className="w-[50%] lg:w-[70%] flex flex-col items-center justify-center text-center">
-            <h1 className="text-[10px] md:text-headline-lg mb-1 md:mb-sm font-extrabold leading-tight">Bukti Packing Pesanan Anda</h1>
-            <p className="text-[8px] md:text-body-md text-on-surface-variant mb-2 md:mb-lg font-medium leading-tight">
-              Penjual menggunakan <strong>BUKTIIN</strong> untuk menjamin pesanan Anda.
+          {/* Center: Video Player (Order 1 on Mobile, 2 on Desktop) */}
+          <section className="order-1 lg:order-2 col-span-1 md:col-span-2 lg:col-span-8 flex flex-col items-center justify-center text-center w-full">
+            <h1 className="text-2xl md:text-headline-lg mb-2 font-extrabold tracking-tight text-on-surface">Bukti Packing Pesanan Anda</h1>
+            <p className="text-sm md:text-body-lg text-on-surface-variant mb-6 font-medium max-w-2xl">
+              Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
             </p>
 
-            <div className="w-full bg-black rounded-lg md:rounded-xl overflow-hidden shadow-2xl border-2 md:border-4 border-surface border-ui-divider aspect-video relative group">
+            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
               <iframe 
                 src={`https://drive.google.com/file/d/${videoId}/preview`} 
                 width="100%" 
@@ -76,44 +77,47 @@ export default function LandingPage() {
                 allow="autoplay" 
                 className="absolute inset-0 z-10"
               ></iframe>
+              <div className="absolute inset-0 bg-primary/5 pointer-events-none z-20 group-hover:bg-transparent transition-colors duration-500" />
             </div>
 
-            <div className="mt-2 md:mt-xl bg-primary-container border md:border-2 border-primary/30 rounded-lg md:rounded-xl p-1 md:p-md w-full shadow-sm md:shadow-md">
-              <p className="text-[8px] md:text-body-md text-on-primary-container font-bold leading-tight">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
+            <div className="mt-6 lg:mt-8 bg-primary-container/50 border-2 border-primary/20 rounded-2xl p-4 w-full shadow-sm backdrop-blur-sm flex items-center justify-center gap-3">
+              <span className="material-symbols-outlined text-primary text-2xl">verified_user</span>
+              <p className="text-sm md:text-base text-on-primary-container font-bold">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
             </div>
           </section>
 
-          {/* Right Sidebar: Kelebihan */}
-          <aside className="w-[25%] lg:w-[15%] flex flex-col gap-1 md:gap-md">
-            <div className="relative bg-primary/10 border border-primary/20 rounded-lg md:rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-1 md:p-3 min-h-[180px] md:min-h-[400px]">
+          {/* Right Sidebar: Kelebihan (Order 3 on Mobile, 3 on Desktop) */}
+          <aside className="order-3 lg:order-3 col-span-1 md:col-span-1 lg:col-span-2 flex flex-col h-full">
+            <div className="relative bg-primary/10 border-2 border-primary/20 rounded-2xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-4 min-h-[350px] lg:min-h-[400px] group hover:border-primary/40 transition-colors">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
-                <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-90" />
+                <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-background/90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-1 md:px-2 py-1 md:py-3 rounded md:rounded-lg w-full mt-1 border border-white/50 shadow-sm">
-                <h2 className="text-[9px] md:text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
+              <div className="relative z-[2] bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl w-full mt-2 border border-primary/20 shadow-lg transform -translate-y-1">
+                <h2 className="text-sm lg:text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
               </div>
 
               {/* Solusi (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-1 md:p-3 rounded md:rounded-lg mt-auto flex flex-col gap-1 md:gap-3 border border-primary/20 shadow-lg">
-                <div className="flex flex-col gap-1 md:gap-2">
-                  <div className="flex items-start gap-1 text-left">
-                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
-                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Rekam otomatis via scan barcode</span>
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-xl p-3 lg:p-4 rounded-xl mt-auto flex flex-col gap-4 border border-primary/20 shadow-xl">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">check_circle</span>
+                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Rekam otomatis via scan barcode</span>
                   </div>
-                  <div className="flex items-start gap-1 text-left">
-                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
-                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Video aman di Cloud (memori lega)</span>
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">cloud_done</span>
+                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Video aman di Cloud (memori lega)</span>
                   </div>
-                  <div className="flex items-start gap-1 text-left">
-                    <span className="material-symbols-outlined text-primary text-[10px] md:text-lg mt-0.5">check_circle</span>
-                    <span className="text-[7px] md:text-xs font-bold text-on-surface leading-tight">Punya bukti kuat 100% akurat</span>
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">gavel</span>
+                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
                   </div>
                 </div>
-                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-1 md:py-2 px-1 text-[7px] md:text-[13px] rounded md:rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow leading-tight">
-                  Daftar Gratis
+                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-3 px-2 text-sm rounded-lg hover:opacity-90 hover:scale-[1.02] hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow shadow-md flex items-center justify-center gap-1">
+                  <span className="material-symbols-outlined text-base">download</span> Daftar Gratis
                 </Link>
               </div>
             </div>
