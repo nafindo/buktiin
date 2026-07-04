@@ -69,13 +69,28 @@ export default function LandingPage() {
               Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
             </p>
 
-            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
+            {/* Container Video Khusus Mobile (Disembunyikan di Laptop) */}
+            <div className="block md:hidden w-full bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-square relative group transition-transform duration-500 hover:scale-[1.01] mb-2">
               <iframe 
                 src={`https://drive.google.com/file/d/${videoId}/preview`} 
                 width="100%" 
                 height="100%" 
-                allow="autoplay" 
-                className="absolute inset-0 z-10"
+                allow="autoplay; fullscreen; picture-in-picture" 
+                frameBorder="0"
+                className="absolute inset-0 z-10 w-full h-full"
+              ></iframe>
+              <div className="absolute inset-0 bg-primary/5 pointer-events-none z-20 group-hover:bg-transparent transition-colors duration-500" />
+            </div>
+
+            {/* Container Video Khusus Laptop (Disembunyikan di Mobile) */}
+            <div className="hidden md:block w-full bg-black rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
+              <iframe 
+                src={`https://drive.google.com/file/d/${videoId}/preview`} 
+                width="100%" 
+                height="100%" 
+                allow="autoplay; fullscreen; picture-in-picture" 
+                frameBorder="0"
+                className="absolute inset-0 z-10 w-full h-full"
               ></iframe>
               <div className="absolute inset-0 bg-primary/5 pointer-events-none z-20 group-hover:bg-transparent transition-colors duration-500" />
             </div>
