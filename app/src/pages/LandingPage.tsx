@@ -69,17 +69,16 @@ export default function LandingPage() {
               Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
             </p>
 
-            {/* Container Video: Menggunakan HTML5 Video Tag untuk menghindari UI Google Drive yang tertutup */}
-            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
-              <video 
-                src={`https://drive.google.com/uc?export=download&id=${videoId}`}
-                controls
-                playsInline
-                preload="metadata"
-                className="absolute inset-0 w-full h-full object-contain z-10"
-              >
-                Maaf, browser Anda tidak mendukung pemutaran video.
-              </video>
+            {/* Container Video: Kembali menggunakan iframe Google Drive karena direct-stream diblokir oleh sistem keamanan Google. Diberikan min-height agar UI Play tidak tertumpuk */}
+            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider min-h-[260px] md:min-h-[auto] md:aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
+              <iframe 
+                src={`https://drive.google.com/file/d/${videoId}/preview`} 
+                width="100%" 
+                height="100%" 
+                allow="autoplay; fullscreen; picture-in-picture"
+                frameBorder="0"
+                className="absolute inset-0 z-10 w-full h-full"
+              ></iframe>
             </div>
 
             <div className="mt-6 lg:mt-8 bg-primary-container/50 border-2 border-primary/20 rounded-2xl p-4 w-full shadow-sm backdrop-blur-sm flex items-center justify-center gap-3">
