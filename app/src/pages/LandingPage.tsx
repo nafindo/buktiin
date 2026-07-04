@@ -41,9 +41,6 @@ export default function LandingPage() {
 
           {/* Center: Video Player */}
           <section className="w-full lg:w-2/4 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-status-processing/10 rounded-full flex items-center justify-center mb-md shadow-lg shadow-status-processing/20">
-              <span className="material-symbols-outlined text-status-processing text-3xl">verified_user</span>
-            </div>
             <h1 className="font-headline-lg text-headline-lg mb-sm font-extrabold">Bukti Packing Pesanan Anda</h1>
             <p className="text-on-surface-variant mb-lg font-medium">
               Penjual menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi pengemasan pesanan Anda.
@@ -111,7 +108,6 @@ export default function LandingPage() {
           <div className="max-w-container-max w-full grid grid-cols-1 lg:grid-cols-2 gap-xl items-center relative z-10">
             <div className="space-y-md">
               <div className="inline-flex items-center gap-sm bg-primary-container/10 border border-primary-container px-sm py-1">
-                <span className="material-symbols-outlined text-primary text-[18px]">verified_user</span>
                 <span className="font-label-caps text-label-caps text-primary uppercase">E-Commerce Protection #1</span>
               </div>
               <h1 className="font-display-lg text-display-lg leading-tight">
