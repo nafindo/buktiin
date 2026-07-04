@@ -30,12 +30,32 @@ export default function LandingPage() {
           
           {/* Left Sidebar: Masalah */}
           <aside className="w-full lg:w-[15%] flex flex-col gap-md">
-            <div className="bg-error/10 border-2 border-error/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
-              <img src={imgProblem} alt="Seller Stress" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
-              <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight mb-2">Sering Kena Retur Fiktif?</h2>
-              <p className="text-body-md text-on-surface-variant font-medium leading-snug">
-                Pembeli nakal klaim barang kurang atau rusak? Anda bisa <strong>rugi uang & reputasi toko anjlok!</strong>
-              </p>
+            <div className="relative bg-error/10 border-2 border-error/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
+              {/* Banner Image (z:1) */}
+              <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
+                <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-90" />
+              </div>
+              
+              {/* Judul di depan banner (z:2) */}
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
+              </div>
+
+              {/* Permasalahan Seller (z:3) */}
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto space-y-3 border border-error/20 shadow-lg">
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Klaim barang kurang/rusak tanpa bukti</span>
+                </div>
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Rugi uang & barang melayang</span>
+                </div>
+                <div className="flex items-start gap-2 text-left">
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Reputasi & rating toko anjlok</span>
+                </div>
+              </div>
             </div>
           </aside>
 
@@ -63,15 +83,37 @@ export default function LandingPage() {
 
           {/* Right Sidebar: Kelebihan */}
           <aside className="w-full lg:w-[15%] flex flex-col gap-md">
-            <div className="bg-primary/10 border-2 border-primary/20 rounded-xl p-md h-full flex flex-col items-center text-center shadow-inner">
-              <img src={imgSolution} alt="Seller Happy" className="w-full max-w-[180px] h-auto object-contain mb-sm rounded-lg hover:scale-105 transition-transform" />
-              <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight mb-2">Menangkan Tiap Sengketa!</h2>
-              <p className="text-body-md text-on-surface-variant font-medium leading-snug mb-md flex-1">
-                Scan barcode, video otomatis direkam & tersimpan di <strong>Cloud</strong>. Bukti kuat 100% aman tanpa kuras memori!
-              </p>
-              <Link to="/register" className="w-full bg-primary text-white font-extrabold px-md py-md rounded-xl hover:opacity-90 hover:shadow-lg transition-all mt-auto animate-pulse-slow">
-                Daftar BUKTIIN (Gratis)
-              </Link>
+            <div className="relative bg-primary/10 border-2 border-primary/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
+              {/* Banner Image (z:1) */}
+              <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
+                <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-90" />
+              </div>
+              
+              {/* Judul di depan banner (z:2) */}
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
+              </div>
+
+              {/* Solusi (z:3) */}
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto flex flex-col gap-3 border border-primary/20 shadow-lg">
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Rekam otomatis via scan barcode</span>
+                  </div>
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Video aman di Cloud (memori lega)</span>
+                  </div>
+                  <div className="flex items-start gap-2 text-left">
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
+                  </div>
+                </div>
+                <Link to="/register" className="w-full bg-primary text-white font-extrabold py-2 px-1 text-[13px] rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow">
+                  Daftar Gratis
+                </Link>
+              </div>
             </div>
           </aside>
         </main>
