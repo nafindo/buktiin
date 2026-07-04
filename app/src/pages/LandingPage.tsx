@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import imgProblem from '../assets/images/promo-problem.png';
 import imgSolution from '../assets/images/promo-solution.png';
 import logoImg from '../assets/images/logo.png';
@@ -393,29 +394,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Trust Signals */}
-        <section className="py-xl bg-surface">
-          <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-xl border-b border-ui-divider pb-xl">
-            <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <span className="font-label-caps text-label-caps text-primary uppercase mb-2">Developed by</span>
-              <h4 className="font-headline-md text-headline-md font-bold tracking-tight">NAFINDO GROUP</h4>
-            </div>
-            <div className="flex gap-xl overflow-x-auto py-md grayscale opacity-60">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined">verified</span>
-                <span className="font-bold">TIER 3 DATA CENTER</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined">dns</span>
-                <span className="font-bold">99.5% UPTIME</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined">lock_reset</span>
-                <span className="font-bold">AES-256 ENCRYPTION</span>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Trust Signals and Footer */}
+        <Footer />
       </main>
     </div>
   );
