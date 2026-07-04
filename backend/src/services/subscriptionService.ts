@@ -1,10 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { prisma } from '../db';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
-);
+import { supabase } from '../db';
 
 export interface PlanLimits {
   name: string;
@@ -25,18 +20,26 @@ const DEFAULT_FREE_LIMITS: PlanLimits = {
 export const getPlanDeviceLimit = (planName: string): number => {
   if (planName === 'FREE' || planName === 'BASIC') return 1;
   if (planName === 'STARTER') return 3;
-  if (planName === 'PRO') return 10;
-  if (planName === 'BUSINESS') return 50;
-  if (planName === 'ENTERPRISE') return 9999;
+  if (planName === 'PRO') return 5;
+  if (planName === 'BUSINESS') return 10;
+  if (planName === 'ENTERPRISE') return 999999;
   return 1;
 };
 
-export const resolveParentId = async (userId: string): Promise<string> => {
+export const resolveParentId = async (userId: string, accessToken?: string): Promise<string> => {
   try {
-    const sub = await prisma.subAccount.findUnique({
-      where: { childId: userId }
-    });
-    return sub ? sub.parentId : userId;
+    const client = accessToken ? createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '', {
+      global: { headers: { Authorization: `Bearer ${accessToken}` } }
+    }) : supabase;
+
+    const { data, error } = await client
+      .from('sub_accounts')
+      .select('parent_id')
+      .eq('child_id', userId)
+      .single();
+
+    if (error || !data) return userId;
+    return data.parent_id;
   } catch (err) {
     return userId;
   }
@@ -47,49 +50,44 @@ export const getUserPlanLimits = async (userId: string, accessToken?: string): P
 
   try {
     // Resolve to parent if this is a sub-account
-    const resolvedUserId = await resolveParentId(userId);
+    const resolvedUserId = await resolveParentId(userId, accessToken);
+    let subData: any = null;
 
-    // If accessToken is provided, create a scoped client to bypass RLS properly using the user's session
-    let client = supabase;
     if (accessToken) {
-      client = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '', {
+      const client = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '', {
         global: { headers: { Authorization: `Bearer ${accessToken}` } }
       });
+      const { data, error } = await client
+        .from('subscriptions')
+        .select('status, end_date, plans (*)')
+        .eq('user_id', resolvedUserId)
+        .eq('status', 'ACTIVE')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      
+      if (!error && data && data.length > 0) {
+        subData = data[0];
+      }
     }
 
-    const { data, error } = await client
-      .from('subscriptions')
-      .select(`
-        status,
-        end_date,
-        plans (*)
-      `)
-      .eq('user_id', resolvedUserId)
-      .eq('status', 'ACTIVE')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    if (error || !data || data.length === 0) {
+    if (!subData) {
       return DEFAULT_FREE_LIMITS;
     }
 
-    const sub = data[0];
+    const sub = subData;
 
     // Check expiration
-    if (new Date(sub.end_date) < new Date()) {
+    if (new Date(subData.end_date) < new Date()) {
       return DEFAULT_FREE_LIMITS;
     }
 
-    const planData = Array.isArray(sub.plans) ? sub.plans[0] : sub.plans;
-
-    if (!planData) return DEFAULT_FREE_LIMITS;
-
+    const plan = subData.plans;
     return {
-      name: planData.name,
-      storageLimitMB: planData.storageLimit || planData.storagelimit,
-      orderLimit: planData.orderLimit || planData.orderlimit,
-      retentionDays: planData.retentionDays || planData.retentiondays,
-      deviceLimit: getPlanDeviceLimit(planData.name)
+      name: plan.name,
+      storageLimitMB: plan.storageLimit || plan.storagelimit || 5000,
+      orderLimit: plan.orderLimit || plan.orderlimit || 10,
+      retentionDays: plan.retentionDays || plan.retentiondays || 7,
+      deviceLimit: plan.accountLimit || plan.accountlimit || getPlanDeviceLimit(plan.name)
     };
   } catch (err) {
     console.error('Error fetching user plan:', err);

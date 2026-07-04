@@ -3,10 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api';
 import driveRoutes from './routes/drive';
-import { processPendingUploads } from './services/driveService';
-import { cleanupService } from './services/cleanupService';
 
-dotenv.config();
+
+import path from 'path';
+
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -19,8 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api', apiRoutes);
 
-import path from 'path';
-
 // Base route
 app.get('/', (req, res) => {
   res.send('BUKTIIN Backend API is running');
@@ -29,14 +28,7 @@ app.get('/', (req, res) => {
 // Serve static uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  
-  // Start Background Worker (Runs every 1 minute)
-  setInterval(() => {
-    processPendingUploads();
-  }, 60000);
-
-  cleanupService.start();
+// Start server - bind explicitly to 127.0.0.1 to avoid IPv6 conflict on Windows
+app.listen(Number(port), '127.0.0.1', () => {
+  console.log(`Server is running on http://127.0.0.1:${port}`);
 });

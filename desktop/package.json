@@ -1,11 +1,11 @@
 {
   "name": "desktop",
   "version": "1.0.0",
-  "description": "",
+  "description": "Buktiin Desktop App",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --dir && xcopy /E /I /Y ..\\backend\\node_modules dist\\win-unpacked\\resources\\backend\\node_modules && node -e \"setTimeout(()=>{}, 5000)\" && electron-builder --prepackaged dist\\win-unpacked"
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "Nafindo",
@@ -13,9 +13,25 @@
   "build": {
     "appId": "com.buktiin.app",
     "productName": "Buktiin",
+    "asar": true,
+    "mac": {
+      "identity": null
+    },
     "win": {
-      "target": "nsis",
+      "verifyUpdateCodeSignature": false,
+      "signExecutable": false,
+      "target": [
+        "nsis-web"
+      ],
       "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "include": "build/installer.nsh"
     },
     "directories": {
       "output": "dist"
@@ -24,17 +40,45 @@
       {
         "from": "../backend",
         "to": "backend",
-        "filter": ["**/*", "node_modules/**/*"]
+        "filter": [
+          "dist/**/*",
+          "package.json",
+          "package-lock.json",
+          ".env"
+        ]
       },
       {
         "from": "../app/dist",
         "to": "frontend"
+      },
+      {
+        "from": "../backend/node_modules/ffmpeg-static/ffmpeg.exe",
+        "to": "ffmpeg.exe"
       }
+    ],
+    "nsisWeb": {
+      "appPackageUrl": "https://github.com/nafindo/buktiin/releases/download/v1.0.0",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "include": "build/installer.nsh"
+    },
+    "files": [
+      "**/*",
+      "!dist_new",
+      "!dist_new/**/*"
     ]
   },
   "type": "commonjs",
   "devDependencies": {
     "electron": "^43.0.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.1"
+  },
+  "dependencies": {
+    "jimp": "^1.6.1",
+    "sharp": "^0.35.3"
   }
 }

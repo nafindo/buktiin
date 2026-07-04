@@ -7,7 +7,8 @@ import {
   checkLimits,
   getSubAccounts,
   addSubAccount,
-  deleteSubAccount
+  deleteSubAccount,
+  streamVideo
 } from '../controllers/apiController';
 import {
   setupIntegration,
@@ -20,11 +21,12 @@ import {
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 
 const router = Router();
 
 // Setup Multer for video uploads
-const uploadDir = path.join(__dirname, '../../uploads/temp');
+const uploadDir = path.join(os.tmpdir(), 'buktiin_uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -35,7 +37,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.webm');
   }
 });
 const upload = multer({ storage: storage });
@@ -47,6 +49,7 @@ router.get('/history', getHistory);
 router.post('/check-limits', checkLimits);
 router.post('/recordings', saveRecording);
 router.post('/recordings/upload', upload.single('video'), uploadVideo);
+router.get('/stream/:filename', streamVideo);
 
 // SubAccounts
 router.get('/subaccounts', getSubAccounts);

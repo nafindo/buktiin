@@ -1,13 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import path from 'path';
 
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit.
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+// Load .env from backend root
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    log: ['query'],
-  });
+const supabaseUrl = process.env.SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_ANON_KEY || '';
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (!supabaseUrl || !supabaseKey) {
+  console.warn("WARNING: SUPABASE_URL or SUPABASE_ANON_KEY is not defined in backend .env");
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey);

@@ -19,7 +19,7 @@ export default function LandingPage() {
               <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
               <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
             </Link>
-            <Link to="/login" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
+            <Link to="/download" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
               Mulai Gunakan BUKTIIN
             </Link>
           </nav>
@@ -110,7 +110,7 @@ export default function LandingPage() {
                     <span className="text-xs font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
                   </div>
                 </div>
-                <Link to="/register" className="w-full bg-primary text-white font-extrabold py-2 px-1 text-[13px] rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow">
+                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-2 px-1 text-[13px] rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow">
                   Daftar Gratis
                 </Link>
               </div>
@@ -137,7 +137,7 @@ export default function LandingPage() {
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
           </div>
           <div className="flex items-center gap-md">
-            <Link to="/login" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
+            <Link to="/download" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
               Mulai Sekarang
             </Link>
           </div>
@@ -159,7 +159,7 @@ export default function LandingPage() {
                 Solusi otomatisasi rekaman packing untuk seller e-commerce. Lindungi bisnismu dari komplain palsu dengan bukti video yang akurat dan tersertifikasi.
               </p>
               <div className="flex flex-wrap gap-md pt-sm">
-                <Link to="/login" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
+                <Link to="/download" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
                   Mulai Sekarang
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
@@ -350,7 +350,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 7 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm opacity-30"><span className="material-symbols-outlined text-[18px]">block</span> Tanpa API Access</li>
                 </ul>
-                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
+                <Link to="/download" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Starter */}
               <div className="bg-surface border-4 border-primary p-lg rounded-xl flex flex-col shadow-xl relative scale-105 z-10">
@@ -369,7 +369,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 14 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Export CSV &amp; Webhook</li>
                 </ul>
-                <Link to="/login" className="w-full py-sm bg-primary text-white font-bold rounded hover:opacity-90 transition-all text-center block">Pilih Paket</Link>
+                <Link to="/download" className="w-full py-sm bg-primary text-white font-bold rounded hover:opacity-90 transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Pro */}
               <div className="bg-surface border border-ui-divider p-lg rounded-xl flex flex-col hover:shadow-md transition-shadow">
@@ -387,7 +387,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 30 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Dedicated Support</li>
                 </ul>
-                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
+                <Link to="/download" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Business */}
               <div className="bg-inverse-surface border border-outline p-lg rounded-xl flex flex-col text-surface">
@@ -405,7 +405,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> 60 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> Custom API Integration</li>
                 </ul>
-                <Link to="/login" className="w-full py-sm bg-surface text-inverse-surface font-bold rounded hover:bg-primary-fixed transition-all text-center block">Hubungi Sales</Link>
+                <Link to="/download" className="w-full py-sm bg-surface text-inverse-surface font-bold rounded hover:bg-primary-fixed transition-all text-center block">Hubungi Sales</Link>
               </div>
             </div>
           </div>

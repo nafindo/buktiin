@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-
 const router = Router();
-const prisma = new PrismaClient();
 
 router.get('/auth', (req, res) => {
   res.redirect('/settings'); // No longer using direct OAuth
