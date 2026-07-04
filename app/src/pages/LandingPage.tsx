@@ -1,4 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import Plyr from 'plyr';
+import 'plyr/dist/plyr.css';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import imgProblem from '../assets/images/promo-problem.png';
@@ -9,6 +12,22 @@ export default function LandingPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const videoId = searchParams.get('v');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoId && videoRef.current) {
+      const player = new Plyr(videoRef.current, {
+        controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
+        autoplay: false,
+      });
+
+      return () => {
+        if (player) {
+          player.destroy();
+        }
+      };
+    }
+  }, [videoId]);
 
   // If a video ID is provided in the URL, render the Customer Promo Player instead
   if (videoId) {
@@ -69,14 +88,18 @@ export default function LandingPage() {
               Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
             </p>
 
-            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
-              <iframe 
-                src={`https://drive.google.com/file/d/${videoId}/preview`} 
-                width="100%" 
-                height="100%" 
-                allow="autoplay" 
-                className="absolute inset-0 z-10"
-              ></iframe>
+            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-[4/3] md:aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
+              <video 
+                ref={videoRef}
+                className="w-full h-full object-cover z-10"
+                crossOrigin="anonymous"
+                playsInline
+                preload="metadata"
+              >
+                <source src={`https://drive.google.com/uc?export=download&id=${videoId}`} type="video/mp4" />
+                Browser Anda tidak mendukung pemutar video HTML5.
+              </video>
+              {/* Optional overlay (pointer-events-none ensures it doesn't block Plyr controls) */}
               <div className="absolute inset-0 bg-primary/5 pointer-events-none z-20 group-hover:bg-transparent transition-colors duration-500" />
             </div>
 
