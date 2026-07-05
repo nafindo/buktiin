@@ -52,6 +52,7 @@ export default function PlanConfiguration() {
   };
 
   const openAddModal = () => {
+    alert("Opening Add Modal...");
     setEditingPlan(null);
     setFormData({
       name: '',
@@ -66,6 +67,7 @@ export default function PlanConfiguration() {
   };
 
   const openEditModal = (plan: Plan) => {
+    alert("Opening Edit Modal for " + plan.name);
     setEditingPlan(plan);
     setFormData({
       name: plan.name,
