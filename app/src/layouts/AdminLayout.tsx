@@ -1,8 +1,83 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function AdminLayout() {
   const location = useLocation();
   const path = location.pathname;
+
+  const [pin, setPin] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const savedPin = sessionStorage.getItem('admin_pin');
+    if (savedPin) {
+      // Very basic check, assume it's valid if it exists. 
+      // The child pages will fail gracefully if it's actually invalid.
+      setIsAuthenticated(true);
+    }
+    setCheckingAuth(false);
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Test the PIN by calling the RPC
+      const { error: rpcError } = await supabase.rpc('get_admin_dashboard_stats', { pin_code: pin });
+      if (rpcError) throw rpcError;
+      
+      sessionStorage.setItem('admin_pin', pin);
+      setIsAuthenticated(true);
+    } catch (err: any) {
+      console.error(err);
+      setError('Invalid PIN or Server Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (checkingAuth) return null;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-surface-container flex items-center justify-center p-lg">
+        <form onSubmit={handleLogin} className="bg-surface border border-ui-divider p-xl rounded-2xl w-full max-w-md flex flex-col gap-lg shadow-sm">
+          <div className="text-center">
+            <span className="material-symbols-outlined text-primary text-4xl mb-sm">admin_panel_settings</span>
+            <h2 className="font-headline-lg text-headline-lg">Admin Console</h2>
+            <p className="font-body-md text-on-surface-variant">Enter your PIN to access the admin area.</p>
+          </div>
+          
+          <div className="flex flex-col gap-xs">
+            <label className="font-label-md text-label-md">PIN Code</label>
+            <input 
+              type="password" 
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              className="bg-surface-container border border-ui-divider rounded-lg px-md py-sm focus:border-primary outline-none font-code-md tracking-[0.5em]"
+              placeholder="••••••"
+              required
+            />
+            {error && <p className="text-status-error font-code-sm text-sm">{error}</p>}
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-primary text-on-primary py-sm rounded-lg font-label-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+          >
+            {loading ? 'Authenticating...' : 'Enter Console'}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-surface text-on-surface font-body-md">

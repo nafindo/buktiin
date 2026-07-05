@@ -1,63 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 export default function AdminDashboard() {
-  const [pin, setPin] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [stats, setStats] = useState<any>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    
-    try {
-      const { data, error: rpcError } = await supabase.rpc('get_admin_dashboard_stats', { pin_code: pin });
-      if (rpcError) throw rpcError;
-      
-      setStats(data);
-      setIsAuthenticated(true);
-    } catch (err: any) {
-      console.error(err);
-      setError('Invalid PIN or Server Error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchStats = async () => {
+      const pin = sessionStorage.getItem('admin_pin');
+      if (!pin) {
+        setError('No PIN found. Please login again.');
+        setLoading(false);
+        return;
+      }
 
-  if (!isAuthenticated) {
+      try {
+        const { data, error: rpcError } = await supabase.rpc('get_admin_dashboard_stats', { pin_code: pin });
+        if (rpcError) throw rpcError;
+        setStats(data);
+      } catch (err: any) {
+        console.error(err);
+        setError('Failed to load stats or invalid PIN.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (loading) {
     return (
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-lg">
-        <form onSubmit={handleLogin} className="bg-surface border border-ui-divider p-xl rounded-2xl w-full max-w-md flex flex-col gap-lg shadow-sm">
-          <div className="text-center">
-            <span className="material-symbols-outlined text-primary text-4xl mb-sm">admin_panel_settings</span>
-            <h2 className="font-headline-lg text-headline-lg">Admin Access</h2>
-            <p className="font-body-md text-on-surface-variant">Enter your PIN to access real-time stats.</p>
-          </div>
-          
-          <div className="flex flex-col gap-xs">
-            <label className="font-label-md text-label-md">PIN Code</label>
-            <input 
-              type="password" 
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="bg-surface-container border border-ui-divider rounded-lg px-md py-sm focus:border-primary outline-none font-code-md tracking-[0.5em]"
-              placeholder="••••••"
-              required
-            />
-            {error && <p className="text-status-error font-code-sm text-sm">{error}</p>}
-          </div>
+      <div className="p-lg flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="flex flex-col items-center gap-sm">
+          <span className="material-symbols-outlined animate-spin text-primary text-4xl">refresh</span>
+          <p className="font-code-md text-on-surface-variant">Syncing live data...</p>
+        </div>
+      </div>
+    );
+  }
 
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="bg-primary text-on-primary py-sm rounded-lg font-label-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
-          >
-            {loading ? 'Authenticating...' : 'View Dashboard'}
-          </button>
-        </form>
+  if (error) {
+    return (
+      <div className="p-lg flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="bg-error-container text-on-error-container p-lg rounded-xl max-w-md text-center">
+          <span className="material-symbols-outlined text-4xl mb-sm">error</span>
+          <p className="font-body-lg">{error}</p>
+        </div>
       </div>
     );
   }
