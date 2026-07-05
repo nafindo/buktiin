@@ -1,25 +1,37 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-interface Recording {
+interface StorageNode {
   id: string;
-  resi: string;
-  created_at: string;
-  video_size: number;
-  storage_node: string;
-}
-
-interface ClusterStat {
-  node_name: string;
-  total_size_bytes: number;
+  name: string;
+  folder_id: string;
+  is_active: boolean;
   tenant_count: number;
 }
 
+interface TenantAllocation {
+  user_id: string;
+  email: string;
+  plan_name: string;
+  node_id: string;
+  node_name: string;
+  folder_id: string;
+}
+
 export default function ClusterStorageManagement() {
-  const [recordings, setRecordings] = useState<Recording[]>([]);
-  const [clusterStats, setClusterStats] = useState<ClusterStat[]>([]);
+  const [nodes, setNodes] = useState<StorageNode[]>([]);
+  const [tenants, setTenants] = useState<TenantAllocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Modals
+  const [isAddNodeOpen, setIsAddNodeOpen] = useState(false);
+  const [isMigrateOpen, setIsMigrateOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Forms
+  const [newNodeForm, setNewNodeForm] = useState({ name: '', folder_id: '' });
+  const [migrateForm, setMigrateForm] = useState({ user_id: '', email: '', target_node_id: '' });
 
   useEffect(() => {
     fetchData();
@@ -37,83 +49,102 @@ export default function ClusterStorageManagement() {
     }
 
     try {
-      // Fetch Stats
-      const { data: statsData, error: statsError } = await supabase.rpc('admin_get_cluster_stats', {
-        pin_code: pin
-      });
-      if (statsError) throw statsError;
+      // Fetch Nodes
+      const { data: nodesData, error: nodesError } = await supabase.rpc('admin_get_storage_nodes', { pin_code: pin });
+      if (nodesError) throw nodesError;
       
-      // Fetch Recordings
-      const { data: recsData, error: recsError } = await supabase.rpc('admin_get_recordings', {
-        pin_code: pin,
-        limit_num: 20
-      });
-      if (recsError) throw recsError;
+      // Fetch Tenant Allocations
+      const { data: tenantsData, error: tenantsError } = await supabase.rpc('admin_get_tenant_allocations', { pin_code: pin });
+      if (tenantsError) throw tenantsError;
 
-      setClusterStats(statsData || []);
-      setRecordings(recsData || []);
+      setNodes(nodesData || []);
+      setTenants(tenantsData || []);
     } catch (err: any) {
       console.error(err);
-      setError(`Failed to fetch storage data: ${err.message || JSON.stringify(err)}`);
+      setError(`Failed to fetch data: ${err.message || JSON.stringify(err)}. Make sure you have executed the new SQL script in Supabase!`);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string, resi: string) => {
-    if (!confirm(`Are you sure you want to permanently delete recording ${resi}? This action cannot be undone.`)) return;
-    
+  const handleAddNode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
     const pin = localStorage.getItem('admin_pin');
+    
     try {
-      const { error } = await supabase.rpc('admin_delete_recording', {
+      const { error } = await supabase.rpc('admin_add_storage_node', {
         pin_code: pin,
-        p_id: id
+        p_name: newNodeForm.name,
+        p_folder_id: newNodeForm.folder_id
       });
       if (error) throw error;
       
-      // Refresh
+      setIsAddNodeOpen(false);
+      setNewNodeForm({ name: '', folder_id: '' });
       fetchData();
     } catch (err: any) {
-      alert(`Failed to delete: ${err.message}`);
+      alert(`Failed to add server: ${err.message}`);
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  const formatSize = (bytes: number) => {
-    if (!bytes) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (isoString: string) => {
-    const d = new Date(isoString);
-    return d.toLocaleString('id-ID', {
-      day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
+  const openMigrateModal = (tenant: TenantAllocation) => {
+    setMigrateForm({
+      user_id: tenant.user_id,
+      email: tenant.email,
+      target_node_id: tenant.node_id || ''
     });
+    setIsMigrateOpen(true);
   };
 
-  // Helper to find specific node stats or default
-  const getNodeStat = (nodeName: string) => {
-    const stat = clusterStats.find(s => s.node_name === nodeName);
-    return stat || { total_size_bytes: 0, tenant_count: 0 };
+  const handleMigrate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    const pin = localStorage.getItem('admin_pin');
+    
+    try {
+      const { error } = await supabase.rpc('admin_migrate_tenant_server', {
+        pin_code: pin,
+        p_user_id: migrateForm.user_id,
+        p_node_id: migrateForm.target_node_id
+      });
+      if (error) throw error;
+      
+      setIsMigrateOpen(false);
+      fetchData();
+    } catch (err: any) {
+      alert(`Migration failed: ${err.message}`);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const node1 = getNodeStat('GEMINI_01');
-  const node2 = getNodeStat('GEMINI_02');
-  
-  // Assuming 5TB capacity per node
-  const capacityBytes = 5 * 1024 * 1024 * 1024 * 1024;
-  const node1Usage = ((node1.total_size_bytes / capacityBytes) * 100).toFixed(2);
-  const node2Usage = ((node2.total_size_bytes / capacityBytes) * 100).toFixed(2);
+  const handleDeleteAssignment = async (userId: string, email: string) => {
+    if (!confirm(`Are you sure you want to remove the server assignment for ${email}?`)) return;
+    
+    const pin = localStorage.getItem('admin_pin');
+    try {
+      // Deleting assignment is just migrating to NULL node
+      const { error } = await supabase.rpc('admin_migrate_tenant_server', {
+        pin_code: pin,
+        p_user_id: userId,
+        p_node_id: null
+      });
+      if (error) throw error;
+      fetchData();
+    } catch (err: any) {
+      alert(`Failed to delete assignment: ${err.message}`);
+    }
+  };
 
   return (
     <div className="p-lg pb-xl space-y-lg flex flex-col min-h-[calc(100vh-64px)] w-full max-w-container-max mx-auto">
       {/* Page Header */}
       <div>
         <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Cluster Storage Management</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">Monitor nodes, load balancing, and automated migrations with real-time Supabase integration.</p>
+        <p className="font-body-md text-body-md text-on-surface-variant">Manage Google Drive Servers and allocate tenants dynamically.</p>
       </div>
 
       {error && (
@@ -123,85 +154,57 @@ export default function ClusterStorageManagement() {
         </div>
       )}
       
-      {/* Backend Storage Nodes */}
+      {/* Google Drive Servers Grid */}
       <div className="space-y-md">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-          {/* Node 01 */}
-          <div className="group relative overflow-hidden bg-surface-container-lowest border-2 border-primary rounded-lg p-lg flex items-center gap-lg shadow-sm">
-            <div className="w-16 h-16 bg-primary-container rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>dns</span>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h4 className="font-headline-md text-[18px] font-bold">Gemini Node 01</h4>
-                <span className="bg-status-success text-white px-2 py-[2px] rounded font-code-sm text-[10px]">ACTIVE</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+          
+          {nodes.map((node) => (
+            <div key={node.id} className="group relative overflow-hidden bg-surface-container-lowest border border-ui-divider hover:border-primary rounded-lg p-lg flex flex-col gap-md shadow-sm transition-all">
+              <div className="flex items-start gap-md">
+                <div className="w-12 h-12 bg-primary-container/20 rounded-lg flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>cloud</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-xs">
+                    <h4 className="font-headline-sm text-[16px] font-bold truncate" title={node.name}>{node.name}</h4>
+                    {node.is_active && (
+                      <span className="bg-status-success text-white px-2 py-[2px] rounded font-code-sm text-[10px] shrink-0">ACTIVE</span>
+                    )}
+                  </div>
+                  <a 
+                    href={`https://drive.google.com/drive/u/0/folders/${node.folder_id}`} 
+                    target="_blank" rel="noreferrer"
+                    className="font-code-sm text-[11px] text-primary hover:underline truncate block"
+                    title={node.folder_id}
+                  >
+                    ID: {node.folder_id}
+                  </a>
+                </div>
               </div>
-              <p className="font-code-sm text-code-sm text-on-surface-variant">
-                {loading ? '...' : node1.tenant_count} Active Tenants Assigned
-              </p>
-              <div className="mt-sm flex items-center gap-lg">
-                <span className="font-label-caps text-[12px] font-bold">5 TB CAPACITY</span>
+              <div className="mt-auto pt-sm border-t border-ui-divider flex justify-between items-center">
                 <span className="font-code-sm text-[12px] text-on-surface-variant">
-                  {loading ? '...' : `${node1Usage}% Used (${formatSize(node1.total_size_bytes)})`}
+                  <strong className="text-on-surface">{node.tenant_count || 0}</strong> Tenants Assigned
                 </span>
               </div>
             </div>
-            <button className="material-symbols-outlined text-on-surface-variant hover:text-status-error transition-colors">settings</button>
-          </div>
+          ))}
           
-          {/* Node 02 */}
-          <div className="group relative overflow-hidden bg-surface-container-lowest border border-ui-divider rounded-lg p-lg flex items-center gap-lg shadow-sm">
-            <div className="w-16 h-16 bg-surface-container-high rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-on-surface-variant text-3xl">dns</span>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h4 className="font-headline-md text-[18px] font-bold">Gemini Node 02</h4>
-                <span className="bg-status-processing text-white px-2 py-[2px] rounded font-code-sm text-[10px]">BALANCING</span>
-              </div>
-              <p className="font-code-sm text-code-sm text-on-surface-variant">
-                {loading ? '...' : node2.tenant_count} Active Tenants Assigned
-              </p>
-              <div className="mt-sm flex items-center gap-lg">
-                <span className="font-label-caps text-[12px] font-bold">5 TB CAPACITY</span>
-                <span className="font-code-sm text-[12px] text-on-surface-variant">
-                  {loading ? '...' : `${node2Usage}% Used (${formatSize(node2.total_size_bytes)})`}
-                </span>
-              </div>
-            </div>
-            <button className="material-symbols-outlined text-on-surface-variant hover:text-status-error transition-colors">settings</button>
-          </div>
-          
-          {/* Add New Node Placeholder */}
-          <div className="border-2 border-dashed border-ui-divider rounded-lg p-lg flex flex-col items-center justify-center text-center hover:border-primary hover:bg-surface-container transition-all group cursor-pointer md:col-span-2">
-            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary mb-2 transition-colors">add_box</span>
-            <p className="font-label-caps text-label-caps text-on-surface-variant">Expand Cluster Capacity</p>
-            <p className="font-code-sm text-[11px] text-outline text-on-surface-variant mt-1">Provision New Gemini Storage Node</p>
+          {/* Add New Node Button */}
+          <div 
+            onClick={() => setIsAddNodeOpen(true)}
+            className="border-2 border-dashed border-ui-divider rounded-lg p-lg flex flex-col items-center justify-center text-center hover:border-primary hover:bg-surface-container transition-all group cursor-pointer min-h-[140px]"
+          >
+            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary mb-2 transition-colors">add_to_drive</span>
+            <p className="font-label-caps text-label-caps text-on-surface-variant group-hover:text-primary">Add New Storage Node</p>
+            <p className="font-code-sm text-[11px] text-on-surface-variant mt-1">Link a new Google Drive Folder</p>
           </div>
         </div>
       </div>
 
-      {/* Migration and Activity */}
+      {/* Tenant Allocations Table */}
       <div className="space-y-md flex-1">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-md mb-md">
-          <div className="bg-surface-container-low border-l-4 border-primary p-md rounded flex items-center gap-md">
-            <span className="material-symbols-outlined text-primary">balance</span>
-            <div>
-              <p className="font-label-caps text-[12px] font-bold text-primary">SMART LOAD BALANCING: ACTIVE</p>
-              <p className="font-code-sm text-[11px] text-on-surface-variant">Distributing data automatically based on UUID hash</p>
-            </div>
-          </div>
-          <div className="bg-primary-container/10 border border-primary/20 p-md rounded flex items-center gap-md">
-            <span className="material-symbols-outlined text-status-success">check_circle</span>
-            <div>
-              <p className="font-label-caps text-[12px] font-bold text-on-surface">CLUSTER STATUS</p>
-              <p className="font-code-sm text-[11px] text-on-surface-variant">RPC Integrations Active. Syncing with Supabase `recordings`.</p>
-            </div>
-          </div>
-        </div>
-
         <div className="flex justify-between items-center mt-lg">
-          <h3 className="font-label-caps text-label-caps text-on-surface font-bold uppercase tracking-widest">Recent Evidence Activity</h3>
+          <h3 className="font-label-caps text-label-caps text-on-surface font-bold uppercase tracking-widest">Tenant Allocations</h3>
           <button onClick={fetchData} className="text-primary hover:underline font-label-caps flex items-center gap-xs">
             <span className="material-symbols-outlined text-sm">refresh</span> Refresh
           </button>
@@ -209,45 +212,63 @@ export default function ClusterStorageManagement() {
 
         <div className="bg-surface-container-lowest border border-ui-divider rounded-lg overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[700px]">
+            <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-surface-container text-on-surface-variant">
-                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Recording RESI</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Timestamp</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Size</th>
-                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Storage Node</th>
+                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Account Email</th>
+                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Active Plan</th>
+                  <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider">Storage Server</th>
                   <th className="px-lg py-md font-label-caps text-label-caps border-b border-ui-divider text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="font-body-md text-on-surface">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="px-lg py-xl text-center">
+                    <td colSpan={4} className="px-lg py-xl text-center">
                       <span className="material-symbols-outlined animate-spin text-4xl text-primary mb-md">progress_activity</span>
-                      <p className="font-code-sm text-on-surface-variant">Fetching recordings...</p>
+                      <p className="font-code-sm text-on-surface-variant">Loading tenants...</p>
                     </td>
                   </tr>
-                ) : recordings.length === 0 ? (
+                ) : tenants.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-lg py-xl text-center font-code-sm text-on-surface-variant">
-                      No recordings found in the cluster.
+                    <td colSpan={4} className="px-lg py-xl text-center font-code-sm text-on-surface-variant">
+                      No tenants found.
                     </td>
                   </tr>
                 ) : (
-                  recordings.map((rec) => (
-                    <tr key={rec.id} className="hover:bg-surface-container-low transition-colors">
-                      <td className="px-lg py-md border-b border-ui-divider font-code-sm font-bold text-on-surface">{rec.resi || 'UNKNOWN'}</td>
-                      <td className="px-lg py-md border-b border-ui-divider font-code-sm text-on-surface-variant">{formatDate(rec.created_at)}</td>
-                      <td className="px-lg py-md border-b border-ui-divider font-code-sm">{formatSize(rec.video_size)}</td>
-                      <td className="px-lg py-md border-b border-ui-divider">
-                        <span className={`font-label-caps px-2 py-1 rounded text-[10px] ${rec.storage_node === 'GEMINI_01' ? 'bg-primary/10 text-primary' : 'bg-surface-variant text-on-surface'}`}>
-                          {rec.storage_node}
-                        </span>
+                  tenants.map((t) => (
+                    <tr key={t.user_id} className="hover:bg-surface-container-low transition-colors">
+                      <td className="px-lg py-md border-b border-ui-divider font-code-sm font-bold text-on-surface">{t.email}</td>
+                      <td className="px-lg py-md border-b border-ui-divider font-label-caps text-xs">
+                        <span className="bg-surface-container-high px-2 py-1 rounded">{t.plan_name || 'NO PLAN'}</span>
                       </td>
-                      <td className="px-lg py-md border-b border-ui-divider text-right">
+                      <td className="px-lg py-md border-b border-ui-divider">
+                        {t.node_id ? (
+                          <div>
+                            <p className="font-bold text-sm text-on-surface">{t.node_name}</p>
+                            <a 
+                              href={`https://drive.google.com/drive/u/0/folders/${t.folder_id}`} 
+                              target="_blank" rel="noreferrer"
+                              className="font-code-sm text-[10px] text-primary hover:underline flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined text-[12px]">link</span> {t.folder_id}
+                            </a>
+                          </div>
+                        ) : (
+                          <span className="text-status-error font-code-sm text-[11px] italic">Unassigned</span>
+                        )}
+                      </td>
+                      <td className="px-lg py-md border-b border-ui-divider text-right space-x-2 whitespace-nowrap">
                         <button 
-                          onClick={() => handleDelete(rec.id, rec.resi)}
-                          className="font-code-sm text-code-sm text-on-surface-variant hover:text-status-error border border-transparent hover:border-status-error px-sm py-xs rounded transition-all"
+                          onClick={() => openMigrateModal(t)}
+                          className="font-code-sm text-code-sm text-primary hover:bg-primary/10 border border-primary px-sm py-xs rounded transition-all"
+                        >
+                          [ MIGRATE ]
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteAssignment(t.user_id, t.email)}
+                          disabled={!t.node_id}
+                          className="font-code-sm text-code-sm text-status-error hover:bg-status-error/10 border border-status-error px-sm py-xs rounded transition-all disabled:opacity-30"
                         >
                           [ DELETE ]
                         </button>
@@ -265,10 +286,100 @@ export default function ClusterStorageManagement() {
       <footer className="flex flex-col md:flex-row justify-between items-center w-full pt-md border-t border-ui-divider bg-surface mt-auto">
         <span className="font-label-caps text-label-caps text-on-surface-variant mb-2 md:mb-0">© 2026 Nafindo Group. All Rights Reserved.</span>
         <div className="flex items-center gap-md">
-          <span className="font-code-sm text-code-sm text-on-surface-variant">BUKTIIN v2.4.0-build.89</span>
+          <span className="font-code-sm text-code-sm text-on-surface-variant">BUKTIIN v2.5.0-drive.1</span>
           <span className="font-code-sm text-code-sm text-on-surface-variant font-bold">Developed by Nafindo Group</span>
         </div>
       </footer>
+
+      {/* Add Node Modal */}
+      {isAddNodeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-ui-divider">
+            <div className="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
+              <h3 className="font-headline-md font-bold text-on-surface">Add Storage Server</h3>
+              <button onClick={() => setIsAddNodeOpen(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleAddNode} className="p-lg space-y-md">
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Server Name</label>
+                <input 
+                  type="text" 
+                  value={newNodeForm.name}
+                  onChange={(e) => setNewNodeForm({...newNodeForm, name: e.target.value})}
+                  placeholder="e.g. Google Drive VIP"
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Google Drive Folder ID</label>
+                <input 
+                  type="text" 
+                  value={newNodeForm.folder_id}
+                  onChange={(e) => setNewNodeForm({...newNodeForm, folder_id: e.target.value})}
+                  placeholder="e.g. 1RzzoTN6TAWdjzchTclguya..."
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+              <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
+                <button type="button" onClick={() => setIsAddNodeOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
+                <button type="submit" disabled={actionLoading} className="px-lg py-sm font-label-md bg-primary text-white rounded hover:opacity-90 disabled:opacity-50">
+                  {actionLoading ? 'Saving...' : 'Save Server'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Migrate Modal */}
+      {isMigrateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-ui-divider">
+            <div className="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
+              <h3 className="font-headline-md font-bold text-on-surface">Migrate Tenant Server</h3>
+              <button onClick={() => setIsMigrateOpen(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleMigrate} className="p-lg space-y-md">
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Tenant Account</label>
+                <div className="w-full bg-surface-container-lowest border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface-variant opacity-70">
+                  {migrateForm.email}
+                </div>
+              </div>
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Target Storage Server</label>
+                <select 
+                  value={migrateForm.target_node_id}
+                  onChange={(e) => setMigrateForm({...migrateForm, target_node_id: e.target.value})}
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                  required
+                >
+                  <option value="" disabled>-- Select a server --</option>
+                  {nodes.map(n => (
+                    <option key={n.id} value={n.id}>{n.name} (ID: {n.folder_id})</option>
+                  ))}
+                </select>
+                <p className="font-code-sm text-[11px] text-on-surface-variant mt-2">
+                  Notice: This only redirects future uploads to the new server. Existing files remain in the old drive unless manually moved.
+                </p>
+              </div>
+              <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
+                <button type="button" onClick={() => setIsMigrateOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
+                <button type="submit" disabled={actionLoading} className="px-lg py-sm font-label-md bg-primary text-white rounded hover:opacity-90 disabled:opacity-50">
+                  {actionLoading ? 'Migrating...' : 'Confirm Migration'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
