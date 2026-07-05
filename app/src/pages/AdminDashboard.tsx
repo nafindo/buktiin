@@ -162,13 +162,13 @@ export default function AdminDashboard() {
               </div>
             </div>
             {/* Legend */}
-            <div className="w-full grid grid-cols-2 gap-sm">
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-primary"></span> Enterprise</div>
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-primary-container"></span> Business</div>
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-secondary"></span> Pro</div>
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-status-processing"></span> Starter</div>
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-ui-divider"></span> Basic</div>
-              <div className="flex items-center gap-xs font-code-sm text-code-sm"><span className="w-2 h-2 bg-surface-variant"></span> Free</div>
+            <div className="w-full grid grid-cols-2 gap-x-sm gap-y-md">
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-primary"></span> Enterprise</span> <span className="font-bold">{stats?.plan_distribution?.ENTERPRISE || 0}</span></div>
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-primary-container"></span> Business</span> <span className="font-bold">{stats?.plan_distribution?.BUSINESS || 0}</span></div>
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-secondary"></span> Pro</span> <span className="font-bold">{stats?.plan_distribution?.PRO || 0}</span></div>
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-status-processing"></span> Starter</span> <span className="font-bold">{stats?.plan_distribution?.STARTER || 0}</span></div>
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-ui-divider"></span> Basic</span> <span className="font-bold">{stats?.plan_distribution?.BASIC || 0}</span></div>
+              <div className="flex justify-between items-center gap-xs font-code-sm text-code-sm"><span className="flex items-center gap-xs"><span className="w-2 h-2 bg-surface-variant"></span> Free</span> <span className="font-bold">{stats?.plan_distribution?.FREE || 0}</span></div>
             </div>
           </div>
         </div>
