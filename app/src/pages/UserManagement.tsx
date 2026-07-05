@@ -28,7 +28,7 @@ export default function UserManagement() {
       setData(result);
     } catch (err: any) {
       console.error(err);
-      setError('Failed to fetch users. Check PIN or permissions.');
+      setError(`Failed to fetch users: ${err.message || err.details || JSON.stringify(err)}`);
     } finally {
       setLoading(false);
     }
