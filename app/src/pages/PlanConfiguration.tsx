@@ -37,12 +37,12 @@ export default function PlanConfiguration() {
 
   const fetchPlans = async () => {
     try {
-      const { data, err } = await supabase
+      const { data, error } = await supabase
         .from('plans')
         .select('*')
         .order('price', { ascending: true });
 
-      if (err) throw err;
+      if (error) throw error;
       setPlans(data || []);
     } catch (err) {
       console.error('Error fetching plans:', err);
