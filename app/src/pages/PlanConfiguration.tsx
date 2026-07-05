@@ -14,6 +14,22 @@ interface Plan {
 export default function PlanConfiguration() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    price: 0,
+    storagelimit: 0,
+    orderlimit: 0,
+    retentiondays: 0,
+    accountlimit: 0
+  });
 
   useEffect(() => {
     fetchPlans();
@@ -21,17 +37,95 @@ export default function PlanConfiguration() {
 
   const fetchPlans = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, err } = await supabase
         .from('plans')
         .select('*')
         .order('price', { ascending: true });
 
-      if (error) throw error;
+      if (err) throw err;
       setPlans(data || []);
     } catch (err) {
       console.error('Error fetching plans:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openAddModal = () => {
+    setEditingPlan(null);
+    setFormData({
+      name: '',
+      price: 0,
+      storagelimit: 5000,
+      orderlimit: 100,
+      retentiondays: 7,
+      accountlimit: 1
+    });
+    setError(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (plan: Plan) => {
+    setEditingPlan(plan);
+    setFormData({
+      name: plan.name,
+      price: plan.price,
+      storagelimit: plan.storagelimit,
+      orderlimit: plan.orderlimit,
+      retentiondays: plan.retentiondays,
+      accountlimit: plan.accountlimit
+    });
+    setError(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    setError(null);
+    
+    const pin = localStorage.getItem('admin_pin');
+    if (!pin) {
+      setError('Admin PIN not found. Please log in again.');
+      setActionLoading(false);
+      return;
+    }
+
+    try {
+      if (editingPlan) {
+        // Update existing plan
+        const { error: rpcError } = await supabase.rpc('admin_update_plan', {
+          pin_code: pin,
+          p_id: editingPlan.id,
+          p_name: formData.name,
+          p_price: formData.price,
+          p_storagelimit: formData.storagelimit,
+          p_orderlimit: formData.orderlimit,
+          p_retentiondays: formData.retentiondays,
+          p_accountlimit: formData.accountlimit
+        });
+        if (rpcError) throw rpcError;
+      } else {
+        // Add new plan
+        const { error: rpcError } = await supabase.rpc('admin_add_plan', {
+          pin_code: pin,
+          p_name: formData.name,
+          p_price: formData.price,
+          p_storagelimit: formData.storagelimit,
+          p_orderlimit: formData.orderlimit,
+          p_retentiondays: formData.retentiondays,
+          p_accountlimit: formData.accountlimit
+        });
+        if (rpcError) throw rpcError;
+      }
+      
+      setIsModalOpen(false);
+      fetchPlans(); // Refresh the grid
+    } catch (err: any) {
+      console.error(err);
+      setError(`Failed to save plan: ${err.message || JSON.stringify(err)}`);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -67,7 +161,7 @@ export default function PlanConfiguration() {
           <h2 className="font-headline-lg text-headline-lg text-on-surface">Plan & Pricing Configuration</h2>
           <p className="font-body-md text-body-md text-on-surface-variant">Manage global service limits, storage tiers, and promotional discount cycles.</p>
         </div>
-        <button className="bg-primary text-white font-bold px-lg py-sm flex items-center gap-sm hover:brightness-110 transition-all rounded">
+        <button onClick={openAddModal} className="bg-primary text-white font-bold px-lg py-sm flex items-center gap-sm hover:brightness-110 transition-all rounded">
           <span className="material-symbols-outlined">add_circle</span>
           [ + Add New Plan ]
         </button>
@@ -103,7 +197,7 @@ export default function PlanConfiguration() {
                   </span>
                   <h3 className="font-headline-md text-headline-md font-bold uppercase">{plan.name}</h3>
                 </div>
-                <button className={`font-label-caps px-sm py-xs transition-colors rounded
+                <button onClick={() => openEditModal(plan)} className={`font-label-caps px-sm py-xs transition-colors rounded
                   ${isEnterprise ? 'text-surface border border-surface hover:bg-surface hover:text-on-surface' : 'text-on-surface border border-on-surface hover:bg-on-surface hover:text-surface'}
                 `}>[ Edit ]</button>
               </div>
@@ -189,6 +283,107 @@ export default function PlanConfiguration() {
           Developed by Nafindo Group
         </div>
       </footer>
+
+      {/* Add / Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-ui-divider">
+            <div className="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
+              <h3 className="font-headline-md font-bold text-on-surface">
+                {editingPlan ? `Edit Plan: ${editingPlan.name}` : 'Add New Plan'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            
+            <form onSubmit={handleSubmit} className="p-lg space-y-md">
+              {error && (
+                <div className="bg-error-container text-on-error-container p-sm rounded font-body-sm mb-md">
+                  {error}
+                </div>
+              )}
+              
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Plan Name</label>
+                <input 
+                  type="text" 
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-md">
+                <div>
+                  <label className="block font-label-md text-on-surface mb-xs">Price (IDR)</label>
+                  <input 
+                    type="number" 
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: parseInt(e.target.value) || 0})}
+                    className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-label-md text-on-surface mb-xs">Storage Limit (MB)</label>
+                  <input 
+                    type="number" 
+                    value={formData.storagelimit}
+                    onChange={(e) => setFormData({...formData, storagelimit: parseInt(e.target.value) || 0})}
+                    className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-md">
+                <div>
+                  <label className="block font-label-md text-on-surface mb-xs">Order Limit / Mo</label>
+                  <input 
+                    type="number" 
+                    value={formData.orderlimit}
+                    onChange={(e) => setFormData({...formData, orderlimit: parseInt(e.target.value) || 0})}
+                    className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-label-md text-on-surface mb-xs">Retention Days</label>
+                  <input 
+                    type="number" 
+                    value={formData.retentiondays}
+                    onChange={(e) => setFormData({...formData, retentiondays: parseInt(e.target.value) || 0})}
+                    className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Account / User Limit</label>
+                <input 
+                  type="number" 
+                  value={formData.accountlimit}
+                  onChange={(e) => setFormData({...formData, accountlimit: parseInt(e.target.value) || 0})}
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+
+              <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" disabled={actionLoading} className="px-lg py-sm font-label-md bg-primary text-white rounded hover:opacity-90 transition-opacity disabled:opacity-50">
+                  {actionLoading ? 'Saving...' : 'Save Plan'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
