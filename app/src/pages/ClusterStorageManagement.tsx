@@ -7,6 +7,8 @@ interface StorageNode {
   folder_id: string;
   is_active: boolean;
   tenant_count: number;
+  allocated_quota_mb: number;
+  real_usage_bytes: number;
 }
 
 interface TenantAllocation {
@@ -33,6 +35,11 @@ export default function ClusterStorageManagement() {
   const [newNodeForm, setNewNodeForm] = useState({ name: '', folder_id: '' });
   const [migrateForm, setMigrateForm] = useState({ user_id: '', email: '', target_node_id: '' });
 
+  // 5TB Max Capacity in Bytes & MB
+  const MAX_CAPACITY_TB = 5;
+  const MAX_CAPACITY_MB = MAX_CAPACITY_TB * 1024 * 1024;
+  const MAX_CAPACITY_BYTES = MAX_CAPACITY_MB * 1024 * 1024;
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -57,11 +64,18 @@ export default function ClusterStorageManagement() {
       const { data: tenantsData, error: tenantsError } = await supabase.rpc('admin_get_tenant_allocations', { pin_code: pin });
       if (tenantsError) throw tenantsError;
 
-      setNodes(nodesData || []);
+      // Type cast or default new fields in case the SQL hasn't been updated yet by the user
+      const safeNodes = (nodesData || []).map((n: any) => ({
+        ...n,
+        allocated_quota_mb: Number(n.allocated_quota_mb || 0),
+        real_usage_bytes: Number(n.real_usage_bytes || 0)
+      }));
+
+      setNodes(safeNodes);
       setTenants(tenantsData || []);
     } catch (err: any) {
       console.error(err);
-      setError(`Failed to fetch data: ${err.message || JSON.stringify(err)}. Make sure you have executed the new SQL script in Supabase!`);
+      setError(`Failed to fetch data: ${err.message || JSON.stringify(err)}`);
     } finally {
       setLoading(false);
     }
@@ -102,17 +116,30 @@ export default function ClusterStorageManagement() {
   const handleMigrate = async (e: React.FormEvent) => {
     e.preventDefault();
     setActionLoading(true);
-    const pin = localStorage.getItem('admin_pin');
     
+    // Instead of simple SQL update, we call our backend API to actually move files
     try {
-      const { error } = await supabase.rpc('admin_migrate_tenant_server', {
-        pin_code: pin,
-        p_user_id: migrateForm.user_id,
-        p_node_id: migrateForm.target_node_id
+      const token = localStorage.getItem('access_token');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      
+      const res = await fetch(`${API_URL}/api/admin/migrate-server`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userId: migrateForm.user_id,
+          targetNodeId: migrateForm.target_node_id,
+          pinCode: localStorage.getItem('admin_pin')
+        })
       });
-      if (error) throw error;
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Migration failed');
       
       setIsMigrateOpen(false);
+      alert('Migration successful! Files moved instantly via Google Drive API.');
       fetchData();
     } catch (err: any) {
       alert(`Migration failed: ${err.message}`);
@@ -139,6 +166,14 @@ export default function ClusterStorageManagement() {
     }
   };
 
+  const formatSize = (bytes: number) => {
+    if (!bytes) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="p-lg pb-xl space-y-lg flex flex-col min-h-[calc(100vh-64px)] w-full max-w-container-max mx-auto">
       {/* Page Header */}
@@ -158,36 +193,66 @@ export default function ClusterStorageManagement() {
       <div className="space-y-md">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
           
-          {nodes.map((node) => (
-            <div key={node.id} className="group relative overflow-hidden bg-surface-container-lowest border border-ui-divider hover:border-primary rounded-lg p-lg flex flex-col gap-md shadow-sm transition-all">
-              <div className="flex items-start gap-md">
-                <div className="w-12 h-12 bg-primary-container/20 rounded-lg flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>cloud</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-xs">
-                    <h4 className="font-headline-sm text-[16px] font-bold truncate" title={node.name}>{node.name}</h4>
-                    {node.is_active && (
-                      <span className="bg-status-success text-white px-2 py-[2px] rounded font-code-sm text-[10px] shrink-0">ACTIVE</span>
-                    )}
+          {nodes.map((node) => {
+            const quotaPercent = Math.min(100, (node.allocated_quota_mb / MAX_CAPACITY_MB) * 100).toFixed(2);
+            const realPercent = Math.min(100, (node.real_usage_bytes / MAX_CAPACITY_BYTES) * 100).toFixed(2);
+
+            return (
+              <div key={node.id} className="group relative overflow-hidden bg-surface-container-lowest border border-ui-divider hover:border-primary rounded-lg p-lg flex flex-col gap-md shadow-sm transition-all">
+                <div className="flex items-start gap-md">
+                  <div className="w-12 h-12 bg-primary-container/20 rounded-lg flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>cloud</span>
                   </div>
-                  <a 
-                    href={`https://drive.google.com/drive/u/0/folders/${node.folder_id}`} 
-                    target="_blank" rel="noreferrer"
-                    className="font-code-sm text-[11px] text-primary hover:underline truncate block"
-                    title={node.folder_id}
-                  >
-                    ID: {node.folder_id}
-                  </a>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-xs">
+                      <h4 className="font-headline-sm text-[16px] font-bold truncate" title={node.name}>{node.name}</h4>
+                      {node.is_active && (
+                        <span className="bg-status-success text-white px-2 py-[2px] rounded font-code-sm text-[10px] shrink-0">ACTIVE</span>
+                      )}
+                    </div>
+                    <a 
+                      href={`https://drive.google.com/drive/u/0/folders/${node.folder_id}`} 
+                      target="_blank" rel="noreferrer"
+                      className="font-code-sm text-[11px] text-primary hover:underline truncate block"
+                      title={node.folder_id}
+                    >
+                      ID: {node.folder_id}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-sm mt-xs">
+                  {/* Indicator 1: Allocated Quota */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-label-caps text-[10px] text-on-surface-variant font-bold">ALLOCATED QUOTA</span>
+                      <span className="font-code-sm text-[10px] text-on-surface-variant">{formatSize(node.allocated_quota_mb * 1024 * 1024)} / 5 TB</span>
+                    </div>
+                    <div className="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-primary h-full rounded-full" style={{ width: `${quotaPercent}%` }}></div>
+                    </div>
+                  </div>
+
+                  {/* Indicator 2: Real Usage */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-label-caps text-[10px] text-on-surface-variant font-bold">REAL USAGE (VIDEOS)</span>
+                      <span className="font-code-sm text-[10px] text-on-surface-variant">{formatSize(node.real_usage_bytes)} / 5 TB</span>
+                    </div>
+                    <div className="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
+                      <div className="bg-status-processing h-full rounded-full" style={{ width: `${realPercent}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-sm border-t border-ui-divider flex justify-between items-center">
+                  <span className="font-code-sm text-[12px] text-on-surface-variant">
+                    <strong className="text-on-surface">{node.tenant_count || 0}</strong> Tenants Assigned
+                  </span>
                 </div>
               </div>
-              <div className="mt-auto pt-sm border-t border-ui-divider flex justify-between items-center">
-                <span className="font-code-sm text-[12px] text-on-surface-variant">
-                  <strong className="text-on-surface">{node.tenant_count || 0}</strong> Tenants Assigned
-                </span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           
           {/* Add New Node Button */}
           <div 
