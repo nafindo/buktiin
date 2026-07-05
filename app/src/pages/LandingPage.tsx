@@ -1,6 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import imgProblem from '../assets/images/promo-problem.png';
 import imgSolution from '../assets/images/promo-solution.png';
 import logoImg from '../assets/images/logo.png';
@@ -21,115 +19,99 @@ export default function LandingPage() {
               <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
               <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
             </Link>
-            <Link to="/download" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
+            <Link to="/login" className="bg-primary-container text-on-primary-container px-md py-sm font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
               Mulai Gunakan BUKTIIN
             </Link>
           </nav>
         </header>
 
         {/* Main Grid Layout */}
-        <main className="w-full max-w-[1400px] px-4 lg:px-lg py-6 lg:py-xl flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch mx-auto">
+        <main className="w-full max-w-[1400px] px-lg py-xl flex-1 flex flex-col lg:flex-row gap-xl items-stretch justify-center mx-auto">
           
-          {/* Left Sidebar: Masalah (Order 2 on Mobile, 1 on Desktop) */}
-          <aside className="order-2 lg:order-1 col-span-1 md:col-span-1 lg:col-span-2 flex flex-col h-full">
-            <div className="relative bg-error/10 border-2 border-error/20 rounded-2xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-4 min-h-[350px] lg:min-h-[400px] group hover:border-error/40 transition-colors">
+          {/* Left Sidebar: Masalah */}
+          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
+            <div className="relative bg-error/10 border-2 border-error/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
-                <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-b from-error/10 to-background/90" />
+                <img src={imgProblem} alt="Seller Stress" className="w-full h-full object-cover opacity-90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl w-full mt-2 border border-error/20 shadow-lg transform -translate-y-1">
-                <h2 className="text-sm lg:text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="font-headline-sm text-headline-sm text-error font-extrabold leading-tight">Sering Kena Retur Fiktif?</h2>
               </div>
 
               {/* Permasalahan Seller (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-xl p-3 lg:p-4 rounded-xl mt-auto space-y-3 border border-error/20 shadow-xl">
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto space-y-3 border border-error/20 shadow-lg">
                 <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
-                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Klaim barang kurang/rusak tanpa bukti</span>
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Klaim barang kurang/rusak tanpa bukti</span>
                 </div>
                 <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
-                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Rugi uang & barang melayang</span>
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Rugi uang & barang melayang</span>
                 </div>
                 <div className="flex items-start gap-2 text-left">
-                  <span className="material-symbols-outlined text-error text-base lg:text-lg shrink-0">cancel</span>
-                  <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Reputasi & rating toko anjlok</span>
+                  <span className="material-symbols-outlined text-error text-lg mt-0.5">cancel</span>
+                  <span className="text-xs font-bold text-on-surface leading-snug">Reputasi & rating toko anjlok</span>
                 </div>
               </div>
             </div>
           </aside>
 
-          {/* Center: Video Player (Order 1 on Mobile, 2 on Desktop) */}
-          <section className="order-1 lg:order-2 col-span-1 md:col-span-2 lg:col-span-8 flex flex-col items-center justify-center text-center w-full">
-            <h1 className="text-2xl md:text-headline-lg mb-2 font-extrabold tracking-tight text-on-surface">Bukti Packing Pesanan Anda</h1>
-            <p className="text-sm md:text-body-lg text-on-surface-variant mb-6 font-medium max-w-2xl">
-              Penjual menggunakan teknologi cerdas <strong>BUKTIIN</strong> untuk menjamin transparansi & keamanan pesanan Anda.
+          {/* Center: Video Player */}
+          <section className="w-full lg:w-[70%] flex flex-col items-center text-center">
+            <h1 className="font-headline-lg text-headline-lg mb-sm font-extrabold">Bukti Packing Pesanan Anda</h1>
+            <p className="text-on-surface-variant mb-lg font-medium">
+              Penjual menggunakan teknologi <strong>BUKTIIN</strong> untuk menjamin transparansi pengemasan pesanan Anda.
             </p>
 
-            {/* Container Video Utama (Berlaku untuk semua perangkat) */}
-            {/* Kita paksa iframe dirender 3x lipat lebih besar agar Google Drive mengira ini layar Desktop, lalu kita perkecil (scale) 3x lipat agar pas di layar HP. Ini mencegah UI raksasa Google Drive menutupi video di HP. */}
-            <div className="w-full bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-surface ring-1 ring-ui-divider aspect-video relative group transition-transform duration-500 hover:scale-[1.01]">
-              <div 
-                className="absolute top-0 left-0 origin-top-left"
-                style={{ 
-                  width: '300%', 
-                  height: '300%', 
-                  transform: 'scale(0.33333333)', 
-                }}
-              >
-                <iframe 
-                  src={`https://drive.google.com/file/d/${videoId}/preview`} 
-                  width="100%" 
-                  height="100%" 
-                  allow="autoplay; fullscreen; picture-in-picture" 
-                  frameBorder="0"
-                  className="w-full h-full"
-                ></iframe>
-              </div>
-              <div className="absolute inset-0 bg-primary/5 pointer-events-none z-20 group-hover:bg-transparent transition-colors duration-500" />
+            <div className="w-full bg-black rounded-xl overflow-hidden shadow-2xl border-4 border-surface border-ui-divider aspect-video relative group">
+              <iframe 
+                src={`https://drive.google.com/file/d/${videoId}/preview`} 
+                width="100%" 
+                height="100%" 
+                allow="autoplay" 
+                className="absolute inset-0 z-10"
+              ></iframe>
             </div>
 
-            <div className="mt-6 lg:mt-8 bg-primary-container/50 border-2 border-primary/20 rounded-2xl p-4 w-full shadow-sm backdrop-blur-sm flex items-center justify-center gap-3">
-              <span className="material-symbols-outlined text-primary text-2xl">verified_user</span>
-              <p className="text-sm md:text-base text-on-primary-container font-bold">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
+            <div className="mt-xl bg-primary-container border-2 border-primary/30 rounded-xl p-md w-full shadow-md">
+              <p className="text-body-md text-on-primary-container font-bold">Pelanggan merasa aman, Anda pun tenang berbisnis.</p>
             </div>
           </section>
 
-          {/* Right Sidebar: Kelebihan (Order 3 on Mobile, 3 on Desktop) */}
-          <aside className="order-3 lg:order-3 col-span-1 md:col-span-1 lg:col-span-2 flex flex-col h-full">
-            <div className="relative bg-primary/10 border-2 border-primary/20 rounded-2xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-4 min-h-[350px] lg:min-h-[400px] group hover:border-primary/40 transition-colors">
+          {/* Right Sidebar: Kelebihan */}
+          <aside className="w-full lg:w-[15%] flex flex-col gap-md">
+            <div className="relative bg-primary/10 border-2 border-primary/20 rounded-xl h-full flex flex-col items-center justify-between text-center shadow-inner overflow-hidden p-3 min-h-[400px]">
               {/* Banner Image (z:1) */}
               <div className="absolute inset-0 z-[1] flex justify-center items-center pointer-events-none">
-                <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500 scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-background/90" />
+                <img src={imgSolution} alt="Seller Happy" className="w-full h-full object-cover opacity-90" />
               </div>
               
               {/* Judul di depan banner (z:2) */}
-              <div className="relative z-[2] bg-white/90 backdrop-blur-md px-3 py-2 rounded-xl w-full mt-2 border border-primary/20 shadow-lg transform -translate-y-1">
-                <h2 className="text-sm lg:text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
+              <div className="relative z-[2] bg-white/80 backdrop-blur-sm px-2 py-3 rounded-lg w-full mt-1 border border-white/50 shadow-sm">
+                <h2 className="font-headline-sm text-headline-sm text-primary font-extrabold leading-tight">Menangkan Tiap Sengketa!</h2>
               </div>
 
               {/* Solusi (z:3) */}
-              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-xl p-3 lg:p-4 rounded-xl mt-auto flex flex-col gap-4 border border-primary/20 shadow-xl">
-                <div className="flex flex-col gap-3">
+              <div className="relative z-[3] w-full bg-white/95 backdrop-blur-md p-3 rounded-lg mt-auto flex flex-col gap-3 border border-primary/20 shadow-lg">
+                <div className="flex flex-col gap-2">
                   <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">check_circle</span>
-                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Rekam otomatis via scan barcode</span>
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Rekam otomatis via scan barcode</span>
                   </div>
                   <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">cloud_done</span>
-                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Video aman di Cloud (memori lega)</span>
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Video aman di Cloud (memori lega)</span>
                   </div>
                   <div className="flex items-start gap-2 text-left">
-                    <span className="material-symbols-outlined text-primary text-base lg:text-lg shrink-0">gavel</span>
-                    <span className="text-xs lg:text-sm font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
+                    <span className="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+                    <span className="text-xs font-bold text-on-surface leading-snug">Punya bukti kuat 100% akurat</span>
                   </div>
                 </div>
-                <Link to="/download" className="w-full bg-primary text-white font-extrabold py-3 px-2 text-sm rounded-lg hover:opacity-90 hover:scale-[1.02] hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow shadow-md flex items-center justify-center gap-1">
-                  <span className="material-symbols-outlined text-base">download</span> Daftar Gratis
+                <Link to="/register" className="w-full bg-primary text-white font-extrabold py-2 px-1 text-[13px] rounded-lg hover:opacity-90 hover:shadow-lg transition-all text-center whitespace-nowrap animate-pulse-slow">
+                  Daftar Gratis
                 </Link>
               </div>
             </div>
@@ -141,7 +123,26 @@ export default function LandingPage() {
 
   return (
     <div className="bg-background text-on-surface font-body-md industrial-pattern selection:bg-primary-container selection:text-on-primary-container min-h-screen">
-      <Navbar />
+      {/* TopNavBar */}
+      <header className="fixed top-0 left-0 w-full z-50 bg-surface border-b border-ui-divider flex justify-center">
+        <nav className="w-full max-w-container-max flex justify-between items-center px-lg py-md h-20">
+          <Link to="/" className="flex items-center gap-2">
+            <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
+            <span className="font-headline-md text-headline-md font-extrabold text-primary tracking-tighter">BUKTIIN</span>
+          </Link>
+          <div className="hidden md:flex items-center gap-xl">
+            <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Fitur</button>
+            <button onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Manfaat</button>
+            <button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Harga</button>
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
+          </div>
+          <div className="flex items-center gap-md">
+            <Link to="/login" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
+              Mulai Sekarang
+            </Link>
+          </div>
+        </nav>
+      </header>
 
       <main className="pt-20">
         {/* Hero Section */}
@@ -158,7 +159,7 @@ export default function LandingPage() {
                 Solusi otomatisasi rekaman packing untuk seller e-commerce. Lindungi bisnismu dari komplain palsu dengan bukti video yang akurat dan tersertifikasi.
               </p>
               <div className="flex flex-wrap gap-md pt-sm">
-                <Link to="/download" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
+                <Link to="/login" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
                   Mulai Sekarang
                   <span className="material-symbols-outlined">arrow_forward</span>
                 </Link>
@@ -349,7 +350,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 7 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm opacity-30"><span className="material-symbols-outlined text-[18px]">block</span> Tanpa API Access</li>
                 </ul>
-                <Link to="/download" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
+                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Starter */}
               <div className="bg-surface border-4 border-primary p-lg rounded-xl flex flex-col shadow-xl relative scale-105 z-10">
@@ -368,7 +369,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 14 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Export CSV &amp; Webhook</li>
                 </ul>
-                <Link to="/download" className="w-full py-sm bg-primary text-white font-bold rounded hover:opacity-90 transition-all text-center block">Pilih Paket</Link>
+                <Link to="/login" className="w-full py-sm bg-primary text-white font-bold rounded hover:opacity-90 transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Pro */}
               <div className="bg-surface border border-ui-divider p-lg rounded-xl flex flex-col hover:shadow-md transition-shadow">
@@ -386,7 +387,7 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 30 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Dedicated Support</li>
                 </ul>
-                <Link to="/download" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
+                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
               </div>
               {/* Business */}
               <div className="bg-inverse-surface border border-outline p-lg rounded-xl flex flex-col text-surface">
@@ -404,14 +405,35 @@ export default function LandingPage() {
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> 60 Hari Cloud Storage</li>
                   <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> Custom API Integration</li>
                 </ul>
-                <Link to="/download" className="w-full py-sm bg-surface text-inverse-surface font-bold rounded hover:bg-primary-fixed transition-all text-center block">Hubungi Sales</Link>
+                <Link to="/login" className="w-full py-sm bg-surface text-inverse-surface font-bold rounded hover:bg-primary-fixed transition-all text-center block">Hubungi Sales</Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Trust Signals and Footer */}
-        <Footer />
+        {/* Trust Signals */}
+        <section className="py-xl bg-surface">
+          <div className="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-xl border-b border-ui-divider pb-xl">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <span className="font-label-caps text-label-caps text-primary uppercase mb-2">Developed by</span>
+              <h4 className="font-headline-md text-headline-md font-bold tracking-tight">NAFINDO GROUP</h4>
+            </div>
+            <div className="flex gap-xl overflow-x-auto py-md grayscale opacity-60">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined">verified</span>
+                <span className="font-bold">TIER 3 DATA CENTER</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined">dns</span>
+                <span className="font-bold">99.5% UPTIME</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined">lock_reset</span>
+                <span className="font-bold">AES-256 ENCRYPTION</span>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
