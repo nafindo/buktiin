@@ -1,4 +1,64 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  storagelimit: number;
+  orderlimit: number;
+  retentiondays: number;
+  accountlimit: number;
+}
+
 export default function PlanConfiguration() {
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('plans')
+        .select('*')
+        .order('price', { ascending: true });
+
+      if (error) throw error;
+      setPlans(data || []);
+    } catch (err) {
+      console.error('Error fetching plans:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatStorage = (mb: number) => {
+    if (mb >= 10000000) return 'Custom On-Prem';
+    if (mb >= 1000000) return `${mb / 1000000}TB Hybrid`;
+    if (mb >= 1000) return `${mb / 1000}GB Cloud`;
+    return `${mb}MB Cloud`;
+  };
+
+  const formatOrders = (orders: number) => {
+    if (orders >= 10000) return 'Unlimited';
+    return `${orders.toLocaleString()} / Mo`;
+  };
+
+  const formatUsers = (users: number) => {
+    if (users >= 999999) return 'Custom SSO';
+    if (users >= 1000) return 'Unlimited';
+    return `${users} Account${users > 1 ? 's' : ''}`;
+  };
+
+  const formatRetention = (days: number) => {
+    if (days >= 365 * 2) return '2 Years';
+    if (days >= 365) return '1 Year';
+    return `${days} Days`;
+  };
+
   return (
     <div className="p-lg pb-xl space-y-lg flex flex-col min-h-[calc(100vh-64px)] max-w-container-max mx-auto w-full industrial-grid">
       {/* Header Section */}
@@ -15,204 +75,75 @@ export default function PlanConfiguration() {
 
       {/* Bento Grid of Plans */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg mb-xl">
-        {/* Free Plan */}
-        <div className="bg-surface border border-ui-divider p-lg flex flex-col group hover:border-primary transition-all rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-on-surface-variant">Tier 0</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Free</h3>
-            </div>
-            <button className="font-label-caps text-on-surface border border-on-surface px-sm py-xs hover:bg-on-surface hover:text-surface transition-colors rounded">[ Edit ]</button>
+        {loading ? (
+          <div className="col-span-full py-xl text-center flex flex-col items-center">
+             <span className="material-symbols-outlined animate-spin text-4xl text-primary mb-md">progress_activity</span>
+             <p className="font-code-sm text-on-surface-variant">Loading plans from Supabase...</p>
           </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-on-surface">5GB Cloud</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-on-surface">100 / Mo</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-on-surface">1 Account</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-on-surface">7 Days</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-status-success rounded-full"></span>
-            <span className="font-label-caps text-sm text-status-success">Active Deployment</span>
-          </div>
-        </div>
+        ) : plans.map((plan, index) => {
+          const isEnterprise = plan.name === 'ENTERPRISE';
+          const isPopular = plan.name === 'STARTER';
 
-        {/* Basic Plan */}
-        <div className="bg-surface border border-ui-divider p-lg flex flex-col group hover:border-primary transition-all rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-on-surface-variant">Tier 1</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Basic</h3>
-            </div>
-            <button className="font-label-caps text-on-surface border border-on-surface px-sm py-xs hover:bg-on-surface hover:text-surface transition-colors rounded">[ Edit ]</button>
-          </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-on-surface">50GB Cloud</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-on-surface">1,000 / Mo</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-on-surface">3 Accounts</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-on-surface">30 Days</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-status-success rounded-full"></span>
-            <span className="font-label-caps text-sm text-status-success">Active Deployment</span>
-          </div>
-        </div>
+          return (
+            <div 
+              key={plan.id}
+              className={`p-lg flex flex-col group transition-all rounded-xl relative
+                ${isEnterprise ? 'bg-on-surface text-surface hover:brightness-110' : 'bg-surface hover:border-primary'}
+                ${isPopular ? 'border-2 border-primary' : 'border border-ui-divider'}
+              `}
+            >
+              {isPopular && (
+                <div className="absolute -top-3 right-lg bg-primary text-white font-label-caps text-xs px-sm py-1 rounded">MOST POPULAR</div>
+              )}
+              
+              <div className="flex justify-between items-start mb-md">
+                <div>
+                  <span className={`font-label-caps text-label-caps ${isEnterprise ? 'text-surface-variant' : (isPopular ? 'text-primary' : 'text-on-surface-variant')}`}>
+                    Tier {index}
+                  </span>
+                  <h3 className="font-headline-md text-headline-md font-bold uppercase">{plan.name}</h3>
+                </div>
+                <button className={`font-label-caps px-sm py-xs transition-colors rounded
+                  ${isEnterprise ? 'text-surface border border-surface hover:bg-surface hover:text-on-surface' : 'text-on-surface border border-on-surface hover:bg-on-surface hover:text-surface'}
+                `}>[ Edit ]</button>
+              </div>
 
-        {/* Starter Plan */}
-        <div className="bg-surface border-2 border-primary p-lg flex flex-col group transition-all relative rounded-xl">
-          <div className="absolute -top-3 right-lg bg-primary text-white font-label-caps text-xs px-sm py-1 rounded">MOST POPULAR</div>
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-primary">Tier 2</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Starter</h3>
-            </div>
-            <button className="font-label-caps text-on-surface border border-on-surface px-sm py-xs hover:bg-on-surface hover:text-white transition-colors rounded">[ Edit ]</button>
-          </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-on-surface">250GB Cloud</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-on-surface">5,000 / Mo</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-on-surface">10 Accounts</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-on-surface">90 Days</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-status-success rounded-full"></span>
-            <span className="font-label-caps text-sm text-status-success">Active Deployment</span>
-          </div>
-        </div>
+              <div className="space-y-sm mb-lg">
+                <div className={`flex justify-between border-b pb-xs ${isEnterprise ? 'border-surface-variant/30' : 'border-ui-divider'}`}>
+                  <span className={`font-body-md ${isEnterprise ? 'text-surface-variant' : 'text-on-surface-variant'}`}>Storage</span>
+                  <span className={`font-code-sm font-bold ${isEnterprise ? 'text-surface' : 'text-on-surface'}`}>
+                    {formatStorage(plan.storagelimit)}
+                  </span>
+                </div>
+                <div className={`flex justify-between border-b pb-xs ${isEnterprise ? 'border-surface-variant/30' : 'border-ui-divider'}`}>
+                  <span className={`font-body-md ${isEnterprise ? 'text-surface-variant' : 'text-on-surface-variant'}`}>Orders</span>
+                  <span className={`font-code-sm font-bold ${isEnterprise ? 'text-surface' : 'text-on-surface'}`}>
+                    {formatOrders(plan.orderlimit)}
+                  </span>
+                </div>
+                <div className={`flex justify-between border-b pb-xs ${isEnterprise ? 'border-surface-variant/30' : 'border-ui-divider'}`}>
+                  <span className={`font-body-md ${isEnterprise ? 'text-surface-variant' : 'text-on-surface-variant'}`}>Users</span>
+                  <span className={`font-code-sm font-bold ${isEnterprise ? 'text-surface' : 'text-on-surface'}`}>
+                    {formatUsers(plan.accountlimit)}
+                  </span>
+                </div>
+                <div className={`flex justify-between border-b pb-xs ${isEnterprise ? 'border-surface-variant/30' : 'border-ui-divider'}`}>
+                  <span className={`font-body-md ${isEnterprise ? 'text-surface-variant' : 'text-on-surface-variant'}`}>Retention</span>
+                  <span className={`font-code-sm font-bold ${isEnterprise ? 'text-surface' : 'text-on-surface'}`}>
+                    {formatRetention(plan.retentiondays)}
+                  </span>
+                </div>
+              </div>
 
-        {/* Pro Plan */}
-        <div className="bg-surface border border-ui-divider p-lg flex flex-col group hover:border-primary transition-all rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-on-surface-variant">Tier 3</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Pro</h3>
+              <div className="mt-auto pt-md flex items-center gap-sm">
+                <span className={`w-2 h-2 rounded-full ${isEnterprise ? 'bg-primary-fixed' : 'bg-status-success'}`}></span>
+                <span className={`font-label-caps text-sm ${isEnterprise ? 'text-primary-fixed' : 'text-status-success'}`}>
+                  {isEnterprise ? 'Custom Quota' : 'Active Deployment'}
+                </span>
+              </div>
             </div>
-            <button className="font-label-caps text-on-surface border border-on-surface px-sm py-xs hover:bg-on-surface hover:text-white transition-colors rounded">[ Edit ]</button>
-          </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-on-surface">1TB Hybrid</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-on-surface">25,000 / Mo</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-on-surface">50 Accounts</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-on-surface">1 Year</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-status-success rounded-full"></span>
-            <span className="font-label-caps text-sm text-status-success">Active Deployment</span>
-          </div>
-        </div>
-
-        {/* Business Plan */}
-        <div className="bg-surface border border-ui-divider p-lg flex flex-col group hover:border-primary transition-all rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-on-surface-variant">Tier 4</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Business</h3>
-            </div>
-            <button className="font-label-caps text-on-surface border border-on-surface px-sm py-xs hover:bg-on-surface hover:text-white transition-colors rounded">[ Edit ]</button>
-          </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-on-surface">5TB Hybrid</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-on-surface">100,000 / Mo</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-on-surface">Unlimited</span>
-            </div>
-            <div className="flex justify-between border-b border-ui-divider pb-xs">
-              <span className="font-body-md text-on-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-on-surface">2 Years</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-status-success rounded-full"></span>
-            <span className="font-label-caps text-sm text-status-success">Active Deployment</span>
-          </div>
-        </div>
-
-        {/* Enterprise Plan */}
-        <div className="bg-on-surface text-surface p-lg flex flex-col group hover:brightness-110 transition-all rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <div>
-              <span className="font-label-caps text-label-caps text-surface-variant">Tier 5</span>
-              <h3 className="font-headline-md text-headline-md font-bold">Enterprise</h3>
-            </div>
-            <button className="font-label-caps text-surface border border-surface px-sm py-xs hover:bg-surface hover:text-on-surface transition-colors rounded">[ Edit ]</button>
-          </div>
-          <div className="space-y-sm mb-lg">
-            <div className="flex justify-between border-b border-surface-variant/30 pb-xs">
-              <span className="font-body-md text-surface-variant">Storage</span>
-              <span className="font-code-sm font-bold text-surface">Custom On-Prem</span>
-            </div>
-            <div className="flex justify-between border-b border-surface-variant/30 pb-xs">
-              <span className="font-body-md text-surface-variant">Orders</span>
-              <span className="font-code-sm font-bold text-surface">Unlimited</span>
-            </div>
-            <div className="flex justify-between border-b border-surface-variant/30 pb-xs">
-              <span className="font-body-md text-surface-variant">Users</span>
-              <span className="font-code-sm font-bold text-surface">Custom SSO</span>
-            </div>
-            <div className="flex justify-between border-b border-surface-variant/30 pb-xs">
-              <span className="font-body-md text-surface-variant">Retention</span>
-              <span className="font-code-sm font-bold text-surface">Indefinite</span>
-            </div>
-          </div>
-          <div className="mt-auto pt-md flex items-center gap-sm">
-            <span className="w-2 h-2 bg-primary-fixed rounded-full"></span>
-            <span className="font-label-caps text-sm text-primary-fixed">Custom Quota</span>
-          </div>
-        </div>
+          );
+        })}
       </section>
 
       {/* Promo & Discount Codes Section */}
@@ -237,53 +168,13 @@ export default function PlanConfiguration() {
               </tr>
             </thead>
             <tbody className="divide-y divide-ui-divider">
-              {/* Promo Row 1 */}
               <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="px-lg py-md font-code-sm font-bold">MERDEKA78</td>
-                <td className="px-lg py-md font-body-md">15% Off</td>
-                <td className="px-lg py-md font-body-md">IDR 2,500,000</td>
-                <td className="px-lg py-md font-code-sm text-sm">31 Aug 2024</td>
-                <td className="px-lg py-md">
-                  <span className="bg-status-success text-white font-label-caps text-xs px-sm py-1 rounded">Selesai</span>
-                </td>
-                <td className="px-lg py-md font-code-sm">
-                  <button className="hover:text-primary">[ Edit ]</button>
-                  <button className="hover:text-status-error ml-md">[ Kill ]</button>
-                </td>
-              </tr>
-              {/* Promo Row 2 */}
-              <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="px-lg py-md font-code-sm font-bold">GAULPACK</td>
-                <td className="px-lg py-md font-body-md">IDR 500k Flat</td>
-                <td className="px-lg py-md font-body-md">IDR 5,000,000</td>
-                <td className="px-lg py-md font-code-sm text-sm">31 Dec 2024</td>
-                <td className="px-lg py-md">
-                  <span className="bg-status-processing text-white font-label-caps text-xs px-sm py-1 rounded">Proses</span>
-                </td>
-                <td className="px-lg py-md font-code-sm">
-                  <button className="hover:text-primary">[ Edit ]</button>
-                  <button className="hover:text-status-error ml-md">[ Kill ]</button>
-                </td>
-              </tr>
-              {/* Promo Row 3 */}
-              <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="px-lg py-md font-code-sm font-bold">EARLYADOPTER</td>
-                <td className="px-lg py-md font-body-md">50% Lifetime</td>
-                <td className="px-lg py-md font-body-md">IDR 0</td>
-                <td className="px-lg py-md font-code-sm text-sm">N/A</td>
-                <td className="px-lg py-md">
-                  <span className="bg-status-error text-white font-label-caps text-xs px-sm py-1 rounded">Gagal</span>
-                </td>
-                <td className="px-lg py-md font-code-sm">
-                  <button className="hover:text-primary">[ Edit ]</button>
-                  <button className="hover:text-status-error ml-md">[ Kill ]</button>
+                <td colSpan={6} className="px-lg py-xl text-center font-code-sm text-on-surface-variant">
+                  Promo feature is currently disabled. Coming soon.
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
-        <div className="px-lg py-sm bg-surface-container-low flex justify-end">
-          <span className="font-code-sm text-xs text-on-surface-variant">Showing 3 of 12 promo codes</span>
         </div>
       </section>
 
