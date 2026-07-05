@@ -225,11 +225,14 @@ export default function ClusterStorageManagement() {
                   {/* Indicator 1: Allocated Quota */}
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-label-caps text-[10px] text-on-surface-variant font-bold">ALLOCATED QUOTA</span>
+                      <span className="font-label-caps text-[10px] text-on-surface-variant font-bold">PLAN ALLOCATION</span>
                       <span className="font-code-sm text-[10px] text-on-surface-variant">{formatSize(node.allocated_quota_mb * 1024 * 1024)} / 5 TB</span>
                     </div>
                     <div className="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
                       <div className="bg-primary h-full rounded-full" style={{ width: `${quotaPercent}%` }}></div>
+                    </div>
+                    <div className="text-right mt-1">
+                      <span className="font-code-sm text-[9px] text-on-surface-variant">Remaining: {formatSize(MAX_CAPACITY_BYTES - (node.allocated_quota_mb * 1024 * 1024))}</span>
                     </div>
                   </div>
 
@@ -241,6 +244,9 @@ export default function ClusterStorageManagement() {
                     </div>
                     <div className="w-full bg-surface-container-high rounded-full h-1.5 overflow-hidden">
                       <div className="bg-status-processing h-full rounded-full" style={{ width: `${realPercent}%` }}></div>
+                    </div>
+                    <div className="text-right mt-1">
+                      <span className="font-code-sm text-[9px] text-on-surface-variant">Available Space: {formatSize(MAX_CAPACITY_BYTES - node.real_usage_bytes)}</span>
                     </div>
                   </div>
                 </div>
@@ -430,8 +436,8 @@ export default function ClusterStorageManagement() {
                     <option key={n.id} value={n.id}>{n.name} (ID: {n.folder_id})</option>
                   ))}
                 </select>
-                <p className="font-code-sm text-[11px] text-on-surface-variant mt-2">
-                  Notice: This only redirects future uploads to the new server. Existing files remain in the old drive unless manually moved.
+                <p className="font-code-sm text-[11px] text-status-success mt-2">
+                  Notice: This will instantly move all existing videos to the new server via Google Drive API, redirect future uploads, and keep video streaming links intact.
                 </p>
               </div>
               <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
