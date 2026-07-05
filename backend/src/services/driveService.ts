@@ -1,112 +1,90 @@
 import fs from 'fs';
-import { createClient } from '@supabase/supabase-js';
+import path from 'path';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
+
+// URL Web App dari Google Apps Script
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzqGBtG_h326vqSVMx_sXYqE7G78NFlhfrMsY_U8JqwrL4UlllxnnMExP12FDj0qro/exec';
 
-// Triggered asynchronously by uploadVideo
-export const triggerDriveUpload = async (
-  recordingId: string, 
-  videoPath: string, 
-  accessToken: string,
-  resi: string,
-  marketplace: string
-) => {
-  console.log(`[DriveService] Starting background upload for recording ${recordingId}...`);
+export const processPendingUploads = async () => {
+  console.log('[Background Worker] Checking for pending Google Drive uploads via Apps Script...');
   
-  const client = createClient(process.env.SUPABASE_URL || '', process.env.SUPABASE_ANON_KEY || '', {
-    global: { headers: { Authorization: `Bearer ${accessToken}` } }
-  });
-
   try {
-    // Set to UPLOADING
-    await client.from('recordings').update({ upload_status: 'UPLOADING' }).eq('id', recordingId);
-
-    if (!fs.existsSync(videoPath)) {
-      await client.from('recordings').update({ upload_status: 'FAILED' }).eq('id', recordingId);
-      return;
-    }
-
-    const fileName = `${resi}_${marketplace}.mp4`;
-    
-    // Read and encode base64
-    const fileBuffer = fs.readFileSync(videoPath);
-    const base64Data = fileBuffer.toString('base64');
-    
-    // Fetch dynamic folder_id based on user
-    let targetFolderId = '1RzzoTN6TAWdjzchTclguyaExAbuM3q0O'; // Fallback
-    
-    const { data: recData } = await client.from('recordings').select('user_id').eq('id', recordingId).single();
-    if (recData && recData.user_id) {
-      const { data: serverData } = await client
-        .from('user_servers')
-        .select(`storage_nodes(folder_id)`)
-        .eq('user_id', recData.user_id)
-        .single();
-        
-      const nodes: any = serverData?.storage_nodes;
-      if (nodes && nodes.folder_id) {
-        targetFolderId = nodes.folder_id;
-      }
-    }
-    
-    const payload = {
-       fileName: fileName,
-       mimeType: 'video/mp4',
-       fileData: base64Data,
-       folderId: targetFolderId
-    };
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minutes timeout
-
-    console.log(`[DriveService] Uploading ${fileName} to Google Drive via GAS (Payload size: ${Math.round(JSON.stringify(payload).length / 1024)} KB)...`);
-
-    const response = await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      signal: controller.signal
+    const pendingRecordings = await prisma.recording.findMany({
+      where: { 
+        uploadStatus: 'PENDING',
+        status: 'DONE',
+        videoPath: { not: null }
+      },
+      take: 5
     });
 
-    clearTimeout(timeoutId);
+    if (pendingRecordings.length === 0) return;
 
-    const textResult = await response.text();
-    console.log('[DriveService] GAS raw response:', textResult);
-    
-    let result: any = {};
-    try {
-      result = JSON.parse(textResult);
-    } catch(e) {
-      console.error('[DriveService] Failed to parse GAS JSON:', e);
-    }
-
-    let fileId = result.id || result.fileId || (result.url && result.url.split('id=')[1]);
-    
-    // Fallback if url is something like /file/d/ID/view
-    if (!fileId && result.url && result.url.includes('/file/d/')) {
-       fileId = result.url.split('/file/d/')[1].split('/')[0];
-    }
-
-    if ((result.status === 'success' || result.status === 200) && fileId) {
-      console.log(`[DriveService] Success! File ID: ${fileId}`);
-      await client.from('recordings').update({ 
-        upload_status: 'SUCCESS',
-        drive_file_id: fileId 
-      }).eq('id', recordingId);
-
-      // Cleanup local file to save disk space
-      try {
-        // fs.unlinkSync(videoPath);
-        // console.log(`[DriveService] Deleted local temp file: ${videoPath}`);
-        console.log(`[DriveService] Kept local temp file for local playback: ${videoPath}`);
-      } catch (err) {
-        console.error('Failed to manage temp video:', err);
+    for (const recording of pendingRecordings) {
+      if (!recording.videoPath || !fs.existsSync(recording.videoPath)) {
+        await prisma.recording.update({
+          where: { id: recording.id },
+          data: { uploadStatus: 'FAILED' }
+        });
+        continue;
       }
-    } else {
-      console.error(`[DriveService] GAS upload failed:`, result);
-      await client.from('recordings').update({ upload_status: 'FAILED' }).eq('id', recordingId);
+
+      // Update status to UPLOADING
+      await prisma.recording.update({
+        where: { id: recording.id },
+        data: { uploadStatus: 'UPLOADING' }
+      });
+
+      try {
+        const fileName = `${recording.resi}_${recording.marketplace}.webm`;
+        
+        // Baca video dan konversi ke Base64
+        const fileBuffer = fs.readFileSync(recording.videoPath);
+        const base64Data = fileBuffer.toString('base64');
+        
+        const payload = {
+           fileName: fileName,
+           mimeType: 'video/webm',
+           fileData: base64Data,
+           folderId: process.env.GOOGLE_DRIVE_FOLDER_ID
+        };
+
+        const response = await fetch(GAS_URL, {
+           method: 'POST',
+           body: JSON.stringify(payload),
+           headers: {
+             'Content-Type': 'application/json'
+           }
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success' && result.id) {
+          // SUCCESS! Update DB 
+          await prisma.recording.update({
+            where: { id: recording.id },
+            data: { 
+              uploadStatus: 'SUCCESS',
+              driveFileId: result.id
+            }
+          });
+          console.log(`[Background Worker] Successfully uploaded ${fileName} to Drive via GAS. ID: ${result.id}`);
+        } else {
+          console.error(`[Background Worker] GAS Error for ${recording.id}:`, result.message);
+          throw new Error(result.message || 'Unknown GAS Error');
+        }
+
+      } catch (err) {
+        console.error(`Failed to upload recording ${recording.id}:`, err);
+        await prisma.recording.update({
+          where: { id: recording.id },
+          data: { uploadStatus: 'FAILED' }
+        });
+      }
     }
-  } catch (err) {
-    console.error(`[DriveService] Error during upload:`, err);
-    await client.from('recordings').update({ upload_status: 'FAILED' }).eq('id', recordingId);
+  } catch (error) {
+    console.error('Error in processPendingUploads worker:', error);
   }
 };
