@@ -32,11 +32,10 @@ spawnSync('npx', [
   'dist/index.js', 
   '--output', 'dist/index.js',
   '--compact', 'true',
-  '--control-flow-flattening', 'true',
-  '--control-flow-flattening-threshold', '0.75',
+  '--control-flow-flattening', 'false',
   '--string-array', 'true',
   '--string-array-encoding', 'rc4',
-  '--string-array-threshold', '0.75'
+  '--string-array-threshold', '0.5'
 ], { stdio: 'inherit', shell: true });
 
 console.log("Backend build and obfuscation complete!");
