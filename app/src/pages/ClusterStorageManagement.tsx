@@ -28,11 +28,13 @@ export default function ClusterStorageManagement() {
 
   // Modals
   const [isAddNodeOpen, setIsAddNodeOpen] = useState(false);
+  const [isEditNodeOpen, setIsEditNodeOpen] = useState(false);
   const [isMigrateOpen, setIsMigrateOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Forms
   const [newNodeForm, setNewNodeForm] = useState({ name: '', folder_id: '' });
+  const [editNodeForm, setEditNodeForm] = useState({ id: '', name: '', folder_id: '' });
   const [migrateForm, setMigrateForm] = useState({ user_id: '', email: '', target_node_id: '' });
 
   // 5TB Max Capacity in Bytes & MB
@@ -101,6 +103,55 @@ export default function ClusterStorageManagement() {
       alert(`Failed to add server: ${err.message}`);
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const openEditNodeModal = (node: StorageNode) => {
+    setEditNodeForm({
+      id: node.id,
+      name: node.name,
+      folder_id: node.folder_id
+    });
+    setIsEditNodeOpen(true);
+  };
+
+  const handleEditNode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    const pin = localStorage.getItem('admin_pin');
+    
+    try {
+      const { error } = await supabase.rpc('admin_update_storage_node', {
+        pin_code: pin,
+        p_id: editNodeForm.id,
+        p_name: editNodeForm.name,
+        p_folder_id: editNodeForm.folder_id
+      });
+      if (error) throw error;
+      
+      setIsEditNodeOpen(false);
+      fetchData();
+    } catch (err: any) {
+      alert(`Failed to update server: ${err.message}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteNode = async (nodeId: string, nodeName: string) => {
+    if (!confirm(`Are you sure you want to delete the server "${nodeName}"? This action cannot be undone.`)) return;
+    
+    const pin = localStorage.getItem('admin_pin');
+    try {
+      const { error } = await supabase.rpc('admin_delete_storage_node', {
+        pin_code: pin,
+        p_id: nodeId
+      });
+      if (error) throw error;
+      
+      fetchData();
+    } catch (err: any) {
+      alert(`Failed to delete server: ${err.message}`);
     }
   };
 
@@ -255,6 +306,22 @@ export default function ClusterStorageManagement() {
                   <span className="font-code-sm text-[12px] text-on-surface-variant">
                     <strong className="text-on-surface">{node.tenant_count || 0}</strong> Tenants Assigned
                   </span>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => openEditNodeModal(node)}
+                      className="text-primary hover:bg-primary/10 p-1 rounded transition-colors"
+                      title="Edit Server"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteNode(node.id, node.name)}
+                      className="text-status-error hover:bg-status-error/10 p-1 rounded transition-colors"
+                      title="Delete Server"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -385,12 +452,12 @@ export default function ClusterStorageManagement() {
                 />
               </div>
               <div>
-                <label className="block font-label-md text-on-surface mb-xs">Google Drive Folder ID</label>
+                <label className="block font-label-md text-on-surface mb-xs">Google Apps Script Code / URL</label>
                 <input 
                   type="text" 
                   value={newNodeForm.folder_id}
                   onChange={(e) => setNewNodeForm({...newNodeForm, folder_id: e.target.value})}
-                  placeholder="e.g. 1RzzoTN6TAWdjzchTclguya..."
+                  placeholder="e.g., AKfycbz... or https://script.google.com/..."
                   className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface focus:border-primary outline-none"
                   required
                 />
@@ -399,6 +466,51 @@ export default function ClusterStorageManagement() {
                 <button type="button" onClick={() => setIsAddNodeOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
                 <button type="submit" disabled={actionLoading} className="px-lg py-sm font-label-md bg-primary text-white rounded hover:opacity-90 disabled:opacity-50">
                   {actionLoading ? 'Saving...' : 'Save Server'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Node Modal */}
+      {isEditNodeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-ui-divider">
+            <div className="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
+              <h3 className="font-headline-md font-bold text-on-surface">Edit Storage Server</h3>
+              <button onClick={() => setIsEditNodeOpen(false)} className="text-on-surface-variant hover:text-on-surface">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form onSubmit={handleEditNode} className="p-lg space-y-md">
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Server Name</label>
+                <input 
+                  type="text" 
+                  value={editNodeForm.name}
+                  onChange={(e) => setEditNodeForm({...editNodeForm, name: e.target.value})}
+                  placeholder="e.g. Google Drive VIP"
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block font-label-md text-on-surface mb-xs">Google Apps Script Code / URL</label>
+                <input 
+                  type="text" 
+                  value={editNodeForm.folder_id}
+                  onChange={(e) => setEditNodeForm({...editNodeForm, folder_id: e.target.value})}
+                  placeholder="e.g., AKfycbz... or https://script.google.com/..."
+                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface focus:border-primary outline-none"
+                  required
+                />
+              </div>
+              
+              <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
+                <button type="button" onClick={() => setIsEditNodeOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
+                <button type="submit" disabled={actionLoading} className="px-lg py-sm font-label-md bg-primary text-white rounded hover:opacity-90 disabled:opacity-50">
+                  {actionLoading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
