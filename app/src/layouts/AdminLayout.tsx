@@ -13,7 +13,7 @@ export default function AdminLayout() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const savedPin = sessionStorage.getItem('admin_pin');
+    const savedPin = localStorage.getItem('admin_pin');
     if (savedPin) {
       // Very basic check, assume it's valid if it exists. 
       // The child pages will fail gracefully if it's actually invalid.
@@ -32,7 +32,7 @@ export default function AdminLayout() {
       const { error: rpcError } = await supabase.rpc('get_admin_dashboard_stats', { pin_code: pin });
       if (rpcError) throw rpcError;
       
-      sessionStorage.setItem('admin_pin', pin);
+      localStorage.setItem('admin_pin', pin);
       setIsAuthenticated(true);
     } catch (err: any) {
       console.error(err);

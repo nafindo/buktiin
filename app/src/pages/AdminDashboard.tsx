@@ -8,7 +8,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const pin = sessionStorage.getItem('admin_pin');
+      const pin = localStorage.getItem('admin_pin');
       if (!pin) {
         setError('No PIN found. Please login again.');
         setLoading(false);
