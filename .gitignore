@@ -12,3 +12,4 @@ backend/uploads/
 *.jpg
 *.pdf
 *.csv
+desktop/backup/

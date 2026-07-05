@@ -32,11 +32,28 @@ export const triggerDriveUpload = async (
     const fileBuffer = fs.readFileSync(videoPath);
     const base64Data = fileBuffer.toString('base64');
     
+    // Fetch dynamic folder_id based on user
+    let targetFolderId = '1RzzoTN6TAWdjzchTclguyaExAbuM3q0O'; // Fallback
+    
+    const { data: recData } = await client.from('recordings').select('user_id').eq('id', recordingId).single();
+    if (recData && recData.user_id) {
+      const { data: serverData } = await client
+        .from('user_servers')
+        .select(`storage_nodes(folder_id)`)
+        .eq('user_id', recData.user_id)
+        .single();
+        
+      const nodes: any = serverData?.storage_nodes;
+      if (nodes && nodes.folder_id) {
+        targetFolderId = nodes.folder_id;
+      }
+    }
+    
     const payload = {
        fileName: fileName,
        mimeType: 'video/mp4',
        fileData: base64Data,
-       folderId: '1RzzoTN6TAWdjzchTclguyaExAbuM3q0O'
+       folderId: targetFolderId
     };
 
     const controller = new AbortController();

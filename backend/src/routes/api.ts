@@ -10,6 +10,7 @@ import {
   deleteSubAccount,
   streamVideo
 } from '../controllers/apiController';
+import { migrateUserServer } from '../controllers/adminController';
 import {
   setupIntegration,
   syncOrderByResi
@@ -63,5 +64,8 @@ router.get('/orders/sync', syncOrderByResi);
 // Payments
 router.post('/pay', createPayment);
 router.post('/pay/activate', activateSubscription);
+
+// Admin
+router.post('/admin/migrate-server', migrateUserServer);
 
 export default router;

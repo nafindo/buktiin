@@ -11,6 +11,7 @@ export default function AdminLayout() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [showPin, setShowPin] = useState(false);
 
   useEffect(() => {
     const savedPin = localStorage.getItem('admin_pin');
@@ -56,14 +57,25 @@ export default function AdminLayout() {
           
           <div className="flex flex-col gap-xs">
             <label className="font-label-md text-label-md">PIN Code</label>
-            <input 
-              type="password" 
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              className="bg-surface-container border border-ui-divider rounded-lg px-md py-sm focus:border-primary outline-none font-code-md tracking-[0.5em]"
-              placeholder="••••••"
-              required
-            />
+            <div className="relative">
+              <input 
+                type={showPin ? "text" : "password"} 
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                className="w-full bg-surface-container border border-ui-divider rounded-lg pl-md pr-12 py-sm focus:border-primary outline-none font-code-md tracking-[0.5em]"
+                placeholder="••••••"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin(!showPin)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  {showPin ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
             {error && <p className="text-status-error font-code-sm text-sm">{error}</p>}
           </div>
 
