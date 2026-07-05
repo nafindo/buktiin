@@ -1,4 +1,67 @@
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+
 export default function AdminDashboard() {
+  const [pin, setPin] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [stats, setStats] = useState<any>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      const { data, error: rpcError } = await supabase.rpc('get_admin_dashboard_stats', { pin_code: pin });
+      if (rpcError) throw rpcError;
+      
+      setStats(data);
+      setIsAuthenticated(true);
+    } catch (err: any) {
+      console.error(err);
+      setError('Invalid PIN or Server Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-lg">
+        <form onSubmit={handleLogin} className="bg-surface border border-ui-divider p-xl rounded-2xl w-full max-w-md flex flex-col gap-lg shadow-sm">
+          <div className="text-center">
+            <span className="material-symbols-outlined text-primary text-4xl mb-sm">admin_panel_settings</span>
+            <h2 className="font-headline-lg text-headline-lg">Admin Access</h2>
+            <p className="font-body-md text-on-surface-variant">Enter your PIN to access real-time stats.</p>
+          </div>
+          
+          <div className="flex flex-col gap-xs">
+            <label className="font-label-md text-label-md">PIN Code</label>
+            <input 
+              type="password" 
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              className="bg-surface-container border border-ui-divider rounded-lg px-md py-sm focus:border-primary outline-none font-code-md tracking-[0.5em]"
+              placeholder="••••••"
+              required
+            />
+            {error && <p className="text-status-error font-code-sm text-sm">{error}</p>}
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-primary text-on-primary py-sm rounded-lg font-label-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+          >
+            {loading ? 'Authenticating...' : 'View Dashboard'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="p-lg pb-xl space-y-lg flex flex-col min-h-[calc(100vh-64px)]">
       {/* Welcome Header */}
@@ -21,10 +84,10 @@ export default function AdminDashboard() {
             <p className="font-label-caps text-label-caps uppercase text-on-surface-variant">Total Users</p>
             <span className="material-symbols-outlined text-primary">group</span>
           </div>
-          <p className="font-display-lg text-display-lg mb-xs">1,245</p>
+          <p className="font-display-lg text-display-lg mb-xs">{stats?.total_users || 0}</p>
           <div className="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
             <span className="material-symbols-outlined">trending_up</span>
-            +12% vs last month
+            Real-time sync
           </div>
         </div>
         {/* Active Users */}
@@ -33,10 +96,10 @@ export default function AdminDashboard() {
             <p className="font-label-caps text-label-caps uppercase text-on-surface-variant">Active Users</p>
             <span className="material-symbols-outlined text-status-processing">person_celebrate</span>
           </div>
-          <p className="font-display-lg text-display-lg mb-xs">1,180</p>
+          <p className="font-display-lg text-display-lg mb-xs">{stats?.active_users || 0}</p>
           <div className="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant">
             <span className="material-symbols-outlined">analytics</span>
-            94.7% Activity Rate
+            Active Subscriptions
           </div>
         </div>
         {/* Revenue */}
@@ -47,11 +110,11 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-baseline gap-xs">
             <span className="font-headline-md text-headline-md">Rp</span>
-            <p className="font-display-lg text-display-lg mb-xs">45.2jt</p>
+            <p className="font-display-lg text-display-lg mb-xs">{stats?.revenue ? (stats.revenue / 1000000).toFixed(1) + 'jt' : '0'}</p>
           </div>
           <div className="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
             <span className="material-symbols-outlined">trending_up</span>
-            +8.4% MRR Growth
+            Estimated MRR
           </div>
         </div>
         {/* New Users */}
@@ -60,10 +123,10 @@ export default function AdminDashboard() {
             <p className="font-label-caps text-label-caps uppercase text-on-surface-variant">New Users (24h)</p>
             <span className="material-symbols-outlined text-primary">person_add</span>
           </div>
-          <p className="font-display-lg text-display-lg mb-xs">45</p>
+          <p className="font-display-lg text-display-lg mb-xs">{stats?.new_users || 0}</p>
           <div className="flex items-center gap-xs font-code-sm text-code-sm text-status-success">
             <span className="material-symbols-outlined">arrow_upward</span>
-            +5 from yesterday
+            Joined recently
           </div>
         </div>
       </div>
@@ -122,7 +185,7 @@ export default function AdminDashboard() {
             <div className="relative w-48 h-48 rounded-full border-[16px] border-primary-container flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-[16px] border-primary border-t-transparent border-r-transparent -rotate-45" style={{ margin: '-16px' }}></div>
               <div className="text-center z-10">
-                <p className="font-headline-lg text-headline-lg">1.2k</p>
+                <p className="font-headline-lg text-headline-lg">{stats?.active_users || 0}</p>
                 <p className="font-code-sm text-code-sm text-on-surface-variant uppercase">Total Active</p>
               </div>
             </div>
