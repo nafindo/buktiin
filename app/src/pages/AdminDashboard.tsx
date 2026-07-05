@@ -127,43 +127,25 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 bg-surface border border-ui-divider p-lg rounded-xl">
           <div className="flex justify-between items-center mb-xl">
             <h3 className="font-headline-md text-headline-md">Revenue Growth</h3>
-            <div className="flex gap-md font-label-caps text-label-caps">
-              <span className="flex items-center gap-xs"><span className="w-3 h-3 bg-primary rounded-full"></span> Actual</span>
-              <span className="flex items-center gap-xs"><span className="w-3 h-3 bg-ui-divider rounded-full"></span> Target</span>
-            </div>
           </div>
           <div className="relative h-64 w-full flex items-end gap-2 border-b border-l border-ui-divider px-md pb-md">
-            {/* Simple visualization of a line chart using div bars */}
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-24 opacity-30"></div>
-              <div className="w-full bg-primary h-20 transition-all hover:h-24 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">JAN</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-28 opacity-30"></div>
-              <div className="w-full bg-primary h-24 transition-all hover:h-28 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">FEB</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-32 opacity-30"></div>
-              <div className="w-full bg-primary h-36 transition-all hover:h-40 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">MAR</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-36 opacity-30"></div>
-              <div className="w-full bg-primary h-40 transition-all hover:h-44 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">APR</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-40 opacity-30"></div>
-              <div className="w-full bg-primary h-44 transition-all hover:h-48 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">MAY</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-end gap-1">
-              <div className="w-full bg-ui-divider h-48 opacity-30"></div>
-              <div className="w-full bg-primary h-52 transition-all hover:h-56 cursor-pointer"></div>
-              <p className="font-code-sm text-code-sm text-center mt-2">JUN</p>
-            </div>
+            {stats?.revenue_growth && stats.revenue_growth.length > 0 ? (
+              stats.revenue_growth.map((item: any, idx: number) => {
+                const maxRevenue = Math.max(...stats.revenue_growth.map((g: any) => g.revenue));
+                const heightPercent = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
+                return (
+                  <div key={idx} className="flex-1 flex flex-col justify-end gap-1 group relative">
+                    <div className="w-full bg-primary transition-all cursor-pointer rounded-t-sm hover:brightness-110" style={{ height: `${heightPercent}%`, minHeight: '4px' }}></div>
+                    <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest text-on-surface-variant font-code-sm text-xs px-2 py-1 rounded transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                      Rp {item.revenue.toLocaleString('id-ID')}
+                    </div>
+                    <p className="font-code-sm text-code-sm text-center mt-2">{item.month}</p>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="w-full h-full flex items-center justify-center font-code-sm text-on-surface-variant">No data available</div>
+            )}
           </div>
         </div>
         
@@ -193,46 +175,32 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity Log */}
-      <section className="bg-surface border border-ui-divider overflow-hidden rounded-xl">
+      <section className="bg-surface border border-ui-divider overflow-hidden rounded-xl mt-lg">
         <div className="px-lg py-md border-b border-ui-divider bg-surface-container-low flex justify-between items-center">
           <h3 className="font-label-caps text-label-caps uppercase">System Activity Log</h3>
           <button className="font-code-sm text-code-sm text-primary flex items-center gap-xs hover:underline">
             View All Logs <span className="material-symbols-outlined text-[16px]">open_in_new</span>
           </button>
         </div>
-        <div className="divide-y divide-ui-divider">
-          <div className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
-            <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">14:22:05</span>
-            <span className="material-symbols-outlined text-status-success">check_circle</span>
-            <div className="flex-1">
-              <p className="font-body-md text-body-md">Admin <strong>Syamsul.H</strong> updated system pricing for <strong>Starter Plan</strong>.</p>
-            </div>
-            <span className="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase rounded">Config</span>
-          </div>
-          <div className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
-            <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">13:45:12</span>
-            <span className="material-symbols-outlined text-status-processing">info</span>
-            <div className="flex-1">
-              <p className="font-body-md text-body-md">Automated scale-up triggered for <strong>Server Node-B2</strong>.</p>
-            </div>
-            <span className="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase rounded">System</span>
-          </div>
-          <div className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
-            <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">12:10:30</span>
-            <span className="material-symbols-outlined text-status-success">person_add</span>
-            <div className="flex-1">
-              <p className="font-body-md text-body-md">New Enterprise subscription confirmed: <strong>Global Logistics Corp</strong>.</p>
-            </div>
-            <span className="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase rounded">Billing</span>
-          </div>
-          <div className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
-            <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">11:55:01</span>
-            <span className="material-symbols-outlined text-status-error">warning</span>
-            <div className="flex-1">
-              <p className="font-body-md text-body-md">Failed login attempt detected from <strong>IP 182.253.xx.xx</strong>.</p>
-            </div>
-            <span className="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase rounded">Security</span>
-          </div>
+        <div className="divide-y divide-ui-divider max-h-[400px] overflow-y-auto">
+          {stats?.activity_logs && stats.activity_logs.length > 0 ? (
+            stats.activity_logs.map((log: any, idx: number) => (
+              <div key={idx} className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
+                <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">
+                  {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+                <span className={`material-symbols-outlined ${log.status === 'success' ? 'text-status-success' : 'text-status-processing'}`}>
+                  {log.type === 'SIGNUP' ? 'person_add' : log.type === 'SUBSCRIPTION' ? 'payments' : log.type === 'RECORDING' ? 'videocam' : 'info'}
+                </span>
+                <div className="flex-1">
+                  <p className="font-body-md text-body-md">{log.message}</p>
+                </div>
+                <span className="font-code-sm text-code-sm px-sm py-xs bg-surface-container border border-ui-divider uppercase rounded">{log.type}</span>
+              </div>
+            ))
+          ) : (
+             <div className="px-lg py-md text-center font-code-sm text-on-surface-variant">No recent activity</div>
+          )}
         </div>
       </section>
 
