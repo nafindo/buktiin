@@ -21,7 +21,7 @@
       "verifyUpdateCodeSignature": false,
       "signExecutable": false,
       "target": [
-        "nsis"
+        "nsis-web"
       ],
       "icon": "build/icon.png"
     },
