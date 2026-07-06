@@ -31,7 +31,7 @@ export default function SubAccounts() {
 
     try {
       // Get subaccounts
-      const res = await fetch(`http://localhost:3001/api/subaccounts?userId=${session.user.id}`);
+      const res = await fetch(`http://localhost:3001/api/subaccounts?userId=${session.user.id}&accessToken=${session.access_token}`);
       const result = await res.json();
       if (result.success) {
         setSubAccounts(result.data);

@@ -10,8 +10,9 @@ export default function StorageManagement() {
 
   useEffect(() => {
     const fetchStorage = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const user = session.user;
       
       // Fetch user plan (Independent from API)
       try {
@@ -37,7 +38,7 @@ export default function StorageManagement() {
 
       // Fetch storage usage (Independent from Supabase)
       try {
-        const res = await fetch(`http://localhost:3001/api/dashboard?userId=${user.id}`);
+        const res = await fetch(`http://localhost:3001/api/dashboard?userId=${user.id}&accessToken=${session.access_token}`);
         const result = await res.json();
         if (result.success && result.data.totalStorageBytes !== undefined) {
           setTotalStorageBytes(result.data.totalStorageBytes);
