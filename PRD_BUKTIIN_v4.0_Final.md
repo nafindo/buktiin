@@ -836,3 +836,33 @@ Total Operasional: Rp 150k-200k/bulan + Rp 320k Gemini = Rp 470k-520k/bulan
 **Version:** 4.0 Final
 **Last Updated:** Juni 2026
 **© 2026 Nafindo Group. All Rights Reserved.**
+
+---
+
+# 13. ADDITIONAL IMPLEMENTED FEATURES (Update Log)
+
+Seiring berjalannya iterasi pengembangan, ada beberapa fungsi krusial yang sudah **berhasil diimplementasikan** dalam sistem aplikasi *Desktop* (Electron) namun belum tertulis secara eksplisit pada rancangan fitur utama (MVP) di atas:
+
+### 13.1. Multi-Tenant Storage Node (Google Drive Rotation)
+- **Fungsi:** Sistem rotasi/manajemen penyimpanan *Cloud* menggunakan banyak akun Google Drive Server (misalnya: `server ajt.nafi4`, dll) secara dinamis. 
+- **Tujuan:** Menghindari limit harian/kuota upload Google Drive tunggal. Pengguna (Tenant) baru akan otomatis di-assign ke Server Node yang *space*-nya paling luang, dan bisa dipindahkan (migrasi) node-nya jika penuh.
+
+### 13.2. Unboxing Return Mode dengan Audio Mute (FFmpeg)
+- **Fungsi:** Aplikasi memiliki modul khusus untuk merekam proses *Unboxing Retur* (pengembalian barang). Modul ini memanfaatkan argumen `-an` pada FFmpeg sehingga video **otomatis di-mute** (tanpa suara). 
+- **Tujuan:** Melindungi privasi tim operasional dari obrolan gudang, serta mengurangi ukuran file karena track *audio* dibuang.
+
+### 13.3. Hierarki Akun Master & Staf (Sub-Account Inheritance)
+- **Fungsi:** Pengelolaan *Manage Staf* yang terstruktur. Akun yang mendaftar langsung (Main Account) otomatis berstatus `Master Operator • Packer 01`. Sub-akun yang dibuat oleh Master akan otomatis bernama `Staff Operator • Packer 02, 03, dst.`
+- **Tujuan:** Sub-akun ini **tidak perlu** membayar langganan mandiri. Seluruh limitasi (Storage, Order/Hari, Masa Aktif) menggunakan dan memotong limit dari *Main Account* (Parent ID) sesuai batas device/paket yang dibeli (misal: Plan Starter = 2 device).
+
+### 13.4. Auto-Watermark Berbasis Nama Toko
+- **Fungsi:** Di halaman profil, pengguna bisa memasukkan nama toko/perusahaan mereka. Nama ini secara otomatis *ter-inject* oleh FFmpeg menjadi *watermark* semi-transparan di pojok/tengah video hasil scan. 
+- **Tujuan:** Bukti otentik bahwa video direkam oleh toko terkait, sekaligus *branding* ketika rekaman dikirimkan sebagai bukti sengketa ke *marketplace*.
+
+### 13.5. Arsitektur Distribusi *NSIS-Web* Desktop (.exe & .7z)
+- **Fungsi:** Pembangunan aplikasi untuk mesin kasir/PC Gudang menggunakan struktur *Electron-Builder NSIS-Web*.
+- **Tujuan:** File installer *launcher* utama (Buktiin Web Setup .exe) sangat kecil (< 1MB) sehingga sangat cepat diunduh, sedangkan logika inti aplikasi (Backend Node.js, Engine FFmpeg statis) disembunyikan dalam file biner terpisah berukuran besar (`.nsis.7z` ~500MB). Hal ini mempercepat siklus update tanpa harus mendownload ulang 500MB setiap ada update *minor*.
+
+### 13.6. Offline-First Video Buffering (Local Queue)
+- **Fungsi:** Ketika order selesai di-*scan*, video rekaman (format raw `.webm`) tidak langsung memblokir layar aplikasi untuk di-upload. Video tersebut diselamatkan dulu ke `os.tmpdir()` / folder lokal komputer.
+- **Tujuan:** Tim *packing* bisa langsung me-*scan* resi berikutnya. Sementara itu, Node.js di *background* diam-diam memproses kompresi ke `.mp4`, membubuhkan watermark, dan mengunggahnya ke Google Drive tanpa mengganggu kecepatan *scan*. Terdapat notifikasi senyap jika upload berhasil maupun gagal *(failed to sync)*.

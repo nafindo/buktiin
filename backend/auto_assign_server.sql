@@ -17,18 +17,24 @@ BEGIN
   -- Sisa kapasitas = (max_capacity_gb * 1024) - total_allocated_mb
   SELECT n.id INTO v_target_node_id
   FROM public.storage_nodes n
-  LEFT JOIN public.user_servers us ON n.id = us.node_id
+  LEFT JOIN public.user_servers us ON n.id = us.storage_node_id
   LEFT JOIN public.subscriptions s ON us.user_id = s.user_id AND s.status = 'ACTIVE'
   LEFT JOIN public.plans p ON s.plan_id = p.id
   WHERE n.status = 'ACTIVE'
-  GROUP BY n.id, n.max_capacity_gb
-  HAVING (n.max_capacity_gb * 1024) - COALESCE(SUM(p.storagelimit), 0) >= v_plan_storage_mb
-  ORDER BY COALESCE(SUM(p.storagelimit), 0) ASC -- Prioritaskan server yang paling kosong
+  GROUP BY n.id
+  ORDER BY 
+    CASE WHEN COUNT(us.storage_node_id) < 200 THEN 0 ELSE 1 END, 
+    COUNT(us.storage_node_id) ASC
   LIMIT 1;
+
+  -- Default fallback
+  IF v_target_node_id IS NULL THEN
+    SELECT id INTO v_target_node_id FROM public.storage_nodes LIMIT 1;
+  END IF;
 
   -- Jika server yang memadai ditemukan, masukkan data ke tabel user_servers
   IF v_target_node_id IS NOT NULL THEN
-    INSERT INTO public.user_servers (user_id, node_id) VALUES (NEW.user_id, v_target_node_id);
+    INSERT INTO public.user_servers (user_id, storage_node_id) VALUES (NEW.user_id, v_target_node_id);
   END IF;
 
   RETURN NEW;

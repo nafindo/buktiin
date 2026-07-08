@@ -26,16 +26,20 @@ esbuild.buildSync({
   external: ['mock-aws-s3', 'aws-sdk', 'nock', 'ffmpeg-static'], // common express/multer optional dependencies + ffmpeg-static (uses __dirname)
 });
 
-console.log("Obfuscating bundled backend...");
-spawnSync('npx', [
-  'javascript-obfuscator', 
-  'dist/index.js', 
-  '--output', 'dist/index.js',
-  '--compact', 'true',
-  '--control-flow-flattening', 'false',
-  '--string-array', 'true',
-  '--string-array-encoding', 'rc4',
-  '--string-array-threshold', '0.5'
-], { stdio: 'inherit', shell: true });
+console.log("Skipping obfuscation for this dev build...");
+// spawnSync('npx', [
+//   'javascript-obfuscator', 
+//   'dist/index.js', 
+//   '--output', 'dist/index.js',
+//   '--compact', 'true',
+//   '--control-flow-flattening', 'false',
+//   '--string-array', 'true',
+//   '--string-array-encoding', 'rc4',
+//   '--string-array-threshold', '0.5'
+// ], { 
+//   stdio: 'inherit', 
+//   shell: true,
+//   env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=8192' }
+// });
 
-console.log("Backend build and obfuscation complete!");
+console.log("Backend build complete!");

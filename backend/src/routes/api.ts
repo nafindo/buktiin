@@ -8,7 +8,8 @@ import {
   getSubAccounts,
   addSubAccount,
   deleteSubAccount,
-  streamVideo
+  streamVideo,
+  retryPendingUploads
 } from '../controllers/apiController';
 import { migrateUserServer } from '../controllers/adminController';
 import {
@@ -50,6 +51,7 @@ router.get('/history', getHistory);
 router.post('/check-limits', checkLimits);
 router.post('/recordings', saveRecording);
 router.post('/recordings/upload', upload.single('video'), uploadVideo);
+router.post('/recordings/retry-pending', retryPendingUploads);
 router.get('/stream/:filename', streamVideo);
 
 // SubAccounts

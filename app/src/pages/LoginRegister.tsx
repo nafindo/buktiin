@@ -188,7 +188,7 @@ export default function LoginRegister() {
                     required
                   />
                   <button 
-                    className="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" 
+                    className="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors z-10" 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                   >

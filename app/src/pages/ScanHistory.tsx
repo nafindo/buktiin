@@ -14,19 +14,45 @@ export default function ScanHistory() {
   const handlePlayVideo = (videoPath: string) => {
     const filename = videoPath.split(/[\/\\]/).pop();
     if (filename) {
-      setPlayingVideo(`http://localhost:3001/uploads/temp/${filename}`);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
+      setPlayingVideo(`${API_URL}/api/stream/${filename}`);
     }
   };
 
-  const handleShare = (record: any) => {
+  const handleCopyLink = (url: string) => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+      alert('Tautan Berhasil Disalin!\nAnda dapat mengirimkan link ini ke pelanggan AllShop Anda.');
+    } catch (err) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert('Tautan Berhasil Disalin!');
+        }).catch(() => {
+          alert('Gagal menyalin tautan. URL: ' + url);
+        });
+      } else {
+        alert('Gagal menyalin tautan. URL: ' + url);
+      }
+    }
+  };
+
+  const handleShare = (record: any, action: 'copy' | 'open') => {
     if (record.driveFileId) {
-      // Changed to the custom branded link format
       const shareUrl = `https://nafindo.github.io/buktiin/#/?v=${record.driveFileId}`;
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        alert('Tautan Berhasil Disalin!\nAnda dapat mengirimkan link ini ke pelanggan AllShop Anda.');
-      }).catch(() => {
-        alert('Gagal menyalin tautan. URL: ' + shareUrl);
-      });
+      if (action === 'copy') {
+        handleCopyLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
     } else {
       alert('Video masih dalam proses sinkronisasi ke Enterprise Cloud Storage.\nMohon tunggu beberapa saat agar link Share tersedia.');
     }
@@ -38,7 +64,8 @@ export default function ScanHistory() {
       if (!session) return;
       
       try {
-        const response = await fetch(`http://localhost:3001/api/history?userId=${session.user.id}&accessToken=${session.access_token}`);
+        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
+        const response = await fetch(`${API_URL}/api/history?userId=${session.user.id}&accessToken=${session.access_token}`);
         const result = await response.json();
         if (result.success) {
           setHistory(result.data);
@@ -52,6 +79,10 @@ export default function ScanHistory() {
   }, []);
 
   const filteredHistory = history.filter(record => {
+     // Filter hanya untuk PACKING atau data lama (kosong/null)
+     const isPacking = !record.scan_type || record.scan_type === 'PACKING';
+     if (!isPacking) return false;
+
      let matchSearch = true;
      if (searchQuery) {
         const q = searchQuery.toLowerCase();
@@ -156,10 +187,16 @@ export default function ScanHistory() {
                     <td className="px-md py-md font-body-md min-w-[200px]">
                       {(() => {
                         try {
-                          const items = JSON.parse(record.items);
-                          return items.map((i: any) => `${i.quantity}x ${i.name}`).join(', ');
+                          let items = record.items;
+                          if (typeof items === 'string') {
+                            items = JSON.parse(items);
+                          }
+                          if (Array.isArray(items)) {
+                            return items.map((i: any) => `${i.quantity || 1}x ${i.name || '-'}`).join(', ');
+                          }
+                          return String(record.items);
                         } catch {
-                          return record.items;
+                          return String(record.items);
                         }
                       })()}
                     </td>
@@ -179,13 +216,21 @@ export default function ScanHistory() {
                         </button>
                       )}
                     </td>
-                    <td className="px-md py-md text-right whitespace-nowrap">
+                    <td className="px-md py-md text-right whitespace-nowrap flex items-center justify-end gap-2">
                       {record.videoPath && (
-                        <a href={`http://localhost:3001${record.videoPath}`} download className="text-primary font-code-sm opacity-80 hover:opacity-100 hover:underline mr-md">
-                          [ Download ]
+                        <a href={`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001'}/api/stream/${record.videoPath.split(/[\/\\]/).pop()}?download=true`} download title="Download Video" className="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-primary/10 text-primary rounded-full transition-colors">
+                          <span className="material-symbols-outlined text-[18px]">download</span>
                         </a>
                       )}
-                      <button onClick={() => setSelectedRecord(record)} className="text-on-surface-variant font-code-sm opacity-50 hover:opacity-100">[ Details ]</button>
+                      <button onClick={() => handleShare(record, 'copy')} title="Salin Link" className="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-primary/10 text-primary rounded-full transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                      </button>
+                      <button onClick={() => handleShare(record, 'open')} title="Buka Link" className="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-primary/10 text-primary rounded-full transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                      </button>
+                      <button onClick={() => setSelectedRecord(record)} title="Detail" className="w-8 h-8 flex items-center justify-center bg-surface-container hover:bg-primary/10 text-primary rounded-full transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">info</span>
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -290,9 +335,13 @@ export default function ScanHistory() {
             </div>
             
             <div className="flex gap-sm mt-md">
-              <button onClick={() => handleShare(selectedRecord)} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
-                <span className="material-symbols-outlined text-sm">share</span>
-                Share Link
+              <button onClick={() => handleShare(selectedRecord, 'copy')} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
+                <span className="material-symbols-outlined text-sm">content_copy</span>
+                Salin Link
+              </button>
+              <button onClick={() => handleShare(selectedRecord, 'open')} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
+                <span className="material-symbols-outlined text-sm">open_in_new</span>
+                Buka Link
               </button>
               <button onClick={() => setSelectedRecord(null)} className="flex-1 py-sm bg-primary text-white font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
                 Tutup

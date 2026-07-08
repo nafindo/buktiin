@@ -53,7 +53,28 @@ export default function Dashboard() {
       }
     };
     
+    const triggerAutoRetryUploads = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
+        await fetch(`${API_URL}/api/recordings/retry-pending`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: session.user.id,
+            accessToken: session.access_token
+          })
+        });
+      } catch (e) {
+        console.error('Failed to trigger auto retry uploads:', e);
+      }
+    };
+    
     fetchStats();
+    triggerAutoRetryUploads();
   }, []);
   const lineChartData = {
     labels: stats.orderTrends?.labels || ['-'],

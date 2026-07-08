@@ -16,6 +16,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import Dashboard from './pages/Dashboard';
 import LiveScanner from './pages/LiveScanner';
 import ScanHistory from './pages/ScanHistory';
+import UnboxingScanner from './pages/UnboxingScanner';
+import UnboxingHistory from './pages/UnboxingHistory';
 import StorageManagement from './pages/StorageManagement';
 import ProfileSettings from './pages/ProfileSettings';
 import SelectPlan from './pages/SelectPlan';
@@ -55,6 +57,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/scanner" element={<LiveScanner />} />
           <Route path="/history" element={<ScanHistory />} />
+          <Route path="/unboxing" element={<UnboxingScanner />} />
+          <Route path="/unboxing-history" element={<UnboxingHistory />} />
           <Route path="/storage" element={<StorageManagement />} />
           <Route path="/profile" element={<ProfileSettings />} />
           <Route path="/plans" element={<SelectPlan />} />

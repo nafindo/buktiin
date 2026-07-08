@@ -52,10 +52,14 @@ export default function UnboxingHistory() {
     }
   };
 
-  const handleShare = (record: any) => {
+  const handleShare = (record: any, action: 'copy' | 'open') => {
     if (record.driveFileId) {
       const shareUrl = `https://nafindo.github.io/buktiin/#/?v=${record.driveFileId}`;
-      copyToClipboard(shareUrl);
+      if (action === 'copy') {
+        copyToClipboard(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
     } else {
       alert('Video masih dalam proses unggah ke Google Drive.\nMohon tunggu beberapa saat agar link Share tersedia.');
     }
@@ -261,23 +265,11 @@ export default function UnboxingHistory() {
                               <span className="material-symbols-outlined text-[18px]">download</span>
                             </button>
                           )}
-                          <button onClick={() => {
-                            if (!record.driveFileId) {
-                              alert('Video sedang diproses ke cloud. Silakan tunggu beberapa saat lagi untuk membagikan tautan.');
-                              return;
-                            }
-                            const shareUrl = `https://nafindo.github.io/buktiin/#/?v=${record.driveFileId}`;
-                            if (navigator.share) {
-                              navigator.share({
-                                title: `Video Bukti Unboxing - ${record.resi}`,
-                                text: `Ini adalah video bukti unboxing untuk pesanan ${record.resi}`,
-                                url: shareUrl
-                              }).catch(() => copyToClipboard(shareUrl));
-                            } else {
-                              copyToClipboard(shareUrl);
-                            }
-                          }} className="text-secondary hover:bg-secondary/10 w-8 h-8 rounded-full transition-colors flex items-center justify-center" title="Share Link">
-                            <span className="material-symbols-outlined text-[18px]">share</span>
+                          <button onClick={() => handleShare(record, 'copy')} className="text-secondary hover:bg-secondary/10 w-8 h-8 rounded-full transition-colors flex items-center justify-center" title="Salin Link">
+                            <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                          </button>
+                          <button onClick={() => handleShare(record, 'open')} className="text-secondary hover:bg-secondary/10 w-8 h-8 rounded-full transition-colors flex items-center justify-center" title="Buka Link">
+                            <span className="material-symbols-outlined text-[18px]">open_in_new</span>
                           </button>
                           <button onClick={() => setSelectedRecord(record)} className="text-on-surface-variant hover:bg-surface-variant w-8 h-8 rounded-full transition-colors flex items-center justify-center" title="Details">
                             <span className="material-symbols-outlined text-[18px]">info</span>
@@ -399,9 +391,13 @@ export default function UnboxingHistory() {
             </div>
             
             <div className="flex gap-sm mt-md">
-              <button onClick={() => handleShare(selectedRecord)} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
-                <span className="material-symbols-outlined text-sm">share</span>
-                Share Link
+              <button onClick={() => handleShare(selectedRecord, 'copy')} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
+                <span className="material-symbols-outlined text-sm">content_copy</span>
+                Salin Link
+              </button>
+              <button onClick={() => handleShare(selectedRecord, 'open')} className="flex-1 py-sm bg-surface-container-highest text-on-surface font-bold rounded-DEFAULT hover:bg-surface-variant flex items-center justify-center gap-xs transition-colors">
+                <span className="material-symbols-outlined text-sm">open_in_new</span>
+                Buka Link
               </button>
               <button onClick={() => setSelectedRecord(null)} className="flex-1 py-sm bg-primary text-white font-bold rounded-DEFAULT hover:opacity-90 transition-opacity">
                 Tutup

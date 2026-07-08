@@ -5,6 +5,7 @@ interface StorageNode {
   id: string;
   name: string;
   folder_id: string;
+  script_url: string;
   is_active: boolean;
   tenant_count: number;
   allocated_quota_mb: number;
@@ -33,8 +34,8 @@ export default function ClusterStorageManagement() {
   const [actionLoading, setActionLoading] = useState(false);
 
   // Forms
-  const [newNodeForm, setNewNodeForm] = useState({ name: '', folder_id: '' });
-  const [editNodeForm, setEditNodeForm] = useState({ id: '', name: '', folder_id: '' });
+  const [newNodeForm, setNewNodeForm] = useState({ name: '', folder_id: '', script_url: '' });
+  const [editNodeForm, setEditNodeForm] = useState({ id: '', name: '', folder_id: '', script_url: '' });
   const [migrateForm, setMigrateForm] = useState({ user_id: '', email: '', target_node_id: '' });
 
   // 5TB Max Capacity in Bytes & MB
@@ -92,12 +93,13 @@ export default function ClusterStorageManagement() {
       const { error } = await supabase.rpc('admin_add_storage_node', {
         pin_code: pin,
         p_name: newNodeForm.name,
-        p_folder_id: newNodeForm.folder_id
+        p_folder_id: newNodeForm.folder_id,
+        p_script_url: newNodeForm.script_url
       });
       if (error) throw error;
       
       setIsAddNodeOpen(false);
-      setNewNodeForm({ name: '', folder_id: '' });
+      setNewNodeForm({ name: '', folder_id: '', script_url: '' });
       fetchData();
     } catch (err: any) {
       alert(`Failed to add server: ${err.message}`);
@@ -110,7 +112,8 @@ export default function ClusterStorageManagement() {
     setEditNodeForm({
       id: node.id,
       name: node.name,
-      folder_id: node.folder_id
+      folder_id: node.folder_id,
+      script_url: node.script_url || ''
     });
     setIsEditNodeOpen(true);
   };
@@ -125,7 +128,8 @@ export default function ClusterStorageManagement() {
         pin_code: pin,
         p_id: editNodeForm.id,
         p_name: editNodeForm.name,
-        p_folder_id: editNodeForm.folder_id
+        p_folder_id: editNodeForm.folder_id,
+        p_script_url: editNodeForm.script_url
       });
       if (error) throw error;
       
@@ -451,16 +455,28 @@ export default function ClusterStorageManagement() {
                   required
                 />
               </div>
-              <div>
-                <label className="block font-label-md text-on-surface mb-xs">Google Apps Script Code / URL</label>
-                <input 
-                  type="text" 
-                  value={newNodeForm.folder_id}
-                  onChange={(e) => setNewNodeForm({...newNodeForm, folder_id: e.target.value})}
-                  placeholder="e.g., AKfycbz... or https://script.google.com/..."
-                  className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface focus:border-primary outline-none"
+              <div className="mb-4">
+                <label className="block font-body-md text-on-surface-variant mb-1">Drive Folder ID</label>
+                <input
+                  type="text"
                   required
+                  value={newNodeForm.folder_id}
+                  onChange={(e) => setNewNodeForm({ ...newNodeForm, folder_id: e.target.value })}
+                  className="w-full bg-surface-container-high border border-outline px-4 py-2 rounded focus:outline-none focus:border-primary text-on-surface font-code-sm"
+                  placeholder="1A2B3C4D5E..."
                 />
+              </div>
+              <div className="mb-6">
+                <label className="block font-body-md text-on-surface-variant mb-1">Drive Script URL</label>
+                <input
+                  type="url"
+                  required
+                  value={newNodeForm.script_url}
+                  onChange={(e) => setNewNodeForm({ ...newNodeForm, script_url: e.target.value })}
+                  className="w-full bg-surface-container-high border border-outline px-4 py-2 rounded focus:outline-none focus:border-primary text-on-surface font-code-sm"
+                  placeholder="https://script.google.com/macros/s/..."
+                />
+                <p className="text-xs text-on-surface-variant mt-1">Google Apps Script Web App URL for this server.</p>
               </div>
               <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
                 <button type="button" onClick={() => setIsAddNodeOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
@@ -495,15 +511,15 @@ export default function ClusterStorageManagement() {
                   required
                 />
               </div>
-              <div>
-                <label className="block font-label-md text-on-surface mb-xs">Google Apps Script Code / URL</label>
-                <input 
-                  type="text" 
+              <div className="mb-4">
+                <label className="block font-body-md text-on-surface-variant mb-1">Drive Folder ID</label>
+                <input
+                  type="text"
+                  required
                   value={editNodeForm.folder_id}
                   onChange={(e) => setEditNodeForm({...editNodeForm, folder_id: e.target.value})}
-                  placeholder="e.g., AKfycbz... or https://script.google.com/..."
+                  placeholder="e.g., AKfycbz..."
                   className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-code-sm text-on-surface focus:border-primary outline-none"
-                  required
                 />
               </div>
               

@@ -349,7 +349,9 @@ export const uploadVideo = async (req: Request, res: Response) => {
         '-c:v libx264',
         '-preset ultrafast',
         '-crf 28',
-        '-r 30'
+        '-r 30',
+        '-an',
+        '-movflags +faststart'
       ])
       .output(mp4Path)
       .on('end', async () => {
@@ -372,7 +374,7 @@ export const uploadVideo = async (req: Request, res: Response) => {
           .eq('id', recordingId);
 
         // Async background upload to Drive
-        triggerDriveUpload(recordingId, mp4Path, accessToken, recData.resi, recData.marketplace).catch(err => {
+        triggerDriveUpload(recordingId, mp4Path, accessToken, recData.resi, recData.marketplace).catch((err: any) => {
           console.error('Async drive upload error:', err);
         });
       })
@@ -474,7 +476,7 @@ export const addSubAccount = async (req: Request, res: Response) => {
 export const deleteSubAccount = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { accessToken } = req.body; // Need to pass accessToken in DELETE body
+    const { accessToken } = req.query; 
     
     const client = getAuthClient(accessToken);
     const { error } = await client.from('sub_accounts').delete().eq('id', id);
@@ -534,5 +536,50 @@ export const streamVideo = (req: Request, res: Response) => {
     }
     res.writeHead(200, head);
     fs.createReadStream(videoPath).pipe(res);
+  }
+};
+
+export const retryPendingUploads = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId, accessToken } = req.body;
+    if (!userId || !accessToken) {
+      res.status(400).json({ success: false, error: 'Missing userId or accessToken' });
+      return;
+    }
+
+    const client = getAuthClient(accessToken);
+    const { data: pendingRecordings, error } = await client
+      .from('recordings')
+      .select('*')
+      .eq('user_id', userId)
+      .in('upload_status', ['PENDING', 'FAILED'])
+      .is('drive_file_id', null);
+
+    if (error) throw error;
+    if (!pendingRecordings || pendingRecordings.length === 0) {
+      res.json({ success: true, message: 'No pending uploads found.' });
+      return;
+    }
+
+    let retried = 0;
+    for (const record of pendingRecordings) {
+      if (record.video_path && fs.existsSync(record.video_path)) {
+        // Trigger background upload
+        triggerDriveUpload(record.id, record.video_path, accessToken).catch(err => {
+          console.error(`[RetryUpload] Failed for record ${record.id}:`, err);
+        });
+        retried++;
+      } else {
+        // If file doesn't exist locally anymore, mark as failed so it doesn't get stuck pending
+        if (record.upload_status === 'PENDING') {
+           await client.from('recordings').update({ upload_status: 'FAILED' }).eq('id', record.id);
+        }
+      }
+    }
+
+    res.json({ success: true, message: `Retriggered ${retried} uploads.` });
+  } catch (err: any) {
+    console.error('Error in retryPendingUploads:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 };

@@ -23,6 +23,8 @@ export default function SubAccounts() {
     fetchData();
   }, []);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
+
   const fetchData = async () => {
     setLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
@@ -31,7 +33,7 @@ export default function SubAccounts() {
 
     try {
       // Get subaccounts
-      const res = await fetch(`http://localhost:3001/api/subaccounts?userId=${session.user.id}&accessToken=${session.access_token}`);
+      const res = await fetch(`${API_URL}/api/subaccounts?userId=${session.user.id}&accessToken=${session.access_token}`);
       const result = await res.json();
       if (result.success) {
         setSubAccounts(result.data);
@@ -39,7 +41,7 @@ export default function SubAccounts() {
 
       // Get limit info
       const deviceId = localStorage.getItem('buktiin_device_id');
-      const limitRes = await fetch('http://localhost:3001/api/check-limits', {
+      const limitRes = await fetch(`${API_URL}/api/check-limits`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: session.user.id, deviceId, accessToken: session.access_token })
@@ -70,7 +72,7 @@ export default function SubAccounts() {
     setErrorMsg('');
 
     try {
-      const res = await fetch('http://localhost:3001/api/subaccounts', {
+      const res = await fetch(`${API_URL}/api/subaccounts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ parentId: userId, email, password, accessToken: (await supabase.auth.getSession()).data.session?.access_token })
@@ -94,7 +96,8 @@ export default function SubAccounts() {
     if (!window.confirm('Hapus akses staf ini? (Akun ini tidak akan lagi menggunakan kuota Anda)')) return;
     
     try {
-      const res = await fetch(`http://localhost:3001/api/subaccounts/${id}`, {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`${API_URL}/api/subaccounts/${id}?accessToken=${session?.access_token}`, {
         method: 'DELETE'
       });
       if (res.ok) {

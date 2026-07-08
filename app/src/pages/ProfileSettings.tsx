@@ -9,30 +9,53 @@ export default function ProfileSettings() {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   
-  const [userProfile, setUserProfile] = useState({ full_name: 'Admin Gudang', phone: '-', avatar_url: '' });
+  const [userProfile, setUserProfile] = useState({ full_name: 'Admin Gudang', phone: '-', avatar_url: '', company_name: '' });
+  const [userRole, setUserRole] = useState('Master Operator • Packer 01');
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editForm, setEditForm] = useState({ full_name: '', phone: '', avatar_url: '' });
+  const [editForm, setEditForm] = useState({ full_name: '', phone: '', avatar_url: '', company_name: '' });
   const [videoQuality, setVideoQuality] = useState(localStorage.getItem('buktiin_video_quality') || '720p');
-  const [syncShopee, setSyncShopee] = useState(localStorage.getItem('buktiin_sync_shopee') !== 'false');
-  const [syncTokopedia, setSyncTokopedia] = useState(localStorage.getItem('buktiin_sync_tokopedia') !== 'false');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
         setUserEmail(session.user.email || '');
         const meta = session.user.user_metadata || {};
+        
+        let parentId = session.user.id;
+        let isSub = false;
+        let role = 'Master Operator • Packer 01';
+
+        // Check if sub account
+        const { data: subData } = await supabase.from('sub_accounts').select('parent_id').eq('child_id', session.user.id).single();
+        if (subData) {
+          parentId = subData.parent_id;
+          isSub = true;
+          // Get siblings to find rank
+          const { data: siblings } = await supabase.from('sub_accounts').select('child_id').eq('parent_id', parentId).order('created_at', { ascending: true });
+          const index = siblings?.findIndex(s => s.child_id === session.user.id) || 0;
+          role = `Staff Operator • Packer ${String(index + 2).padStart(2, '0')}`;
+        }
+        setUserRole(role);
+
+        // Fetch parent user's metadata to get company name if we are a sub account
+        let companyNameStr = meta.company_name || '';
+        if (isSub && !companyNameStr) {
+           companyNameStr = 'Toko Anda (Sub Account)';
+        }
+
         const profile = {
           full_name: meta.full_name || 'Admin Gudang',
           phone: meta.phone || '-',
+          company_name: companyNameStr,
           avatar_url: meta.avatar_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK'
         };
         setUserProfile(profile);
-        setEditForm({ full_name: profile.full_name, phone: profile.phone, avatar_url: profile.avatar_url });
+        setEditForm({ full_name: profile.full_name, phone: profile.phone, avatar_url: profile.avatar_url, company_name: profile.company_name });
         
         supabase
           .from('subscriptions')
           .select('*, plans(*)')
-          .eq('user_id', session.user.id)
+          .eq('user_id', parentId) // Use parentId for plan check
           .eq('status', 'ACTIVE')
           .limit(1)
           .then(({ data }) => {
@@ -88,12 +111,12 @@ export default function ProfileSettings() {
 
   const handleSaveProfile = async () => {
     const { error } = await supabase.auth.updateUser({
-      data: { full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url }
+      data: { full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url, company_name: editForm.company_name }
     });
     if (error) {
       alert("Gagal mengupdate profil: " + error.message);
     } else {
-      setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url }));
+      setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url, company_name: editForm.company_name }));
       setShowEditModal(false);
       alert("Profil berhasil diupdate!");
     }
@@ -104,35 +127,29 @@ export default function ProfileSettings() {
     localStorage.setItem('buktiin_video_quality', quality);
   };
 
-  const handleSyncChange = (platform: 'shopee' | 'tokopedia', checked: boolean) => {
-    if (platform === 'shopee') {
-      setSyncShopee(checked);
-      localStorage.setItem('buktiin_sync_shopee', checked.toString());
-    } else {
-      setSyncTokopedia(checked);
-      localStorage.setItem('buktiin_sync_tokopedia', checked.toString());
-    }
-    alert(`Sinkronisasi ${platform} ${checked ? 'diaktifkan' : 'dinonaktifkan'}.`);
-  };
-  
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
 
+  const marketplaces = [
+    { id: 'shopee', name: 'Shopee', color: 'bg-orange-100 text-orange-600', letter: 'S' },
+    { id: 'tokopedia', name: 'Tokopedia', color: 'bg-green-100 text-green-600', letter: 'T' },
+    { id: 'tiktok', name: 'TikTok Shop', color: 'bg-black text-white', letter: 'TK' },
+    { id: 'lazada', name: 'Lazada', color: 'bg-blue-100 text-blue-800', letter: 'L' },
+    { id: 'blibli', name: 'Blibli', color: 'bg-blue-50 text-blue-500', letter: 'B' },
+    { id: 'bukalapak', name: 'Bukalapak', color: 'bg-red-100 text-red-700', letter: 'BL' }
+  ];
+
   return (
     <div className="flex flex-col min-h-full">
-      {/* Content Area */}
       <div className="flex-1 p-lg max-w-6xl mx-auto w-full space-y-lg">
-        {/* Page Header */}
         <div className="md:hidden flex justify-between items-center w-full pb-md border-b border-ui-divider mb-lg">
           <h1 className="font-headline-md text-headline-md font-bold text-primary">Profile & Settings</h1>
         </div>
 
-        {/* Bento Grid Layout for Settings */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
           
-          {/* Profile Card */}
           <section className="md:col-span-8 bg-surface-container-lowest border border-ui-divider p-xl rounded-xl flex flex-col md:flex-row gap-xl hover:border-primary transition-colors duration-200">
             <div className="relative group cursor-pointer w-32 h-32 flex-shrink-0" onClick={() => setShowEditModal(true)}>
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary-container shadow-sm bg-surface-variant flex items-center justify-center">
@@ -148,10 +165,11 @@ export default function ProfileSettings() {
             </div>
             <div className="flex-1 space-y-md">
               <div>
-                <h2 className="font-headline-md text-headline-md font-bold">{userProfile.full_name}</h2>
-                <p className="text-on-surface-variant opacity-80 font-code-sm text-code-sm uppercase tracking-widest">Master Operator • Station 01</p>
+                <h2 className="font-headline-md text-headline-md font-bold text-on-surface">{userProfile.full_name}</h2>
+                <p className="text-primary font-code-sm text-code-sm uppercase tracking-widest font-bold mt-1">{userRole}</p>
+                <p className="text-on-surface-variant font-body-md mt-1 italic opacity-80">{userProfile.company_name || 'Toko/Perusahaan Belum Diisi'}</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-md mt-4">
                 <div className="space-y-xs">
                   <label className="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
                   <div className="flex items-center gap-sm px-md py-sm bg-surface-container-low border border-ui-divider rounded">
@@ -177,7 +195,6 @@ export default function ProfileSettings() {
             </div>
           </section>
 
-          {/* Subscription Card */}
           <section className="md:col-span-4 bg-surface-container-low border border-ui-divider p-xl rounded-xl flex flex-col justify-between overflow-hidden relative hover:border-primary transition-colors duration-200">
             <div className="absolute -right-4 -top-4 opacity-5 pointer-events-none">
               <span className="material-symbols-outlined !text-9xl">verified_user</span>
@@ -191,13 +208,6 @@ export default function ProfileSettings() {
               <p className="text-on-surface-variant text-sm">Paket berlangganan aktif yang terkoneksi dengan database Supabase.</p>
             </div>
             <div className="mt-xl space-y-md">
-              <div className="flex items-center justify-between p-md bg-white border border-ui-divider rounded">
-                <span className="font-body-md text-body-md font-semibold">Auto-Renew</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" defaultChecked className="sr-only peer" />
-                  <div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-status-success"></div>
-                </label>
-              </div>
               <button 
                 onClick={() => navigate('/plans')}
                 className="w-full py-sm border border-secondary text-secondary font-bold hover:bg-secondary hover:text-white transition-all rounded-DEFAULT active:scale-95 duration-150">
@@ -206,7 +216,6 @@ export default function ProfileSettings() {
             </div>
           </section>
 
-          {/* App Settings Section */}
           <section className="md:col-span-12 space-y-lg mt-md">
             <div className="flex items-center gap-md">
               <div className="h-1 w-8 bg-primary"></div>
@@ -214,7 +223,6 @@ export default function ProfileSettings() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
               
-              {/* Webcam Settings */}
               <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
                 <div className="flex items-center gap-sm text-primary">
                   <span className="material-symbols-outlined">videocam</span>
@@ -244,7 +252,6 @@ export default function ProfileSettings() {
                 </div>
               </div>
 
-              {/* Video Quality Settings */}
               <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
                 <div className="flex items-center gap-sm text-primary">
                   <span className="material-symbols-outlined">settings_overscan</span>
@@ -263,34 +270,27 @@ export default function ProfileSettings() {
                 <p className="text-[10px] text-on-surface-variant text-center">Note: 1080p requires at least 10Mbps upload speed.</p>
               </div>
 
-              {/* Marketplace Connections */}
-              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
+              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200 row-span-2">
                 <div className="flex items-center gap-sm text-primary">
                   <span className="material-symbols-outlined">hub</span>
                   <span className="font-label-caps text-label-caps">Marketplace Sync</span>
                 </div>
-                <div className="space-y-sm">
-                  <label className="flex items-center justify-between p-sm border border-ui-divider hover:bg-surface-container-low transition-colors cursor-pointer group rounded">
-                    <div className="flex items-center gap-md">
-                      <div className="w-8 h-8 rounded-sm bg-orange-100 flex items-center justify-center text-orange-600 font-bold">S</div>
-                      <span className="font-body-md text-body-md">Shopee Integration</span>
+                <div className="space-y-sm max-h-[300px] overflow-y-auto pr-2">
+                  {marketplaces.map(mp => (
+                    <div key={mp.id} className="flex items-center justify-between p-sm border border-ui-divider bg-surface-container-low rounded opacity-70">
+                      <div className="flex items-center gap-md">
+                        <div className={`w-8 h-8 rounded-sm ${mp.color} flex items-center justify-center font-bold`}>{mp.letter}</div>
+                        <span className="font-body-md text-body-md font-bold">{mp.name}</span>
+                      </div>
+                      <span className="bg-surface-variant text-on-surface-variant px-2 py-1 text-[10px] font-bold rounded uppercase">Coming Soon</span>
                     </div>
-                    <input type="checkbox" checked={syncShopee} onChange={e => handleSyncChange('shopee', e.target.checked)} className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary cursor-pointer" />
-                  </label>
-                  <label className="flex items-center justify-between p-sm border border-ui-divider hover:bg-surface-container-low transition-colors cursor-pointer group rounded">
-                    <div className="flex items-center gap-md">
-                      <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center text-green-600 font-bold">T</div>
-                      <span className="font-body-md text-body-md">Tokopedia Sync</span>
-                    </div>
-                    <input type="checkbox" checked={syncTokopedia} onChange={e => handleSyncChange('tokopedia', e.target.checked)} className="w-5 h-5 text-primary border-ui-divider rounded-DEFAULT focus:ring-primary cursor-pointer" />
-                  </label>
+                  ))}
                 </div>
               </div>
 
             </div>
           </section>
 
-          {/* Danger Zone */}
           <section className="md:col-span-12 border border-error/20 bg-error-container/10 p-lg rounded-xl flex flex-col md:flex-row justify-between items-center gap-md mt-md">
             <div>
               <h4 className="font-bold text-error">Danger Zone</h4>
@@ -308,7 +308,6 @@ export default function ProfileSettings() {
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="mt-auto flex flex-col md:flex-row justify-between items-center w-full px-lg py-md border-t border-ui-divider bg-surface">
         <div className="font-label-caps text-label-caps text-on-surface-variant mb-md md:mb-0">
           © 2026 Nafindo Group. All Rights Reserved.
@@ -320,7 +319,7 @@ export default function ProfileSettings() {
           </a>
         </div>
       </footer>
-      {/* Edit Profile Modal */}
+
       {showEditModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex flex-col items-center justify-center p-lg backdrop-blur-sm">
           <div className="w-full max-w-md bg-surface rounded-xl overflow-hidden shadow-xl border border-ui-divider flex flex-col p-lg gap-md">
@@ -342,24 +341,33 @@ export default function ProfileSettings() {
               </div>
 
               <div className="space-y-xs">
-                <label className="font-label-caps text-label-caps text-on-surface-variant">Full Name</label>
+                <label className="font-label-caps text-label-caps text-on-surface-variant">Nama Lengkap</label>
                 <input 
                   type="text"
                   value={editForm.full_name}
                   onChange={e => setEditForm(prev => ({ ...prev, full_name: e.target.value }))}
                   className="w-full px-md py-sm bg-surface-container-lowest border border-ui-divider rounded-DEFAULT focus:border-primary outline-none transition-colors font-body-md text-on-surface"
-                  placeholder="Masukkan nama lengkap"
                 />
               </div>
               
               <div className="space-y-xs">
-                <label className="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
+                <label className="font-label-caps text-label-caps text-on-surface-variant">Nama Toko / Perusahaan</label>
+                <input 
+                  type="text"
+                  value={editForm.company_name}
+                  onChange={e => setEditForm(prev => ({ ...prev, company_name: e.target.value }))}
+                  className="w-full px-md py-sm bg-surface-container-lowest border border-ui-divider rounded-DEFAULT focus:border-primary outline-none transition-colors font-body-md text-on-surface"
+                  placeholder="Gudang Utama (Watermark Video)"
+                />
+              </div>
+
+              <div className="space-y-xs">
+                <label className="font-label-caps text-label-caps text-on-surface-variant">No. Telepon</label>
                 <input 
                   type="text"
                   value={editForm.phone}
                   onChange={e => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
                   className="w-full px-md py-sm bg-surface-container-lowest border border-ui-divider rounded-DEFAULT focus:border-primary outline-none transition-colors font-body-md text-on-surface"
-                  placeholder="Contoh: 081234567890"
                 />
               </div>
             </div>
