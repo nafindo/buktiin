@@ -17,9 +17,7 @@ export default function LaunchApp() {
         // We can redirect to download or a specific section on the web
         // But for now, we'll go to the /login page where they can see the download options,
         // or a dedicated /download route if it exists.
-        // Let's redirect to /login and pass a query param or state if needed,
-        // or we can redirect to github releases for now.
-        window.location.href = 'https://github.com/nafindo/buktiin/releases';
+        navigate('/download');
       }, 1500);
     }, 2500);
 
