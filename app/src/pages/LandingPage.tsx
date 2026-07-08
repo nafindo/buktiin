@@ -46,9 +46,6 @@ export default function LandingPage() {
   const toggleBilling = () => {
     setIsAnnual(!isAnnual);
   };
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const videoId = searchParams.get('v');
 
   // If a video ID is provided in the URL, render the Customer Promo Player instead
   if (videoId) {
@@ -176,6 +173,7 @@ export default function LandingPage() {
             <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Fitur</button>
             <button onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Manfaat</button>
             <button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Harga</button>
+            <Link to="/download" className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Download</Link>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
           </div>
           <div className="flex items-center gap-md">
@@ -442,7 +440,6 @@ export default function LandingPage() {
                   </div>
                 ))
               )}
-            </div>
             </div>
           </div>
         </section>
