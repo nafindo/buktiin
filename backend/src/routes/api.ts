@@ -18,7 +18,8 @@ import {
 } from '../controllers/integrationController';
 import {
   createPayment,
-  activateSubscription
+  activateSubscription,
+  handleMidtransWebhook
 } from '../controllers/paymentController';
 import multer from 'multer';
 import path from 'path';
@@ -66,6 +67,7 @@ router.get('/orders/sync', syncOrderByResi);
 // Payments
 router.post('/pay', createPayment);
 router.post('/pay/activate', activateSubscription);
+router.post('/pay/webhook', handleMidtransWebhook);
 
 // Admin
 router.post('/admin/migrate-server', migrateUserServer);
