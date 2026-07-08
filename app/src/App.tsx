@@ -5,6 +5,7 @@ import AdminLayout from './layouts/AdminLayout';
 
 // Public Pages
 import LandingPage from './pages/LandingPage';
+import LaunchApp from './pages/LaunchApp';
 import DownloadApp from './pages/DownloadApp';
 import LoginRegister from './pages/LoginRegister';
 import Payment from './pages/Payment';
@@ -42,6 +43,7 @@ function App() {
         {/* Public Routes with generic topnav (like Landing, Pricing) */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/launch" element={<LaunchApp />} />
           <Route path="/pricing" element={<SelectPlan />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />

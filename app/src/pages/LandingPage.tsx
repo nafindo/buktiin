@@ -1,9 +1,51 @@
-﻿import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import imgProblem from '../assets/images/promo-problem.png';
 import imgSolution from '../assets/images/promo-solution.png';
 import logoImg from '../assets/images/logo.png';
 
+const planDescriptions: Record<string, string> = {
+  'FREE': 'Trial',
+  'BASIC': 'Seller pemula',
+  'STARTER': 'Seller growing',
+  'PRO': 'Seller established',
+  'BUSINESS': 'Tim/Warehouse',
+  'ENTERPRISE': 'Large ops'
+};
+
+const planDevices: Record<string, string> = {
+  'FREE': '1 Akun (Tidak bisa tambah staf)',
+  'BASIC': '1 Akun (Tidak bisa tambah staf)',
+  'STARTER': 'Maksimal 3 Akun',
+  'PRO': 'Maksimal 10 Akun',
+  'BUSINESS': 'Maksimal 50 Akun',
+  'ENTERPRISE': 'Custom Multi-Akun'
+};
+
 export default function LandingPage() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const videoId = searchParams.get('v');
+
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      const { data } = await supabase.from('plans').select('*').order('price', { ascending: true });
+      if (data) setPlans(data);
+      setLoading(false);
+    };
+    if (!videoId) {
+      fetchPlans();
+    }
+  }, [videoId]);
+
+  const toggleBilling = () => {
+    setIsAnnual(!isAnnual);
+  };
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const videoId = searchParams.get('v');
@@ -137,8 +179,8 @@ export default function LandingPage() {
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-on-surface-variant hover:text-primary transition-colors font-body-md">Bantuan</button>
           </div>
           <div className="flex items-center gap-md">
-            <Link to="/login" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
-              Mulai Sekarang
+            <Link to="/launch" className="bg-primary text-on-primary px-lg py-sm font-bold rounded hover:opacity-90 transition-opacity">
+              Buka Aplikasi
             </Link>
           </div>
         </nav>
@@ -159,13 +201,13 @@ export default function LandingPage() {
                 Solusi otomatisasi rekaman packing untuk seller e-commerce. Lindungi bisnismu dari komplain palsu dengan bukti video yang akurat dan tersertifikasi.
               </p>
               <div className="flex flex-wrap gap-md pt-sm">
-                <Link to="/login" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
-                  Mulai Sekarang
-                  <span className="material-symbols-outlined">arrow_forward</span>
+                <Link to="/launch" className="bg-primary text-on-primary px-xl py-md font-bold text-lg rounded hover:shadow-lg transition-all flex items-center gap-sm">
+                  Buka Aplikasi
+                  <span className="material-symbols-outlined">open_in_new</span>
                 </Link>
-                <button className="border-2 border-on-surface text-on-surface px-xl py-md font-bold text-lg rounded hover:bg-on-surface hover:text-surface transition-all">
-                  Lihat Demo
-                </button>
+                <Link to="/login" className="border-2 border-on-surface text-on-surface px-xl py-md font-bold text-lg rounded hover:bg-on-surface hover:text-surface transition-all flex items-center gap-sm">
+                  Daftar / Konsol Admin
+                </Link>
               </div>
               <div className="flex items-center gap-lg pt-md">
                 <div className="flex -space-x-3">
@@ -181,16 +223,26 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="camera-viewport rounded-xl shadow-2xl border-4 border-primary">
-                <img className="w-full h-full object-cover opacity-80" alt="Camera View" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqMgffZcBkI2Cbsw4yyvABB8lZkgwldqa38GNse6qqOoG95TKzuUMu_jsDgwP2XU0iTVIhtCU3gkbazL67CcdJVVmTrKIr86oKIunXGC9bjEjip_ERL336Sr1MCGev7Qhjhl2zfPnQPNxMdL4Co1gO0HzcqHhTTdkIQKFh2Lo3XjNI2wiwv0Z7zFcJ5iJV-AMkvvzaaFIu0hctKsNiWi2b15A1RjnQwlqPXwXf7hBiTv_pTRUzzuH7"/>
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded">
+              <div className="camera-viewport rounded-xl shadow-2xl border-4 border-primary bg-black overflow-hidden relative aspect-video flex items-center justify-center">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src="https://www.youtube.com/embed/-A2lx4D6B7o?si=w4Oq-FCKSYZ4mB5I&autoplay=1&mute=1&loop=1" 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                  className="absolute inset-0 z-10"
+                ></iframe>
+                
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded z-20 pointer-events-none">
                   <div className="w-3 h-3 bg-red-600 rounded-full rec-indicator"></div>
                   <span className="font-code-sm text-code-sm text-white uppercase tracking-widest">REC ●</span>
                 </div>
-                <div className="absolute bottom-4 left-4 font-code-sm text-code-sm text-primary-fixed-dim bg-black/40 p-2">
+                <div className="absolute bottom-4 left-4 font-code-sm text-code-sm text-primary-fixed-dim bg-black/40 p-2 z-20 pointer-events-none">
                   FPS: 30 | 1080p | AES-256 ENCRYPTED
                 </div>
-                <div className="absolute inset-0 border-[20px] border-white/5 pointer-events-none"></div>
+                <div className="absolute inset-0 border-[20px] border-white/5 pointer-events-none z-20"></div>
               </div>
               <div className="absolute -top-6 -right-6 w-24 h-24 bg-status-processing/20 rounded-full blur-3xl -z-10"></div>
               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl -z-10"></div>
@@ -322,91 +374,75 @@ export default function LandingPage() {
           <div className="max-w-container-max mx-auto">
             <div className="text-center mb-xl">
               <h2 className="font-headline-lg text-headline-lg mb-md">Pilih Paket Sesuai Skalamu</h2>
-              <div className="flex items-center justify-center gap-md">
-                <span className="font-body-md">Bulanan</span>
-                <button className="w-14 h-8 bg-primary rounded-full relative p-1 transition-all">
-                  <div className="w-6 h-6 bg-white rounded-full transition-all translate-x-6"></div>
+              <div className="flex items-center justify-center gap-md mt-md">
+                <span className={`font-label-caps text-label-caps ${!isAnnual ? 'text-on-surface' : 'text-on-surface-variant'}`} id="monthly-label">Bulanan</span>
+                <button 
+                  className="relative w-14 h-7 bg-surface-container-highest rounded-full p-1 focus:outline-none transition-colors" 
+                  onClick={toggleBilling}
+                >
+                  <div className={`w-5 h-5 bg-primary rounded-full transition-transform transform ${isAnnual ? 'translate-x-7' : 'translate-x-0'}`}></div>
                 </button>
-                <span className="font-body-md flex items-center gap-sm">
-                  Tahunan 
-                  <span className="bg-primary-container text-on-primary-container text-[10px] px-2 py-1 rounded-full font-bold">HEMAT 17%</span>
+                <span className={`font-label-caps text-label-caps ${isAnnual ? 'text-on-surface' : 'text-on-surface-variant'}`} id="annual-label">
+                  Tahunan <span className="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full ml-1 font-bold">HEMAT 17%</span>
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
-              {/* Basic */}
-              <div className="bg-surface border border-ui-divider p-lg rounded-xl flex flex-col hover:shadow-md transition-shadow">
-                <div className="mb-lg">
-                  <h5 className="font-label-caps text-label-caps uppercase text-on-surface-variant mb-xs">Basic</h5>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold">Rp</span>
-                    <span className="text-3xl font-extrabold tracking-tighter">49k</span>
-                    <span className="text-on-surface-variant text-sm">/bln</span>
+            
+            <div className="flex flex-wrap justify-center gap-md mt-xl">
+              {loading ? (
+                <div className="w-full text-center py-xl text-on-surface-variant">Memuat daftar harga...</div>
+              ) : (
+                plans.map((plan) => (
+                  <div key={plan.id} className={`pricing-card w-full sm:w-[320px] lg:w-[280px] flex-shrink-0 flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-lg scale-105 z-10' : 'border-ui-divider hover:shadow-md'} p-md rounded-xl relative overflow-hidden transition-all duration-200`}>
+                    {plan.name === 'STARTER' && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-widest mt-4 z-20">Recommended</div>
+                    )}
+                    <div className="mb-md mt-2">
+                      <h5 className={`font-label-caps text-label-caps uppercase ${plan.name === 'STARTER' ? 'text-primary' : plan.name === 'BUSINESS' ? 'text-primary-fixed' : 'text-on-surface-variant'} mb-xs`}>{plan.name}</h5>
+                      <div className="flex items-baseline gap-1">
+                        {plan.name !== 'ENTERPRISE' && (
+                          <span className="text-lg font-bold">Rp</span>
+                        )}
+                        <span className="text-3xl font-extrabold tracking-tighter">
+                          {plan.name === 'ENTERPRISE' ? 'Custom' : (isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
+                        </span>
+                        {plan.name !== 'ENTERPRISE' && (
+                          <span className="text-on-surface-variant text-sm">/{isAnnual ? 'yr' : 'mo'}</span>
+                        )}
+                      </div>
+                      <p className="font-body-sm text-[13px] text-on-surface-variant mt-sm min-h-[40px]">{planDescriptions[plan.name] || 'Pilihan terbaik untuk bisnis Anda'}</p>
+                    </div>
+                    <ul className="space-y-sm text-sm mb-xl flex-1 border-t border-ui-divider pt-md">
+                      <li className="flex items-center gap-sm">
+                        <span className={`material-symbols-outlined text-[18px] ${plan.name === 'BUSINESS' ? 'text-primary-fixed' : 'text-primary'}`}>check_circle</span> 
+                        {plan.name === 'ENTERPRISE' ? 'Unlimited Storage' : ((plan.storageLimit || plan.storagelimit) / 1000) + 'GB Storage'}
+                      </li>
+                      <li className="flex items-center gap-sm">
+                        <span className={`material-symbols-outlined text-[18px] ${plan.name === 'BUSINESS' ? 'text-primary-fixed' : 'text-primary'}`}>check_circle</span> 
+                        {plan.name === 'ENTERPRISE' ? 'Unlimited Orders' : (plan.orderLimit || plan.orderlimit).toLocaleString('id-ID') + ' Orders/day'}
+                      </li>
+                      <li className="flex items-center gap-sm">
+                        <span className={`material-symbols-outlined text-[18px] ${plan.name === 'BUSINESS' ? 'text-primary-fixed' : 'text-primary'}`}>check_circle</span> 
+                        {plan.retentionDays || plan.retentiondays} Hari Cloud Storage
+                      </li>
+                      <li className="flex items-center gap-sm">
+                        <span className={`material-symbols-outlined text-[18px] ${plan.name === 'BUSINESS' ? 'text-primary-fixed' : 'text-primary'}`}>devices</span> 
+                        {planDevices[plan.name]}
+                      </li>
+                    </ul>
+                    <Link to="/login" className={`w-full py-sm font-bold rounded transition-all text-center block ${
+                      plan.name === 'STARTER' 
+                        ? 'bg-primary text-white hover:opacity-90' 
+                        : plan.name === 'BUSINESS' 
+                          ? 'bg-surface-container-highest text-on-surface hover:bg-primary-fixed' 
+                          : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
+                    }`}>
+                      {plan.name === 'ENTERPRISE' ? 'Hubungi Sales' : 'Pilih Paket'}
+                    </Link>
                   </div>
-                </div>
-                <ul className="space-y-sm text-sm mb-xl flex-1">
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 1 Kamera</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 500 Rekaman/Bulan</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 7 Hari Cloud Storage</li>
-                  <li className="flex items-center gap-sm opacity-30"><span className="material-symbols-outlined text-[18px]">block</span> Tanpa API Access</li>
-                </ul>
-                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
-              </div>
-              {/* Starter */}
-              <div className="bg-surface border-4 border-primary p-lg rounded-xl flex flex-col shadow-xl relative scale-105 z-10">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-widest">Recommended</div>
-                <div className="mb-lg">
-                  <h5 className="font-label-caps text-label-caps uppercase text-primary mb-xs">Starter</h5>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold">Rp</span>
-                    <span className="text-3xl font-extrabold tracking-tighter">99k</span>
-                    <span className="text-on-surface-variant text-sm">/bln</span>
-                  </div>
-                </div>
-                <ul className="space-y-sm text-sm mb-xl flex-1">
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 3 Kamera</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 2.500 Rekaman/Bulan</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 14 Hari Cloud Storage</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Export CSV &amp; Webhook</li>
-                </ul>
-                <Link to="/login" className="w-full py-sm bg-primary text-white font-bold rounded hover:opacity-90 transition-all text-center block">Pilih Paket</Link>
-              </div>
-              {/* Pro */}
-              <div className="bg-surface border border-ui-divider p-lg rounded-xl flex flex-col hover:shadow-md transition-shadow">
-                <div className="mb-lg">
-                  <h5 className="font-label-caps text-label-caps uppercase text-on-surface-variant mb-xs">Pro</h5>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold">Rp</span>
-                    <span className="text-3xl font-extrabold tracking-tighter">199k</span>
-                    <span className="text-on-surface-variant text-sm">/bln</span>
-                  </div>
-                </div>
-                <ul className="space-y-sm text-sm mb-xl flex-1">
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 10 Kamera</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 10.000 Rekaman/Bulan</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> 30 Hari Cloud Storage</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary text-[18px]">check_circle</span> Dedicated Support</li>
-                </ul>
-                <Link to="/login" className="w-full py-sm border-2 border-primary text-primary font-bold rounded hover:bg-primary hover:text-white transition-all text-center block">Pilih Paket</Link>
-              </div>
-              {/* Business */}
-              <div className="bg-inverse-surface border border-outline p-lg rounded-xl flex flex-col text-surface">
-                <div className="mb-lg">
-                  <h5 className="font-label-caps text-label-caps uppercase text-primary-fixed mb-xs">Business</h5>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold">Rp</span>
-                    <span className="text-3xl font-extrabold tracking-tighter text-white">399k</span>
-                    <span className="text-surface-variant text-sm">/bln</span>
-                  </div>
-                </div>
-                <ul className="space-y-sm text-sm mb-xl flex-1">
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> Unlimited Kamera</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> 50.000 Rekaman/Bulan</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> 60 Hari Cloud Storage</li>
-                  <li className="flex items-center gap-sm"><span className="material-symbols-outlined text-primary-fixed text-[18px]">check_circle</span> Custom API Integration</li>
-                </ul>
-                <Link to="/login" className="w-full py-sm bg-surface text-inverse-surface font-bold rounded hover:bg-primary-fixed transition-all text-center block">Hubungi Sales</Link>
-              </div>
+                ))
+              )}
+            </div>
             </div>
           </div>
         </section>

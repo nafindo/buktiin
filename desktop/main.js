@@ -100,8 +100,25 @@ function startBackend() {
   }
 }
 
-app.on('ready', () => {
-  startBackend();
+app.setAsDefaultProtocolClient('buktiin');
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+    // We can also parse the deep link from commandLine here if needed
+    console.log('Second instance launched with:', commandLine);
+  });
+
+  app.on('ready', () => {
+    startBackend();
 
   // Wait up to 30 seconds for the backend to be ready before opening the window
   waitForBackend('http://127.0.0.1:3001/', 60, (err) => {
@@ -114,6 +131,7 @@ app.on('ready', () => {
     createWindow();
   });
 });
+}
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
@@ -122,6 +140,16 @@ app.on('window-all-closed', function () {
     }
     app.quit();
   }
+});
+
+// Handle custom protocol for macOS
+app.on('open-url', (event, url) => {
+  event.preventDefault();
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+  console.log('Opened URL:', url);
 });
 
 app.on('activate', function () {

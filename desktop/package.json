@@ -26,6 +26,12 @@
       ],
       "icon": "build/icon.png"
     },
+    "protocols": {
+      "name": "Buktiin URI Scheme",
+      "schemes": [
+        "buktiin"
+      ]
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
