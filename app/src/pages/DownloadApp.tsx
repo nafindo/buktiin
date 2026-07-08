@@ -33,7 +33,7 @@ const DownloadApp: React.FC = () => {
             <h2 className="font-headline-lg text-headline-lg font-bold mb-sm z-10">Windows PC</h2>
             <p className="text-on-surface-variant text-base mb-xl z-10">Solusi optimal untuk PC admin kasir atau workstation packing dengan OS Windows 10 & 11.</p>
             
-            <a href="https://github.com/nafindo/buktiin/releases" target="_blank" rel="noopener noreferrer" className="mt-auto w-full bg-primary text-white font-bold py-4 px-xl rounded-xl hover:opacity-90 hover:scale-[1.02] transition-all z-10 flex items-center justify-center gap-3 shadow-md hover:shadow-lg text-lg">
+            <a href="https://nafindo.github.io/buktiin/downloads/Buktiin-Web-Setup.exe" download className="mt-auto w-full bg-primary text-white font-bold py-4 px-xl rounded-xl hover:opacity-90 hover:scale-[1.02] transition-all z-10 flex items-center justify-center gap-3 shadow-md hover:shadow-lg text-lg">
               <span className="material-symbols-outlined">download</span>
               Download untuk Windows
             </a>
