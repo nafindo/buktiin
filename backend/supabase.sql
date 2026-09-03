@@ -6,49 +6,84 @@ CREATE TABLE IF NOT EXISTS public.plans (
   storageLimit INTEGER NOT NULL,
   orderLimit INTEGER NOT NULL,
   retentionDays INTEGER NOT NULL,
-  accountLimit INTEGER NOT NULL DEFAULT 1
+  accountLimit INTEGER NOT NULL DEFAULT 1,
+  payment_link TEXT
 );
 
--- Tambahkan kolom accountlimit jika tabel sebelumnya sudah ada
+-- Tambahkan kolom accountlimit & payment_link jika tabel sebelumnya sudah ada
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'plans' AND column_name = 'accountlimit') THEN
     ALTER TABLE public.plans ADD COLUMN accountlimit INTEGER NOT NULL DEFAULT 1;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'plans' AND column_name = 'payment_link') THEN
+    ALTER TABLE public.plans ADD COLUMN payment_link TEXT;
+  END IF;
 END $$;
 
 -- Update data paket awal (agar aman jika sudah ada)
-INSERT INTO public.plans (name, price, storageLimit, orderLimit, retentionDays, accountLimit)
+INSERT INTO public.plans (name, price, storageLimit, orderLimit, retentionDays, accountLimit, payment_link)
 VALUES 
-  ('FREE', 0, 5000, 10, 7, 1),
-  ('BASIC', 49000, 20000, 30, 30, 1),
-  ('STARTER', 99000, 50000, 100, 30, 3),
-  ('PRO', 199000, 150000, 300, 30, 5),
-  ('BUSINESS', 399000, 500000, 1000, 30, 10),
-  ('ENTERPRISE', 0, 10000000, 10000, 30, 999999)
+  ('FREE', 0, 5000, 10, 7, 1, NULL),
+  ('BASIC', 49000, 20000, 30, 30, 1, 'https://link.dana.id/p2mlink?params=[orderId=kxnjuyxs]'),
+  ('STARTER', 99000, 50000, 100, 30, 3, 'https://link.dana.id/paymentlink?params=[orderId=5lft34yy]'),
+  ('PRO', 199000, 150000, 300, 30, 5, 'https://link.dana.id/paymentlink?params=[orderId=yx2xjf23]'),
+  ('BUSINESS', 399000, 500000, 1000, 30, 10, 'https://link.dana.id/paymentlink?params=[orderId=pcthuuy6]'),
+  ('ENTERPRISE', 0, 10000000, 10000, 30, 999999, 'https://link.dana.id/paymentlink?params=[orderId=pcthuuy6]')
 ON CONFLICT (name) DO UPDATE SET 
   price = EXCLUDED.price,
   storagelimit = EXCLUDED.storagelimit,
   orderlimit = EXCLUDED.orderlimit,
   retentiondays = EXCLUDED.retentiondays,
-  accountlimit = EXCLUDED.accountlimit;
+  accountlimit = EXCLUDED.accountlimit,
+  payment_link = EXCLUDED.payment_link;
 
 -- Buat tabel Subscription
 CREATE TABLE IF NOT EXISTS public.subscriptions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL, -- Merujuk ke auth.users
   plan_id UUID REFERENCES public.plans(id) NOT NULL,
-  status TEXT DEFAULT 'ACTIVE', -- ACTIVE, EXPIRED
+  status TEXT DEFAULT 'ACTIVE', -- ACTIVE, PENDING_APPROVAL, REJECTED, EXPIRED
   start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  payment_proof_url TEXT,
+  payment_method TEXT DEFAULT 'QRIS_DANA',
+  user_email TEXT,
+  user_name TEXT,
+  amount_paid INTEGER,
+  notes TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Tambahkan kolom baru jika tabel sudah ada sebelumnya
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'payment_proof_url') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN payment_proof_url TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'payment_method') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN payment_method TEXT DEFAULT 'QRIS_DANA';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'user_email') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN user_email TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'user_name') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN user_name TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'amount_paid') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN amount_paid INTEGER;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'notes') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN notes TEXT;
+  END IF;
+END $$;
+
 -- RLS (Row Level Security) agar aman
--- Kita hapus policy dulu jika sudah ada agar tidak error "policy already exists"
 DROP POLICY IF EXISTS "Public profiles are viewable by everyone." ON public.plans;
 DROP POLICY IF EXISTS "Users can view their own subscriptions." ON public.subscriptions;
+DROP POLICY IF EXISTS "Users can insert their own subscriptions." ON public.subscriptions;
+DROP POLICY IF EXISTS "Users can update their own subscriptions." ON public.subscriptions;
 
 ALTER TABLE public.plans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
@@ -57,9 +92,15 @@ ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public profiles are viewable by everyone." 
 ON public.plans FOR SELECT USING (true);
 
--- Policy agar user hanya bisa melihat subscription miliknya sendiri
+-- Policy subscriptions
 CREATE POLICY "Users can view their own subscriptions." 
-ON public.subscriptions FOR SELECT USING (auth.uid() = user_id);
+ON public.subscriptions FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert their own subscriptions." 
+ON public.subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id OR true);
+
+CREATE POLICY "Users can update their own subscriptions." 
+ON public.subscriptions FOR UPDATE USING (true);
 
 -- Buat tabel Recordings
 CREATE TABLE IF NOT EXISTS public.recordings (

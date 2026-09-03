@@ -60,122 +60,102 @@ export default function SelectPlan() {
   const handlePay = async (plan: any) => {
     if (paying) return;
     setPaying(true);
-    try {
-      const res = await fetch('http://localhost:3001/api/pay', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planId: plan.id,
-          price: isAnnual ? plan.price * 10 : plan.price,
-          name: plan.name,
-          userId: userId
-        })
-      });
-      const data = await res.json();
-      
-      if (data.token) {
-        window.snap.pay(data.token, {
-          onSuccess: async (result: any) => {
-            await fetch('http://localhost:3001/api/pay/activate', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId, planId: plan.id, token: result.transaction_id })
-            });
-            window.location.href = '/#/dashboard';
-          },
-          onPending: () => {
-            alert('Menunggu pembayaran.');
-            setPaying(false);
-          },
-          onError: () => {
-            alert('Pembayaran gagal.');
-            setPaying(false);
-          },
-          onClose: () => {
-            setPaying(false);
-          }
+
+    // Free plan: direct activation
+    if (plan.price === 0) {
+      try {
+        const startDate = new Date();
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 30);
+        await supabase.from('subscriptions').insert({
+          user_id: userId,
+          plan_id: plan.id,
+          status: 'ACTIVE',
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString()
         });
-      } else {
-        alert('Gagal mendapatkan token pembayaran.');
+        alert(`Paket ${plan.name} berhasil diaktifkan!`);
+        navigate('/dashboard');
+      } catch (err: any) {
+        console.error('Failed to activate plan:', err);
+        alert('Gagal mengaktifkan paket: ' + (err.message || String(err)));
+      } finally {
         setPaying(false);
       }
-    } catch (err) {
-      console.error(err);
-      alert('Terjadi kesalahan koneksi.');
-      setPaying(false);
+      return;
     }
+
+    // Paid Plan: Navigate to QRIS DANA payment & upload proof page
+    setPaying(false);
+    navigate(`/payment?planId=${plan.id}&isAnnual=${isAnnual ? '1' : '0'}`);
   };
 
   return (
     <div className="flex flex-col min-h-full">
       {/* TopNavBar is handled by layout if applicable, or we just render the content below */}
       
-      <main className="flex-grow container mx-auto px-lg py-xl max-w-7xl">
+      <main className="flex-grow container mx-auto px-2 py-3 sm:px-4 max-w-7xl">
         {/* Header Section */}
-        <div className="text-center mb-xl">
-          <h1 className="font-headline-lg text-headline-lg mb-sm">Upgrade Your Evidence System</h1>
-          <p className="text-on-surface-variant max-w-2xl mx-auto mb-md">
-            Scale your packing station security with automated video recording and cloud storage designed for modern e-commerce teams.
+        <div className="text-center mb-3">
+          <h1 className="font-headline-md text-base sm:text-xl font-bold mb-1">Pilihan Paket Berlangganan</h1>
+          <p className="text-on-surface-variant text-xs max-w-xl mx-auto mb-2">
+            Tingkatkan keamanan gudang dan kapasitas kuota rekaman video toko Anda.
           </p>
           
           {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-md mt-md">
-            <span className={`font-label-caps text-label-caps ${!isAnnual ? 'text-on-surface' : 'text-on-surface-variant'}`} id="monthly-label">Monthly</span>
+          <div className="flex items-center justify-center gap-2 mt-1">
+            <span className={`font-label-caps text-xs ${!isAnnual ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`} id="monthly-label">Bulanan</span>
             <button 
-              className="relative w-14 h-7 bg-surface-container-highest rounded-full p-1 focus:outline-none transition-colors" 
+              className="relative w-11 h-6 bg-surface-container-highest rounded-full p-0.5 focus:outline-none transition-colors" 
               onClick={toggleBilling}
             >
-              <div className={`w-5 h-5 bg-primary rounded-full transition-transform transform ${isAnnual ? 'translate-x-7' : 'translate-x-0'}`}></div>
+              <div className={`w-5 h-5 bg-primary rounded-full transition-transform transform ${isAnnual ? 'translate-x-5' : 'translate-x-0'}`}></div>
             </button>
-            <span className={`font-label-caps text-label-caps ${isAnnual ? 'text-on-surface' : 'text-on-surface-variant'}`} id="annual-label">
-              Annual <span className="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full ml-1">SAVE 17%</span>
+            <span className={`font-label-caps text-xs ${isAnnual ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`} id="annual-label">
+              Tahunan <span className="bg-primary-container text-on-primary-container text-[9px] px-1.5 py-0.5 rounded-full ml-0.5 font-bold">HEMAT 17%</span>
             </span>
           </div>
         </div>
 
         {/* Pricing Grid */}
-        <div className="flex flex-wrap justify-center gap-md mt-xl">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-3">
           {loading ? (
-            <div className="w-full text-center py-xl text-on-surface-variant">Memuat daftar paket...</div>
+            <div className="w-full text-center py-6 text-on-surface-variant text-xs">Memuat daftar paket...</div>
           ) : (
             plans.map((plan) => (
-              <div key={plan.id} className={`pricing-card w-full sm:w-[320px] lg:w-[300px] flex-shrink-0 flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-lg' : 'border-ui-divider'} p-md rounded-xl relative overflow-hidden hover:-translate-y-1 transition-transform duration-200`}>
+              <div key={plan.id} className={`pricing-card w-full sm:w-[260px] flex-shrink-0 flex flex-col bg-surface border ${plan.name === 'STARTER' ? 'border-2 border-primary shadow-md' : 'border-ui-divider'} p-3 rounded-xl relative overflow-hidden transition-transform duration-200`}>
                 {plan.name === 'STARTER' && (
                   <div className="absolute top-0 right-0">
-                    <span className="bg-primary text-white font-label-caps text-[10px] px-3 py-1 rounded-tr-lg rounded-bl-lg">RECOMMENDED</span>
+                    <span className="bg-primary text-white font-label-caps text-[9px] font-bold px-2 py-0.5 rounded-tr-lg rounded-bl-lg">POPULER</span>
                   </div>
                 )}
-                <div className="mb-md">
-                  <h3 className={`font-label-caps text-label-caps ${plan.name === 'STARTER' ? 'text-primary mt-2' : 'text-on-surface-variant'} mb-xs`}>{plan.name}</h3>
-                  <p className="font-body-sm text-[13px] text-on-surface-variant mb-sm">{planDescriptions[plan.name] || 'Pilihan terbaik untuk bisnis Anda'}</p>
-                  <div className="flex items-baseline gap-1">
+                <div className="mb-2">
+                  <h3 className={`font-label-caps text-xs font-bold ${plan.name === 'STARTER' ? 'text-primary' : 'text-on-surface-variant'}`}>{plan.name}</h3>
+                  <p className="text-[11px] text-on-surface-variant mb-1">{planDescriptions[plan.name] || 'Pilihan terbaik untuk bisnis Anda'}</p>
+                  <div className="flex items-baseline gap-0.5">
                     {plan.name !== 'ENTERPRISE' && (
-                      <span className={`font-headline-md text-headline-md ${plan.name === 'STARTER' ? 'text-on-surface' : ''}`}>Rp</span>
+                      <span className="text-xs font-bold">Rp</span>
                     )}
-                    <span className="font-headline-lg text-headline-lg transition-transform duration-200">
+                    <span className="text-lg sm:text-xl font-extrabold">
                       {plan.name === 'ENTERPRISE' ? 'Custom' : (isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
                     </span>
                     {plan.name !== 'ENTERPRISE' && (
-                      <span className="text-on-surface-variant font-code-sm text-code-sm">/{isAnnual ? 'yr' : 'mo'}</span>
+                      <span className="text-on-surface-variant text-[10px]">/{isAnnual ? 'thn' : 'bln'}</span>
                     )}
                   </div>
                 </div>
-                <div className="flex-grow space-y-md border-t border-ui-divider pt-md">
-                  <ul className="space-y-sm">
-                    <li className="flex items-center gap-2 font-body-md text-[14px]">
-                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : ((plan.storageLimit || plan.storagelimit) / 1000) + 'GB'} Storage</span>
+                <div className="flex-grow space-y-1 border-t border-ui-divider pt-2">
+                  <ul className="space-y-1">
+                    <li className="flex items-center gap-1.5 text-xs">
+                      <span className="material-symbols-outlined text-status-success text-sm">check_circle</span>
+                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : ((plan.storageLimit || plan.storagelimit) / 1000) + 'GB'} Cloud</span>
                     </li>
-                    <li className="flex items-center gap-2 font-body-md text-[14px]">
-                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : (plan.orderLimit || plan.orderlimit)} Orders/day</span>
+                    <li className="flex items-center gap-1.5 text-xs">
+                      <span className="material-symbols-outlined text-status-success text-sm">check_circle</span>
+                      <span>{plan.name === 'ENTERPRISE' ? 'Unlimited' : (plan.orderLimit || plan.orderlimit)} Scan/hari</span>
                     </li>
-                    <li className="flex items-center gap-2 font-body-md text-[14px]">
-                      <span className="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
-                      <span>{plan.retentionDays || plan.retentiondays} Days Retention</span>
-                    </li>
-                    <li className="flex items-center gap-2 font-body-md text-[14px]">
-                      <span className="material-symbols-outlined text-status-success text-[18px]">devices</span>
+                    <li className="flex items-center gap-1.5 text-xs">
+                      <span className="material-symbols-outlined text-status-success text-sm">devices</span>
                       <span>{planDevices[plan.name]}</span>
                     </li>
                   </ul>
@@ -183,23 +163,24 @@ export default function SelectPlan() {
                 {isSubAccount ? (
                   <button 
                     disabled
-                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all bg-surface-container text-on-surface-variant cursor-not-allowed"
+                    className="mt-3 w-full py-1.5 font-bold rounded-lg text-xs bg-surface-container text-on-surface-variant cursor-not-allowed"
                   >
-                    Tidak Ada Akses (Akun Staf)
+                    Akun Staf
                   </button>
                 ) : plan.name === 'ENTERPRISE' ? (
-                  <button 
-                    onClick={() => {
-                      alert('Silakan hubungi tim Customer Service kami (0812-XXXX-XXXX) untuk menyesuaikan fasilitas dan harga yang Anda butuhkan.');
-                    }}
-                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all border border-on-surface text-on-surface hover:bg-surface-container"
+                  <a 
+                    href="https://wa.me/6281232797271?text=Halo%20Admin%20BUKTIIN%2C%20saya%20tertarik%20dengan%20Paket%20Enterprise.%20Mohon%20informasi%20dan%20penawaran%20sesuai%20kebutuhan%20kami."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 w-full py-1.5 font-bold rounded-lg text-xs border border-on-surface text-on-surface hover:bg-surface-container flex items-center justify-center gap-1.5 transition-colors text-center"
                   >
-                    Hubungi Customer Service
-                  </button>
+                    <span className="material-symbols-outlined text-sm text-green-600">chat</span>
+                    Hubungi Kami
+                  </a>
                 ) : plan.name === 'FREE' ? (
                   <button 
                     disabled
-                    className="mt-xl w-full py-md font-bold rounded-DEFAULT transition-all bg-surface-container text-on-surface-variant cursor-not-allowed"
+                    className="mt-3 w-full py-1.5 font-bold rounded-lg text-xs bg-surface-container text-on-surface-variant cursor-not-allowed"
                   >
                     Paket Saat Ini
                   </button>

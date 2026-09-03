@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { getDeviceId, registerDeviceSession } from '../lib/deviceSession';
 import logoImg from '../assets/images/logo.png';
 
 export default function LoginRegister() {
@@ -35,10 +36,30 @@ export default function LoginRegister() {
       }
 
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        if (authData?.user) {
+          await registerDeviceSession(authData.user.id, getDeviceId());
+
+          // Check if this account is a registered staff / sub-account
+          try {
+            const { data: subRow } = await supabase
+              .from('sub_accounts')
+              .select('parent_id')
+              .eq('child_id', authData.user.id)
+              .maybeSingle();
+
+            if (subRow) {
+              localStorage.setItem('isSubAccount', 'true');
+              localStorage.setItem('parentId', subRow.parent_id);
+            } else {
+              localStorage.removeItem('isSubAccount');
+              localStorage.removeItem('parentId');
+            }
+          } catch (_) {}
+        }
       } else {
-        const { error } = await supabase.auth.signUp({ 
+        const { data: authData, error } = await supabase.auth.signUp({ 
           email, 
           password,
           options: {
@@ -50,7 +71,9 @@ export default function LoginRegister() {
           }
         });
         if (error) throw error;
-        // Auto sign in or show message
+        if (authData?.user) {
+          await registerDeviceSession(authData.user.id, getDeviceId());
+        }
       }
       navigate('/dashboard');
     } catch (err: any) {
@@ -221,7 +244,7 @@ export default function LoginRegister() {
                 <span className="material-symbols-outlined relative z-10 transition-transform group-hover:translate-x-1">arrow_forward</span>
               </button>
             </form>
-            <div className="pt-lg border-t border-ui-divider text-center">
+            <div className="pt-lg border-t border-ui-divider text-center space-y-2">
               <p className="font-body-md text-on-surface-variant">
                 {isLogin ? 'Belum punya akun?' : 'Sudah punya akun?'} 
                 <button 
@@ -232,6 +255,16 @@ export default function LoginRegister() {
                   {isLogin ? 'Daftar di sini' : 'Masuk di sini'}
                 </button>
               </p>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin/dashboard')}
+                  className="text-xs text-on-surface-variant/70 hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto font-medium"
+                >
+                  <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+                  <span>Akses Admin Console</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

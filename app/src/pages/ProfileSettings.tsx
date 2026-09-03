@@ -143,146 +143,135 @@ export default function ProfileSettings() {
 
   return (
     <div className="flex flex-col min-h-full">
-      <div className="flex-1 p-lg max-w-6xl mx-auto w-full space-y-lg">
-        <div className="md:hidden flex justify-between items-center w-full pb-md border-b border-ui-divider mb-lg">
-          <h1 className="font-headline-md text-headline-md font-bold text-primary">Profile & Settings</h1>
+      <div className="flex-1 p-2 sm:p-4 max-w-6xl mx-auto w-full space-y-2 sm:space-y-3">
+        <div className="flex justify-between items-center w-full pb-1 border-b border-ui-divider mb-1">
+          <h1 className="font-headline-md text-sm sm:text-base font-bold text-primary">Profil & Pengaturan</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3">
           
-          <section className="md:col-span-8 bg-surface-container-lowest border border-ui-divider p-xl rounded-xl flex flex-col md:flex-row gap-xl hover:border-primary transition-colors duration-200">
-            <div className="relative group cursor-pointer w-32 h-32 flex-shrink-0" onClick={() => setShowEditModal(true)}>
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary-container shadow-sm bg-surface-variant flex items-center justify-center">
+          <section className="md:col-span-8 bg-surface-container-lowest border border-ui-divider p-3 sm:p-4 rounded-xl flex flex-col sm:flex-row gap-3 hover:border-primary transition-colors">
+            <div className="relative group cursor-pointer w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 mx-auto sm:mx-0" onClick={() => setShowEditModal(true)}>
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-primary-container shadow-sm bg-surface-variant flex items-center justify-center">
                 {userProfile.avatar_url ? (
                   <img className="w-full h-full object-cover" alt="Profile Picture" src={userProfile.avatar_url} />
                 ) : (
-                  <span className="text-4xl text-on-surface-variant font-bold">{userProfile.full_name.charAt(0)}</span>
+                  <span className="text-2xl text-on-surface-variant font-bold">{userProfile.full_name.charAt(0)}</span>
                 )}
               </div>
-              <div className="absolute bottom-0 right-0 bg-primary text-white p-xs rounded-full border-2 border-white shadow-md">
-                <span className="material-symbols-outlined !text-sm">edit</span>
+              <div className="absolute bottom-0 right-0 bg-primary text-white p-0.5 rounded-full border border-white shadow">
+                <span className="material-symbols-outlined !text-xs">edit</span>
               </div>
             </div>
-            <div className="flex-1 space-y-md">
+            <div className="flex-1 space-y-1 sm:space-y-2 text-center sm:text-left">
               <div>
-                <h2 className="font-headline-md text-headline-md font-bold text-on-surface">{userProfile.full_name}</h2>
-                <p className="text-primary font-code-sm text-code-sm uppercase tracking-widest font-bold mt-1">{userRole}</p>
-                <p className="text-on-surface-variant font-body-md mt-1 italic opacity-80">{userProfile.company_name || 'Toko/Perusahaan Belum Diisi'}</p>
+                <h2 className="font-headline-md text-sm sm:text-base font-bold text-on-surface">{userProfile.full_name}</h2>
+                <p className="text-primary font-code-sm text-[10px] sm:text-xs uppercase tracking-wider font-bold">{userRole}</p>
+                <p className="text-on-surface-variant text-[11px] italic opacity-80">{userProfile.company_name || 'Toko/Perusahaan Belum Diisi'}</p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-md mt-4">
-                <div className="space-y-xs">
-                  <label className="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                  <div className="flex items-center gap-sm px-md py-sm bg-surface-container-low border border-ui-divider rounded">
-                    <span className="material-symbols-outlined text-on-surface-variant !text-lg">mail</span>
-                    <span className="font-body-md text-body-md truncate">{userEmail}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-2">
+                <div className="space-y-0.5">
+                  <label className="font-label-caps text-[10px] text-on-surface-variant">Email Address</label>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-low border border-ui-divider rounded text-xs">
+                    <span className="material-symbols-outlined text-on-surface-variant !text-sm">mail</span>
+                    <span className="truncate">{userEmail}</span>
                   </div>
                 </div>
-                <div className="space-y-xs">
-                  <label className="font-label-caps text-label-caps text-on-surface-variant">Phone Number</label>
-                  <div className="flex items-center gap-sm px-md py-sm bg-surface-container-low border border-ui-divider rounded">
-                    <span className="material-symbols-outlined text-on-surface-variant !text-lg">call</span>
-                    <span className="font-body-md text-body-md truncate">{userProfile.phone}</span>
+                <div className="space-y-0.5">
+                  <label className="font-label-caps text-[10px] text-on-surface-variant">No. Telepon</label>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-surface-container-low border border-ui-divider rounded text-xs">
+                    <span className="material-symbols-outlined text-on-surface-variant !text-sm">call</span>
+                    <span className="truncate">{userProfile.phone}</span>
                   </div>
                 </div>
               </div>
-              <div className="pt-md">
+              <div className="pt-1">
                 <button 
                   onClick={() => setShowEditModal(true)}
-                  className="px-lg py-sm bg-primary text-white font-bold hover:opacity-90 transition-opacity rounded-DEFAULT border-b-2 border-primary-fixed-dim active:scale-95 duration-150">
-                  Update Personal Info
+                  className="px-3 py-1 bg-primary text-white text-xs font-bold hover:opacity-90 transition-opacity rounded-lg">
+                  Edit Profil
                 </button>
               </div>
             </div>
           </section>
 
-          <section className="md:col-span-4 bg-surface-container-low border border-ui-divider p-xl rounded-xl flex flex-col justify-between overflow-hidden relative hover:border-primary transition-colors duration-200">
-            <div className="absolute -right-4 -top-4 opacity-5 pointer-events-none">
-              <span className="material-symbols-outlined !text-9xl">verified_user</span>
-            </div>
-            <div className="space-y-md">
+          <section className="md:col-span-4 bg-surface-container-low border border-ui-divider p-3 sm:p-4 rounded-xl flex flex-col justify-between overflow-hidden relative hover:border-primary transition-colors">
+            <div className="space-y-1">
               <div className="flex justify-between items-start">
-                <label className="font-label-caps text-label-caps text-on-surface-variant">Current Plan</label>
-                <span className="bg-status-success text-white px-md py-xs font-label-caps text-[10px] rounded-full uppercase tracking-tighter">Active</span>
+                <label className="font-label-caps text-[10px] text-on-surface-variant">Paket Berlangganan</label>
+                <span className="bg-status-success text-white px-2 py-0.5 font-label-caps text-[9px] rounded-full uppercase">Active</span>
               </div>
-              <h3 className="font-headline-md text-headline-md font-bold text-secondary">{planName}</h3>
-              <p className="text-on-surface-variant text-sm">Paket berlangganan aktif yang terkoneksi dengan database Supabase.</p>
+              <h3 className="font-headline-md text-sm sm:text-base font-bold text-secondary">{planName}</h3>
+              <p className="text-on-surface-variant text-[11px]">Paket aktif terkoneksi dengan database Cloud.</p>
             </div>
-            <div className="mt-xl space-y-md">
+            <div className="mt-2 space-y-1">
               <button 
                 onClick={() => navigate('/plans')}
-                className="w-full py-sm border border-secondary text-secondary font-bold hover:bg-secondary hover:text-white transition-all rounded-DEFAULT active:scale-95 duration-150">
-                Manage Subscription
+                className="w-full py-1.5 border border-secondary text-secondary text-xs font-bold hover:bg-secondary hover:text-white transition-all rounded-lg">
+                Kelola Paket
               </button>
             </div>
           </section>
 
-          <section className="md:col-span-12 space-y-lg mt-md">
-            <div className="flex items-center gap-md">
-              <div className="h-1 w-8 bg-primary"></div>
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">App Hardware & Configuration</h3>
+          <section className="md:col-span-12 space-y-2 mt-1">
+            <div className="flex items-center gap-1.5">
+              <div className="h-1 w-4 bg-primary"></div>
+              <h3 className="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-wider">Pengaturan Kamera & Kualitas</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
               
-              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
-                <div className="flex items-center gap-sm text-primary">
-                  <span className="material-symbols-outlined">videocam</span>
-                  <span className="font-label-caps text-label-caps">Recording Device</span>
+              <div className="bg-surface-container-lowest border border-ui-divider p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1 text-primary">
+                  <span className="material-symbols-outlined text-base">videocam</span>
+                  <span className="font-label-caps text-xs">Perangkat Kamera</span>
                 </div>
-                <div className="space-y-xs">
-                  <label className="text-xs text-on-surface-variant">Active Camera Source</label>
+                <div className="space-y-0.5">
+                  <label className="text-[10px] text-on-surface-variant">Pilih Kamera</label>
                   <select 
                     value={selectedCamera}
                     onChange={handleCameraChange}
-                    className="w-full bg-surface-container-low border border-ui-divider p-md font-body-md text-body-md focus:border-primary focus:ring-0 rounded-DEFAULT"
+                    className="w-full bg-surface-container-low border border-ui-divider p-1.5 text-xs focus:border-primary rounded"
                   >
                     {cameras.length === 0 && <option value="">Loading cameras...</option>}
                     {cameras.map(cam => (
                       <option key={cam.deviceId} value={cam.deviceId}>
-                        {cam.label || `Camera ${cam.deviceId.substring(0,5)}...`}
+                        {cam.label || `Kamera ${cam.deviceId.substring(0,5)}...`}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="flex items-center justify-between pt-sm">
-                  <span className="text-xs text-on-surface-variant">Camera Status</span>
-                  <div className="flex items-center gap-xs">
-                    <div className="w-2 h-2 rounded-full bg-status-success animate-pulse"></div>
-                    <span className="text-xs font-bold text-status-success uppercase">Online & Saved</span>
-                  </div>
+              </div>
+
+              <div className="bg-surface-container-lowest border border-ui-divider p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1 text-primary">
+                  <span className="material-symbols-outlined text-base">settings_overscan</span>
+                  <span className="font-label-caps text-xs">Kualitas Video</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button onClick={() => handleQualityChange('720p')} className={`px-2 py-1.5 border-2 transition-all rounded text-center ${videoQuality === '720p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant'}`}>
+                    <span className="font-bold text-xs">720p HD</span>
+                    <span className="text-[9px] block">STANDAR</span>
+                  </button>
+                  <button onClick={() => handleQualityChange('1080p')} className={`px-2 py-1.5 border-2 transition-all rounded text-center ${videoQuality === '1080p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant'}`}>
+                    <span className="font-bold text-xs">1080p FHD</span>
+                    <span className="text-[9px] block">HIGH-DEF</span>
+                  </button>
                 </div>
               </div>
 
-              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200">
-                <div className="flex items-center gap-sm text-primary">
-                  <span className="material-symbols-outlined">settings_overscan</span>
-                  <span className="font-label-caps text-label-caps">Video Quality</span>
+              <div className="bg-surface-container-lowest border border-ui-divider p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1 text-primary">
+                  <span className="material-symbols-outlined text-base">hub</span>
+                  <span className="font-label-caps text-xs">Marketplace Sync</span>
                 </div>
-                <div className="grid grid-cols-2 gap-sm">
-                  <button onClick={() => handleQualityChange('720p')} className={`px-md py-md border-2 transition-all rounded-DEFAULT flex flex-col items-center gap-xs ${videoQuality === '720p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant hover:border-primary/50'}`}>
-                    <span className="font-bold">720p</span>
-                    <span className="text-[10px] font-code-sm">STANDARD</span>
-                  </button>
-                  <button onClick={() => handleQualityChange('1080p')} className={`px-md py-md border-2 transition-all rounded-DEFAULT flex flex-col items-center gap-xs ${videoQuality === '1080p' ? 'border-primary bg-primary-container text-on-primary-container' : 'border-ui-divider text-on-surface-variant hover:border-primary/50'}`}>
-                    <span className="font-bold">1080p</span>
-                    <span className="text-[10px] font-code-sm">HIGH-DEF</span>
-                  </button>
-                </div>
-                <p className="text-[10px] text-on-surface-variant text-center">Note: 1080p requires at least 10Mbps upload speed.</p>
-              </div>
-
-              <div className="bg-surface-container-lowest border border-ui-divider p-lg rounded-xl space-y-md hover:border-primary transition-colors duration-200 row-span-2">
-                <div className="flex items-center gap-sm text-primary">
-                  <span className="material-symbols-outlined">hub</span>
-                  <span className="font-label-caps text-label-caps">Marketplace Sync</span>
-                </div>
-                <div className="space-y-sm max-h-[300px] overflow-y-auto pr-2">
-                  {marketplaces.map(mp => (
-                    <div key={mp.id} className="flex items-center justify-between p-sm border border-ui-divider bg-surface-container-low rounded opacity-70">
-                      <div className="flex items-center gap-md">
-                        <div className={`w-8 h-8 rounded-sm ${mp.color} flex items-center justify-center font-bold`}>{mp.letter}</div>
-                        <span className="font-body-md text-body-md font-bold">{mp.name}</span>
+                <div className="space-y-1 max-h-[140px] overflow-y-auto pr-1">
+                  {marketplaces.slice(0, 3).map(mp => (
+                    <div key={mp.id} className="flex items-center justify-between p-1 border border-ui-divider bg-surface-container-low rounded text-xs opacity-75">
+                      <div className="flex items-center gap-1.5">
+                        <div className={`w-5 h-5 rounded-xs ${mp.color} flex items-center justify-center font-bold text-[10px]`}>{mp.letter}</div>
+                        <span className="font-bold">{mp.name}</span>
                       </div>
-                      <span className="bg-surface-variant text-on-surface-variant px-2 py-1 text-[10px] font-bold rounded uppercase">Coming Soon</span>
+                      <span className="bg-surface-variant text-on-surface-variant px-1 text-[8px] font-bold rounded">Coming Soon</span>
                     </div>
                   ))}
                 </div>
@@ -291,16 +280,16 @@ export default function ProfileSettings() {
             </div>
           </section>
 
-          <section className="md:col-span-12 border border-error/20 bg-error-container/10 p-lg rounded-xl flex flex-col md:flex-row justify-between items-center gap-md mt-md">
+          <section className="md:col-span-12 border border-error/20 bg-error-container/10 p-2.5 rounded-xl flex justify-between items-center gap-2 mt-1">
             <div>
-              <h4 className="font-bold text-error">Danger Zone</h4>
-              <p className="text-sm text-error/80">Keluar dari akun Anda saat ini atau hapus data rekaman.</p>
+              <h4 className="font-bold text-xs text-error">Keluar Akun</h4>
+              <p className="text-[10px] text-error/80">Keluar dari akun Anda di perangkat ini.</p>
             </div>
             <button 
               onClick={handleLogout}
-              className="px-lg py-sm border border-error text-error font-bold hover:bg-error hover:text-white transition-all rounded-DEFAULT active:scale-95 flex items-center gap-sm"
+              className="px-3 py-1 border border-error text-error text-xs font-bold hover:bg-error hover:text-white transition-all rounded-lg flex items-center gap-1"
             >
-              <span className="material-symbols-outlined">logout</span>
+              <span className="material-symbols-outlined text-sm">logout</span>
               Sign Out
             </button>
           </section>
@@ -308,16 +297,9 @@ export default function ProfileSettings() {
         </div>
       </div>
 
-      <footer className="mt-auto flex flex-col md:flex-row justify-between items-center w-full px-lg py-md border-t border-ui-divider bg-surface">
-        <div className="font-label-caps text-label-caps text-on-surface-variant mb-md md:mb-0">
-          © 2026 Nafindo Group. All Rights Reserved.
-        </div>
-        <div className="flex gap-lg items-center">
-          <span className="font-code-sm text-code-sm text-on-surface-variant opacity-60">v4.0.1-stable</span>
-          <a className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors" href="#">
-            Developed by Nafindo Group
-          </a>
-        </div>
+      <footer className="mt-auto flex flex-row justify-between items-center w-full px-3 py-1.5 border-t border-ui-divider bg-surface text-[10px] text-on-surface-variant">
+        <span>© 2026 Nafindo Group.</span>
+        <span className="font-code-sm">v4.0.0</span>
       </footer>
 
       {showEditModal && (

@@ -16,9 +16,29 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    flavorDimensions "mode"
+    productFlavors {
+        seller {
+            dimension "mode"
+            applicationId "com.nafindo.buktiin"
+            manifestPlaceholders = [
+                appName: "Buktiin",
+                screenOrientation: "sensorLandscape"
+            ]
+        }
+        admin {
+            dimension "mode"
+            applicationId "com.nafindo.buktiin.admin"
+            manifestPlaceholders = [
+                appName: "Buktiin Admin",
+                screenOrientation: "fullSensor"
+            ]
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { syncPendingUploads } from '../lib/driveUpload';
+import { getDeviceId, registerDeviceSession, checkIsActiveDevice, listenToDeviceSession } from '../lib/deviceSession';
 import logoImg from '../assets/images/logo.png';
 
 export default function MainLayout() {
@@ -11,23 +13,16 @@ export default function MainLayout() {
   const [userEmail, setUserEmail] = useState('');
   const [userAvatar, setUserAvatar] = useState('https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK');
   const [planName, setPlanName] = useState('No Plan');
-  const [isSubAccount, setIsSubAccount] = useState(false);
+  const [isSubAccount, setIsSubAccount] = useState(() => localStorage.getItem('isSubAccount') === 'true');
   const [deviceLimitsError, setDeviceLimitsError] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSystemBusy, setIsSystemBusy] = useState(false);
+  const cleanupDeviceListenerRef = useRef<(() => void) | null>(null);
 
-  // Initialize or get deviceId
-  const getDeviceId = () => {
-    let id = localStorage.getItem('buktiin_device_id');
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem('buktiin_device_id', id);
-    }
-    return id;
-  };
-
+  // Single-device session & Auth check
   useEffect(() => {
-    const checkAuth = async () => {
+    let isMounted = true;
+
+    const checkAuthAndSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate('/login');
@@ -39,16 +34,40 @@ export default function MainLayout() {
         setUserAvatar(session.user.user_metadata.avatar_url);
       }
 
-      // Check subscription
+      // Check if this account is a registered sub-account of another owner
+      let targetOwnerId = session.user.id;
+      let userIsSub = false;
+      try {
+        const { data: subRow } = await supabase
+          .from('sub_accounts')
+          .select('parent_id')
+          .eq('child_id', session.user.id)
+          .maybeSingle();
+
+        if (subRow) {
+          userIsSub = true;
+          setIsSubAccount(true);
+          localStorage.setItem('isSubAccount', 'true');
+          localStorage.setItem('parentId', subRow.parent_id);
+          targetOwnerId = subRow.parent_id;
+        } else {
+          setIsSubAccount(false);
+          localStorage.removeItem('isSubAccount');
+          localStorage.removeItem('parentId');
+        }
+      } catch (_) {}
+
+      // Check subscription of effective owner
       const { data: subArray } = await supabase
         .from('subscriptions')
         .select('*, plans(*)')
-        .eq('user_id', session.user.id)
+        .eq('user_id', targetOwnerId)
         .eq('status', 'ACTIVE')
+        .order('created_at', { ascending: false })
         .limit(1);
         
       if (!subArray || subArray.length === 0) {
-        if (path !== '/plans') navigate('/plans');
+        if (path !== '/plans' && !userIsSub) navigate('/plans');
       } else {
         const activeSub = subArray[0];
         if (activeSub.plans) {
@@ -56,92 +75,79 @@ export default function MainLayout() {
         }
       }
       
-      setLoading(false);
-
-      // Perform initial check-limits
-      const deviceId = getDeviceId();
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
-      try {
-        const response = await fetch(`${API_URL}/api/check-limits`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: session.user.id, deviceId, forceLogin: true, accessToken: session.access_token })
-        });
-        const result = await response.json();
-        if (result.success) {
-          setIsSubAccount(result.data.isSubAccount);
-          localStorage.setItem('isSubAccount', result.data.isSubAccount ? 'true' : 'false');
-        } else if (!result.success && result.message === 'DEVICE_LIMIT_REACHED') {
-          // This should technically not happen with forceLogin=true, but we handle just in case
-          setDeviceLimitsError(true);
-        }
-      } catch (err) {
-        console.error('Failed to check limits:', err);
+      if (isMounted) {
+        setLoading(false);
       }
+
+      // Single-device enforcement (1 Akun 1 Device)
+      const myDeviceId = getDeviceId();
+      const userId = session.user.id;
+
+      // 1. Initial active device verification
+      const isActive = await checkIsActiveDevice(userId, myDeviceId);
+      if (!isActive) {
+        console.warn('[SingleDevice] Another device is currently active, logging out.');
+        setDeviceLimitsError(true);
+        await supabase.auth.signOut();
+        return;
+      }
+
+      // If active_device_id is not set on user yet, register this device
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser?.user_metadata?.active_device_id) {
+        await registerDeviceSession(userId, myDeviceId);
+      }
+
+      // 2. Attach continuous realtime & periodic listener
+      if (cleanupDeviceListenerRef.current) {
+        cleanupDeviceListenerRef.current();
+      }
+
+      cleanupDeviceListenerRef.current = listenToDeviceSession(userId, myDeviceId, async () => {
+        console.warn('[SingleDevice] Force logout triggered for this device!');
+        setDeviceLimitsError(true);
+        await supabase.auth.signOut();
+      });
     };
     
-    checkAuth();
-  }, [navigate, path]);
+    checkAuthAndSession();
 
-  // Periodic Heartbeat
-  useEffect(() => {
-    let intervalId: number;
-    const checkHeartbeat = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      
-      const deviceId = getDeviceId();
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
-      try {
-        const response = await fetch(`${API_URL}/api/check-limits`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: session.user.id, deviceId, forceLogin: false, accessToken: session.access_token }) // false so we get kicked if someone else logged in
-        });
-        const result = await response.json();
-        
-        if (response.status === 403 && result.message === 'DEVICE_LIMIT_REACHED') {
-          // Kick user
-          setDeviceLimitsError(true);
-          await supabase.auth.signOut();
-        }
-      } catch (err) {
-        // ignore network errors
+    return () => {
+      isMounted = false;
+      if (cleanupDeviceListenerRef.current) {
+        cleanupDeviceListenerRef.current();
+        cleanupDeviceListenerRef.current = null;
       }
     };
+  }, [navigate]);
 
-    if (!loading && !deviceLimitsError) {
-      intervalId = window.setInterval(checkHeartbeat, 15000); // Check every 15 seconds
-    }
-    return () => {
-      if (intervalId) window.clearInterval(intervalId);
-    };
-  }, [loading, deviceLimitsError]);
-
-  // Polling for background upload tasks
+  // Polling for background upload tasks & auto-sync
   useEffect(() => {
     let intervalId: number;
+    let syncCounter = 0;
+
     const checkBusyStatus = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       
       try {
-        const { count: scanCount } = await supabase
-          .from('scan_history')
+        const { count: pendingCount } = await supabase
+          .from('recordings')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', session.user.id)
           .in('upload_status', ['PENDING', 'UPLOADING']);
           
-        const { count: unboxCount } = await supabase
-          .from('unboxing_history')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', session.user.id)
-          .in('upload_status', ['PENDING', 'UPLOADING']);
-          
-        if ((scanCount && scanCount > 0) || (unboxCount && unboxCount > 0)) {
+        if (pendingCount && pendingCount > 0) {
           setIsSystemBusy(true);
         } else {
           setIsSystemBusy(false);
+        }
+
+        // Trigger syncPendingUploads every ~15 seconds (every 3 polling cycles)
+        syncCounter++;
+        if (syncCounter >= 3) {
+          syncCounter = 0;
+          syncPendingUploads().catch(() => {});
         }
       } catch (err) {
         // ignore network errors
@@ -150,7 +156,7 @@ export default function MainLayout() {
 
     if (!loading && !deviceLimitsError) {
       checkBusyStatus();
-      intervalId = window.setInterval(checkBusyStatus, 3000); // Check every 3 seconds
+      intervalId = window.setInterval(checkBusyStatus, 5000); // Check every 5 seconds
     }
     return () => {
       if (intervalId) window.clearInterval(intervalId);
@@ -189,102 +195,70 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-surface font-body-md text-on-surface">
-      {/* Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* SideNavBar */}
-      <aside className={`fixed md:relative z-50 transform top-0 left-0 h-screen w-64 bg-surface-container-low dark:bg-inverse-surface border-r border-ui-divider dark:border-outline-variant p-md flex flex-col space-y-sm shrink-0 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <div className="flex items-center gap-3 mb-xl">
-          <img src={logoImg} alt="Buktiin Logo" className="w-8 h-8 rounded-lg shadow-sm" />
-          <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
+    <div className="flex h-screen w-screen overflow-hidden bg-surface font-body-md text-on-surface">
+      {/* SideNavBar - Permanent in Landscape View */}
+      <aside className="h-screen w-36 sm:w-40 bg-surface-container-low dark:bg-inverse-surface border-r border-ui-divider dark:border-outline-variant p-1.5 flex flex-col space-y-0.5 shrink-0 z-20">
+        <div className="flex items-center gap-1.5 py-1 px-1 mb-1 border-b border-ui-divider">
+          <img src={logoImg} alt="Buktiin Logo" className="w-4 h-4 rounded shadow-sm" />
+          <span className="font-headline-md text-xs font-bold text-primary">BUKTIIN</span>
         </div>
         
-        <div className="mb-lg px-xs">
-          <div className="flex items-center gap-md">
-            <div className="w-10 h-10 rounded-DEFAULT overflow-hidden border border-ui-divider flex items-center justify-center shrink-0">
-              <img src={userAvatar} alt="Profile" className="w-full h-full object-cover" />
-            </div>
-            <div>
-              <p className="font-label-caps text-label-caps text-primary truncate max-w-[120px]">{userEmail}</p>
-              <p className="font-code-sm text-code-sm text-on-surface-variant">{planName}</p>
-            </div>
-          </div>
-        </div>
-        
-        <nav className="space-y-xs flex-1">
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/dashboard" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/dashboard' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-            <span className="font-label-caps text-label-caps">Dashboard</span>
+        <nav className="space-y-0.5 flex-1 overflow-y-auto pt-0.5">
+          <Link to="/dashboard" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/dashboard' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
+            <span className="font-label-caps truncate">Dashboard</span>
           </Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/scanner" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/scanner' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">qr_code_scanner</span>
-            <span className="font-label-caps text-label-caps">Live Scanner</span>
+          <Link to="/scanner" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/scanner' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">qr_code_scanner</span>
+            <span className="font-label-caps truncate">Live Scanner</span>
           </Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/history" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/history' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">history</span>
-            <span className="font-label-caps text-label-caps">Scan History</span>
+          <Link to="/history" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/history' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">history</span>
+            <span className="font-label-caps truncate">Riwayat Scan</span>
           </Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/unboxing" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/unboxing' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">inventory</span>
-            <span className="font-label-caps text-label-caps">Unboxing Retur</span>
+          <Link to="/unboxing" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/unboxing' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">inventory</span>
+            <span className="font-label-caps truncate">Unboxing Retur</span>
           </Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/unboxing-history" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/unboxing-history' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">history_toggle_off</span>
-            <span className="font-label-caps text-label-caps">Unboxing History</span>
+          <Link to="/unboxing-history" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/unboxing-history' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">history_toggle_off</span>
+            <span className="font-label-caps truncate">Riwayat Unbox</span>
           </Link>
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/storage" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/storage' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">inventory_2</span>
-            <span className="font-label-caps text-label-caps">Storage</span>
+          <Link to="/storage" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/storage' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">inventory_2</span>
+            <span className="font-label-caps truncate">Storage</span>
           </Link>
-          {!isSubAccount && planName !== 'FREE Plan' && planName !== 'BASIC Plan' && (
-            <Link onClick={() => setIsMobileMenuOpen(false)} to="/subaccounts" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/subaccounts' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-              <span className="material-symbols-outlined">group</span>
-              <span className="font-label-caps text-label-caps">Manajemen Staf</span>
+          {!isSubAccount && !planName.toUpperCase().includes('FREE') && !planName.toUpperCase().includes('BASIC') && planName !== 'No Plan' && (
+            <Link to="/subaccounts" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/subaccounts' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+              <span className="material-symbols-outlined text-sm">group</span>
+              <span className="font-label-caps truncate">Staf</span>
             </Link>
           )}
         </nav>
         
-        <div className="mt-auto border-t border-ui-divider pt-sm pb-md">
-          <Link onClick={() => setIsMobileMenuOpen(false)} to="/profile" className={`flex items-center gap-md p-md transition-all rounded-DEFAULT ${path === '/profile' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-4 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-on-surface-variant'}`}>
-            <span className="material-symbols-outlined">account_circle</span>
-            <span className="font-label-caps text-label-caps">Profile</span>
+        <div className="mt-auto border-t border-ui-divider pt-1">
+          <Link to="/profile" className={`flex items-center gap-1.5 p-1.5 transition-all rounded-md text-[11px] ${path === '/profile' ? 'bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary font-bold border-l-2 border-primary' : 'text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant'}`}>
+            <span className="material-symbols-outlined text-sm">account_circle</span>
+            <span className="font-label-caps truncate">Profil</span>
           </Link>
-          <div className="px-md mt-sm">
-            <p className="font-code-sm text-code-sm text-on-surface-variant">V 4.0.0</p>
-          </div>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* TopNavBar */}
-        <header className="flex justify-between items-center w-full px-lg py-md border-b border-ui-divider bg-surface dark:bg-inverse-surface z-10 shrink-0">
-          <div className="flex items-center gap-md md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(true)} className="p-1 hover:bg-surface-variant rounded-full flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary">menu</span>
-            </button>
-            <div className="flex items-center gap-2">
-              <img src={logoImg} alt="Buktiin Logo" className="w-7 h-7 rounded shadow-sm" />
-              <span className="font-headline-md text-headline-md font-bold text-primary">BUKTIIN</span>
-            </div>
+        {/* TopNavBar (Ultra-Slim 24px height, without hamburger) */}
+        <header className="flex justify-between items-center w-full px-2 py-0.5 border-b border-ui-divider bg-surface dark:bg-inverse-surface z-10 shrink-0 h-6 sm:h-7">
+          <div className="flex items-center gap-1 text-[10px] text-on-surface-variant font-bold">
+            <span>● ONLINE</span>
           </div>
-          <div className="hidden md:block">
-            <h1 className="font-headline-md text-headline-md font-bold text-on-surface">BUKTIIN App</h1>
-          </div>
-          <div className="flex items-center gap-lg">
-            <button className="relative hover:bg-surface-container transition-colors p-sm rounded-full">
-              <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-status-error rounded-full"></span>
+          <div className="flex items-center gap-1.5">
+            <button className="relative hover:bg-surface-container transition-colors p-0.5 rounded-full" title="Notifikasi">
+              <span className="material-symbols-outlined text-sm text-on-surface-variant">notifications</span>
+              <span className="absolute top-0.5 right-0.5 w-1 h-1 bg-status-error rounded-full"></span>
             </button>
-            <Link to="/profile" className="w-10 h-10 rounded-full bg-surface-container border border-ui-divider flex items-center justify-center overflow-hidden">
+            <Link to="/profile" title={userEmail} className="w-5 h-5 rounded-full bg-surface-container border border-ui-divider flex items-center justify-center overflow-hidden">
               {isSystemBusy ? (
-                <span className="material-symbols-outlined animate-spin text-primary">sync</span>
+                <span className="material-symbols-outlined animate-spin text-xs text-primary">sync</span>
               ) : (
                 <img className="w-full h-full object-cover" alt="User Avatar" src={userAvatar}/>
               )}
@@ -297,6 +271,30 @@ export default function MainLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* 1 Akun 1 Device Force Logout Modal */}
+      {deviceLimitsError && (
+        <div className="fixed inset-0 bg-black/85 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]">
+          <div className="bg-surface border border-status-error/40 rounded-2xl max-w-sm w-full p-5 flex flex-col items-center text-center shadow-2xl">
+            <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/40 text-red-600 flex items-center justify-center mb-3">
+              <span className="material-symbols-outlined text-2xl">phonelink_lock</span>
+            </div>
+            <h3 className="font-bold text-base text-on-surface mb-1.5">Akun Dikeluarkan Otomatis</h3>
+            <p className="text-xs text-on-surface-variant leading-relaxed mb-4">
+              Akun Anda baru saja login di perangkat lain (PC / HP lain). Sesuai aturan <span className="font-bold text-primary">1 Akun untuk 1 Perangkat</span>, sesi pada perangkat ini telah diakhiri secara otomatis.
+            </p>
+            <button
+              onClick={() => {
+                setDeviceLimitsError(false);
+                navigate('/login');
+              }}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-colors shadow"
+            >
+              Masuk Kembali di Perangkat Ini
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -234,7 +234,7 @@ export default function ClusterStorageManagement() {
       {/* Page Header */}
       <div>
         <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Cluster Storage Management</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">Manage Google Drive Servers and allocate tenants dynamically.</p>
+        <p className="font-body-md text-body-md text-on-surface-variant">Manage Cloud Storage Servers and allocate tenants dynamically.</p>
       </div>
 
       {error && (
@@ -244,7 +244,7 @@ export default function ClusterStorageManagement() {
         </div>
       )}
       
-      {/* Google Drive Servers Grid */}
+      {/* Cloud Storage Servers Grid */}
       <div className="space-y-md">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
           
@@ -336,9 +336,9 @@ export default function ClusterStorageManagement() {
             onClick={() => setIsAddNodeOpen(true)}
             className="border-2 border-dashed border-ui-divider rounded-lg p-lg flex flex-col items-center justify-center text-center hover:border-primary hover:bg-surface-container transition-all group cursor-pointer min-h-[140px]"
           >
-            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary mb-2 transition-colors">add_to_drive</span>
+            <span className="material-symbols-outlined text-outline-variant group-hover:text-primary mb-2 transition-colors">cloud_upload</span>
             <p className="font-label-caps text-label-caps text-on-surface-variant group-hover:text-primary">Add New Storage Node</p>
-            <p className="font-code-sm text-[11px] text-on-surface-variant mt-1">Link a new Google Drive Folder</p>
+            <p className="font-code-sm text-[11px] text-on-surface-variant mt-1">Link a new Storage Server Node</p>
           </div>
         </div>
       </div>
@@ -388,13 +388,9 @@ export default function ClusterStorageManagement() {
                         {t.node_id ? (
                           <div>
                             <p className="font-bold text-sm text-on-surface">{t.node_name}</p>
-                            <a 
-                              href={`https://drive.google.com/drive/u/0/folders/${t.folder_id}`} 
-                              target="_blank" rel="noreferrer"
-                              className="font-code-sm text-[10px] text-primary hover:underline flex items-center gap-1"
-                            >
-                              <span className="material-symbols-outlined text-[12px]">link</span> {t.folder_id}
-                            </a>
+                            <span className="font-code-sm text-[10px] text-primary flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[12px]">dns</span> Node: {t.folder_id}
+                            </span>
                           </div>
                         ) : (
                           <span className="text-status-error font-code-sm text-[11px] italic">Unassigned</span>
@@ -428,7 +424,7 @@ export default function ClusterStorageManagement() {
       <footer className="flex flex-col md:flex-row justify-between items-center w-full pt-md border-t border-ui-divider bg-surface mt-auto">
         <span className="font-label-caps text-label-caps text-on-surface-variant mb-2 md:mb-0">© 2026 Nafindo Group. All Rights Reserved.</span>
         <div className="flex items-center gap-md">
-          <span className="font-code-sm text-code-sm text-on-surface-variant">BUKTIIN v2.5.0-drive.1</span>
+          <span className="font-code-sm text-code-sm text-on-surface-variant">BUKTIIN v4.0.0-Cloud</span>
           <span className="font-code-sm text-code-sm text-on-surface-variant font-bold">Developed by Nafindo Group</span>
         </div>
       </footer>
@@ -450,13 +446,13 @@ export default function ClusterStorageManagement() {
                   type="text" 
                   value={newNodeForm.name}
                   onChange={(e) => setNewNodeForm({...newNodeForm, name: e.target.value})}
-                  placeholder="e.g. Google Drive VIP"
+                  placeholder="e.g. Cloud Node Premium 1"
                   className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-body-md text-on-surface-variant mb-1">Drive Folder ID</label>
+                <label className="block font-body-md text-on-surface-variant mb-1">Server Node / Folder ID</label>
                 <input
                   type="text"
                   required
@@ -467,16 +463,16 @@ export default function ClusterStorageManagement() {
                 />
               </div>
               <div className="mb-6">
-                <label className="block font-body-md text-on-surface-variant mb-1">Drive Script URL</label>
+                <label className="block font-body-md text-on-surface-variant mb-1">Server Endpoint URL</label>
                 <input
                   type="url"
                   required
                   value={newNodeForm.script_url}
                   onChange={(e) => setNewNodeForm({ ...newNodeForm, script_url: e.target.value })}
                   className="w-full bg-surface-container-high border border-outline px-4 py-2 rounded focus:outline-none focus:border-primary text-on-surface font-code-sm"
-                  placeholder="https://script.google.com/macros/s/..."
+                  placeholder="https://..."
                 />
-                <p className="text-xs text-on-surface-variant mt-1">Google Apps Script Web App URL for this server.</p>
+                <p className="text-xs text-on-surface-variant mt-1">Cloud Server Web App Endpoint URL for this server.</p>
               </div>
               <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">
                 <button type="button" onClick={() => setIsAddNodeOpen(false)} className="px-lg py-sm font-label-md text-on-surface hover:bg-surface-container-low rounded">Cancel</button>
@@ -506,13 +502,13 @@ export default function ClusterStorageManagement() {
                   type="text" 
                   value={editNodeForm.name}
                   onChange={(e) => setEditNodeForm({...editNodeForm, name: e.target.value})}
-                  placeholder="e.g. Google Drive VIP"
+                  placeholder="e.g. Cloud Node Premium 1"
                   className="w-full bg-surface-container-low border border-ui-divider rounded px-md py-sm font-body-md text-on-surface focus:border-primary outline-none"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-body-md text-on-surface-variant mb-1">Drive Folder ID</label>
+                <label className="block font-body-md text-on-surface-variant mb-1">Server Node / Folder ID</label>
                 <input
                   type="text"
                   required
@@ -565,7 +561,7 @@ export default function ClusterStorageManagement() {
                   ))}
                 </select>
                 <p className="font-code-sm text-[11px] text-status-success mt-2">
-                  Notice: This will instantly move all existing videos to the new server via Google Drive API, redirect future uploads, and keep video streaming links intact.
+                  Notice: This will instantly transfer recordings to the target Cloud Server node and update routing dynamically.
                 </p>
               </div>
               <div className="pt-md flex justify-end gap-sm border-t border-ui-divider mt-lg">

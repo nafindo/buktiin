@@ -428,15 +428,26 @@ export default function LandingPage() {
                         {planDevices[plan.name]}
                       </li>
                     </ul>
-                    <Link to="/login" className={`w-full py-sm font-bold rounded transition-all text-center block ${
-                      plan.name === 'STARTER' 
-                        ? 'bg-primary text-white hover:opacity-90' 
-                        : plan.name === 'BUSINESS' 
-                          ? 'bg-surface-container-highest text-on-surface hover:bg-primary-fixed' 
-                          : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
-                    }`}>
-                      {plan.name === 'ENTERPRISE' ? 'Hubungi Sales' : 'Pilih Paket'}
-                    </Link>
+                    {plan.name === 'ENTERPRISE' ? (
+                      <a
+                        href="https://wa.me/6281232797271?text=Halo%20Admin%20BUKTIIN%2C%20saya%20tertarik%20dengan%20Paket%20Enterprise.%20Mohon%20informasi%20dan%20penawaran%20sesuai%20kebutuhan%20kami."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-sm font-bold rounded transition-all text-center block border-2 border-primary text-primary hover:bg-primary hover:text-white"
+                      >
+                        Hubungi Kami
+                      </a>
+                    ) : (
+                      <Link to="/login" className={`w-full py-sm font-bold rounded transition-all text-center block ${
+                        plan.name === 'STARTER' 
+                          ? 'bg-primary text-white hover:opacity-90' 
+                          : plan.name === 'BUSINESS' 
+                            ? 'bg-surface-container-highest text-on-surface hover:bg-primary-fixed' 
+                            : 'border-2 border-primary text-primary hover:bg-primary hover:text-white'
+                      }`}>
+                        Pilih Paket
+                      </Link>
+                    )}
                   </div>
                 ))
               )}

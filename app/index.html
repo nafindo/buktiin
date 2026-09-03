@@ -14,6 +14,13 @@
       if (typeof require !== 'undefined') {
         window.electronApi = require('electron');
       }
+      try {
+        if (localStorage.getItem('is_admin_mode') === 'true') {
+          if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#/login' || window.location.hash === '#/dashboard') {
+            window.location.hash = '#/admin/dashboard';
+          }
+        }
+      } catch (e) {}
     </script>
   </head>
   <body>

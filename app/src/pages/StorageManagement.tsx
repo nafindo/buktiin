@@ -36,15 +36,31 @@ export default function StorageManagement() {
         console.error('Supabase subscription fetch error:', err);
       }
 
-      // Fetch storage usage (Independent from Supabase)
+      // Fetch storage usage
       try {
-        const res = await fetch(`http://localhost:3001/api/dashboard?userId=${user.id}&accessToken=${session.access_token}`);
-        const result = await res.json();
-        if (result.success && result.data.totalStorageBytes !== undefined) {
-          setTotalStorageBytes(result.data.totalStorageBytes);
+        const API_URL = import.meta.env.VITE_API_URL;
+        if (API_URL) {
+          const res = await fetch(`${API_URL}/api/dashboard?userId=${user.id}&accessToken=${session.access_token}`);
+          const result = await res.json();
+          if (result.success && result.data.totalStorageBytes !== undefined) {
+            setTotalStorageBytes(result.data.totalStorageBytes);
+            return;
+          }
         }
       } catch (err) {
-        console.error('Backend dashboard fetch error:', err);
+        console.warn('Backend storage usage fetch error, falling back to Supabase:', err);
+      }
+
+      // Standalone direct computation from Supabase
+      try {
+        const { data: recs } = await supabase
+          .from('recordings')
+          .select('video_size')
+          .eq('user_id', user.id);
+        const total = (recs || []).reduce((sum, r) => sum + (Number(r.video_size) || 0), 0);
+        setTotalStorageBytes(total);
+      } catch (e) {
+        console.error('Direct Supabase storage calculation error:', e);
       }
     };
     fetchStorage();
@@ -58,58 +74,54 @@ export default function StorageManagement() {
   return (
     <div className="flex flex-col min-h-full">
       {/* Page Header */}
-      <div className="px-lg py-xl">
-        <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">Storage Management</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">Manage your cloud evidence capacity and archival rules.</p>
+      <div className="px-3 py-2 border-b border-ui-divider bg-surface">
+        <h2 className="font-headline-md text-sm sm:text-base font-bold text-on-surface">Kapasitas Penyimpanan Cloud</h2>
+        <p className="font-body-md text-[10px] sm:text-xs text-on-surface-variant">Kelola kapasitas penyimpanan video bukti packing & unboxing toko Anda.</p>
       </div>
       
-      <div className="px-lg pb-xl space-y-lg max-w-container-max mx-auto w-full flex-1">
+      <div className="p-2 sm:p-3 space-y-2 max-w-container-max mx-auto w-full flex-1">
         {/* Top Section */}
-        <div className="flex flex-col gap-lg">
+        <div className="flex flex-col gap-2">
           {/* Storage Usage Card */}
-          <div className="p-xl bg-surface-container-lowest border border-ui-divider rounded-lg flex flex-col justify-between hover:border-primary hover:bg-surface-container-low transition-all duration-200">
-            <div className="flex justify-between items-start mb-md">
+          <div className="p-3 bg-surface-container-lowest border border-ui-divider rounded-xl flex flex-col justify-between hover:border-primary transition-all">
+            <div className="flex justify-between items-start mb-2">
               <div>
-                <span className="font-label-caps text-label-caps text-on-surface-variant block mb-1">Current Usage</span>
-                <h3 className="font-headline-md text-headline-md font-bold">{currentUsageGB} GB <span className="font-normal text-on-surface-variant">/ {maxUsageGB} GB</span></h3>
+                <span className="font-label-caps text-[10px] text-on-surface-variant block mb-0.5">Penggunaan Saat Ini</span>
+                <h3 className="font-headline-md text-base sm:text-lg font-bold">{currentUsageGB} GB <span className="font-normal text-xs text-on-surface-variant">/ {maxUsageGB} GB</span></h3>
               </div>
-              <div className="bg-status-processing px-3 py-1 rounded-DEFAULT">
-                <span className="font-label-caps text-label-caps text-white text-[12px]">{planName} PLAN</span>
+              <div className="bg-primary/10 px-2 py-0.5 rounded">
+                <span className="font-label-caps text-primary text-[10px] font-bold">{planName} PLAN</span>
               </div>
             </div>
             
-            <div className="w-full h-8 bg-surface-container rounded-DEFAULT overflow-hidden relative border border-ui-divider mb-lg">
+            <div className="w-full h-5 bg-surface-container rounded overflow-hidden relative border border-ui-divider mb-3">
               {/* Progress Bar */}
               <div className="h-full bg-status-processing transition-all duration-500 ease-out" style={{ width: `${percentage}%` }}></div>
-              <div className="absolute inset-0 flex items-center justify-end px-md">
-                <span className="font-code-sm text-code-sm font-bold text-on-surface-variant">{percentage}% USED</span>
+              <div className="absolute inset-0 flex items-center justify-end px-2">
+                <span className="font-code-sm text-[9px] font-bold text-on-surface-variant">{percentage}% DIGUNAKAN</span>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-md">
-              <p className="font-body-md text-body-md text-on-surface-variant max-w-md">Your storage is reaching its limit. Upgrade now to avoid service interruption during high-volume periods.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+              <p className="font-body-md text-[11px] text-on-surface-variant max-w-md">Upgrade paket untuk menambah kapasitas kuota penyimpanan video cloud Anda.</p>
               <button 
                 onClick={() => navigate('/plans')}
-                className="w-full sm:w-auto px-lg py-md bg-primary text-white font-bold rounded-DEFAULT hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-1.5"
               >
-                <span className="material-symbols-outlined text-[20px]">upgrade</span>
-                UPGRADE PLAN
+                <span className="material-symbols-outlined text-sm">upgrade</span>
+                UPGRADE PAKET
               </button>
             </div>
           </div>
 
         </div>
 
-
       </div>
 
       {/* Footer */}
-      <footer className="mt-auto flex flex-col md:flex-row justify-between items-center w-full px-lg py-md border-t border-ui-divider bg-surface">
-        <span className="font-label-caps text-label-caps text-on-surface-variant mb-2 md:mb-0">© 2026 Nafindo Group. All Rights Reserved.</span>
-        <div className="flex items-center gap-md">
-          <span className="font-code-sm text-code-sm text-on-surface-variant">BUKTIIN v2.4.0-build.88</span>
-          <span className="font-code-sm text-code-sm text-on-surface-variant font-bold">Developed by Nafindo Group</span>
-        </div>
+      <footer className="mt-auto flex flex-row justify-between items-center w-full px-3 py-1.5 border-t border-ui-divider bg-surface text-[10px] text-on-surface-variant">
+        <span>© 2026 Nafindo Group.</span>
+        <span className="font-code-sm">v4.0.0</span>
       </footer>
     </div>
   );

@@ -21,10 +21,26 @@ ChartJS.register(
   Legend,
   ArcElement
 );
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { syncPendingUploads } from '../lib/driveUpload';
+import { getAllLocalRecordings, deleteLocalVideoBlob } from '../lib/videoStorage';
 
 export default function Dashboard() {
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [subscriptionInfo, setSubscriptionInfo] = useState<{
+    activeSub: any;
+    pendingSub: any;
+    daysRemaining: number | null;
+    isExpired: boolean;
+  }>({
+    activeSub: null,
+    pendingSub: null,
+    daysRemaining: null,
+    isExpired: false
+  });
   const [stats, setStats] = useState<any>({
     total: 0,
     completed: 0,
@@ -37,45 +53,265 @@ export default function Dashboard() {
     storageMetrics: { totalVideosThisMonth: 0, totalSizeThisMonth: 0, avgSizeBytes: 0 }
   });
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+  const fetchStats = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    // 1. Clean up dangling 'PROCESS' rows in Supabase
+    try {
+      await supabase
+        .from('recordings')
+        .delete()
+        .eq('user_id', session.user.id)
+        .eq('status', 'PROCESS');
+    } catch (_) {}
+
+    // 2. Fetch Local IndexedDB Recordings
+    let localList: any[] = [];
+    try {
+      localList = await getAllLocalRecordings();
+    } catch (e) {
+      console.warn('Local recordings fetch error:', e);
+    }
+
+    // 3. Fetch Remote Supabase Recordings
+    let remoteRecords: any[] = [];
+    try {
+      const { data: recs, error } = await supabase
+        .from('recordings')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .neq('status', 'PROCESS');
       
-      try {
-        const response = await fetch(`http://localhost:3001/api/dashboard?userId=${session.user.id}&accessToken=${session.access_token}`);
-        const result = await response.json();
-        if (result.success) {
-          setStats(result.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch dashboard stats:", error);
+      if (!error && recs) {
+        remoteRecords = recs.map(h => ({
+          id: h.id,
+          resi: h.resi,
+          customer: h.customer || 'Pelanggan',
+          marketplace: h.marketplace || 'OFFLINE',
+          status: h.status || 'DONE',
+          scan_type: h.scan_type || 'PACKING',
+          items: h.items || [],
+          videoPath: h.video_path,
+          videoSize: Number(h.video_size) || 0,
+          uploadStatus: h.upload_status || 'PENDING',
+          driveFileId: h.drive_file_id,
+          createdAt: h.created_at,
+          updatedAt: h.updated_at,
+          isLocal: false
+        }));
       }
-    };
-    
-    const triggerAutoRetryUploads = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-      try {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001';
+    } catch (err) {
+      console.warn('Supabase recordings fetch error:', err);
+    }
+
+    // 4. Deduplicate and Purge Un-uploaded Duplicate Ghost Entries
+    const cleanMap = new Map<string, any>();
+    const allRecords = [...remoteRecords, ...localList];
+
+    for (const item of allRecords) {
+      const cleanResi = (item.resi || '').trim().toUpperCase();
+      const key = (cleanResi && cleanResi !== 'LOCAL_REC' && cleanResi !== 'REC')
+        ? `resi_${cleanResi}`
+        : `id_${item.id}`;
+
+      const existing = cleanMap.get(key);
+      if (!existing) {
+        cleanMap.set(key, item);
+      } else {
+        const itemIsUploaded = Boolean(item.driveFileId || item.uploadStatus === 'SUCCESS');
+        const existingIsUploaded = Boolean(existing.driveFileId || existing.uploadStatus === 'SUCCESS');
+
+        if (itemIsUploaded && !existingIsUploaded) {
+          if (existing.isLocal) {
+            deleteLocalVideoBlob(existing.id);
+          } else {
+            supabase.from('recordings').delete().eq('id', existing.id).then();
+          }
+          cleanMap.set(key, { ...existing, ...item, id: item.id || existing.id });
+        } else if (!itemIsUploaded && existingIsUploaded) {
+          if (item.isLocal) {
+            deleteLocalVideoBlob(item.id);
+          } else {
+            supabase.from('recordings').delete().eq('id', item.id).then();
+          }
+        } else {
+          cleanMap.set(key, { ...existing, ...item });
+        }
+      }
+    }
+
+    const list = Array.from(cleanMap.values());
+    const total = list.length;
+    const completed = list.filter(r => r.status === 'DONE').length;
+    const process = list.filter(r => r.status === 'PROCESS').length;
+    const failed = list.filter(r => r.status === 'FAILED').length;
+    const pendingUploads = list.filter(r => !r.driveFileId && r.uploadStatus !== 'SUCCESS').length;
+
+    const last7Days: string[] = [];
+    const counts: number[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+      last7Days.push(dateStr);
+      const dayStart = new Date(d);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(d);
+      dayEnd.setHours(23, 59, 59, 999);
+      const dayCount = list.filter(r => {
+        const cd = new Date(r.createdAt || r.created_at);
+        return cd >= dayStart && cd <= dayEnd;
+      }).length;
+      counts.push(dayCount);
+    }
+
+    // Marketplace distribution
+    const mpMap: Record<string, number> = {};
+    for (const item of list) {
+      const mp = item.marketplace || 'OFFLINE';
+      mpMap[mp] = (mpMap[mp] || 0) + 1;
+    }
+    const mpLabels = Object.keys(mpMap).length > 0 ? Object.keys(mpMap) : ['Direct / Offline'];
+    const mpData = Object.keys(mpMap).length > 0 ? Object.values(mpMap) : [total || 1];
+
+    const totalSizeBytes = list.reduce((sum, r) => sum + (Number(r.videoSize || r.video_size) || 0), 0);
+
+    setStats({
+      total,
+      completed,
+      process,
+      failed,
+      pendingUploads,
+      videoCount: completed,
+      orderTrends: { labels: last7Days, data: counts },
+      marketplaceDistribution: { labels: mpLabels, data: mpData },
+      storageMetrics: { totalVideosThisMonth: completed, totalSizeThisMonth: totalSizeBytes, avgSizeBytes: total ? Math.round(totalSizeBytes / total) : 0 }
+    });
+
+    // 5. Fetch Subscriptions & Calculate Expiration / Renewal
+    try {
+      const { data: subs } = await supabase
+        .from('subscriptions')
+        .select('*, plans(*)')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false });
+
+      if (subs && subs.length > 0) {
+        const active = subs.find(s => s.status === 'ACTIVE');
+        const pending = subs.find(s => s.status === 'PENDING_APPROVAL');
+        
+        let daysRem: number | null = null;
+        let isExp = false;
+        if (active && active.end_date) {
+          const endMs = new Date(active.end_date).getTime();
+          const nowMs = Date.now();
+          daysRem = Math.ceil((endMs - nowMs) / (1000 * 60 * 60 * 24));
+          if (daysRem <= 0) {
+            isExp = true;
+          }
+        }
+
+        setSubscriptionInfo({
+          activeSub: active || null,
+          pendingSub: pending || null,
+          daysRemaining: daysRem,
+          isExpired: isExp
+        });
+      }
+    } catch (subErr) {
+      console.warn('Subscription fetch error in Dashboard:', subErr);
+    }
+  }, []);
+
+  const triggerAutoRetryUploads = useCallback(async () => {
+    try {
+      await syncPendingUploads();
+    } catch (err) {
+      console.warn('Pending sync error:', err);
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      if (API_URL) {
         await fetch(`${API_URL}/api/recordings/retry-pending`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId: session.user.id,
             accessToken: session.access_token
           })
         });
-      } catch (e) {
-        console.error('Failed to trigger auto retry uploads:', e);
       }
-    };
-    
+    } catch (e) {
+      // Backend not available in APK mode
+    }
+  }, []);
+
+  useEffect(() => {
     fetchStats();
     triggerAutoRetryUploads();
-  }, []);
+
+    const onFocus = () => {
+      fetchStats();
+    };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+
+    const interval = setInterval(fetchStats, 5000);
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      clearInterval(interval);
+    };
+  }, [fetchStats, triggerAutoRetryUploads]);
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage('Sedang menyinkronkan rekaman ke Cloud Server...');
+    try {
+      const uploaded = await syncPendingUploads();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Refresh stats
+        const { data: recs } = await supabase
+          .from('recordings')
+          .select('*')
+          .eq('user_id', session.user.id);
+        if (recs) {
+          const total = recs.length;
+          const completed = recs.filter(r => r.status === 'DONE').length;
+          const process = recs.filter(r => r.status === 'PROCESS').length;
+          const failed = recs.filter(r => r.status === 'FAILED').length;
+          const pendingUploads = recs.filter(r => (r.upload_status === 'PENDING' || r.upload_status === 'UPLOADING' || r.upload_status === 'FAILED') && !r.drive_file_id).length;
+          const videoCount = recs.filter(r => r.video_path || r.drive_file_id).length;
+          setStats((prev: any) => ({
+            ...prev,
+            total,
+            completed,
+            process,
+            failed,
+            pendingUploads,
+            videoCount
+          }));
+        }
+      }
+      if (uploaded > 0) {
+        setSyncMessage(`Berhasil menyinkronkan ${uploaded} video ke Cloud Server!`);
+      } else {
+        setSyncMessage('Semua video rekaman telah tersimpan di Cloud Server.');
+      }
+    } catch (_) {
+      setSyncMessage('Sinkronisasi selesai.');
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncMessage(null), 4000);
+    }
+  };
+
   const lineChartData = {
     labels: stats.orderTrends?.labels || ['-'],
     datasets: [
@@ -142,78 +378,162 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto p-lg space-y-lg flex flex-col min-h-full">
+    <div className="max-w-[1440px] mx-auto p-2 sm:p-4 space-y-2 sm:space-y-4 flex flex-col min-h-full">
+      {/* Top Header & Sync Action */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-white border border-ui-divider rounded-xl p-2.5 sm:p-3 px-3 sm:px-4 shadow-sm">
+        <div>
+          <h1 className="font-headline-md text-base sm:text-lg font-bold text-on-surface">Dashboard Buktiin</h1>
+          <p className="font-body-md text-[11px] sm:text-xs text-on-surface-variant">Ringkasan aktivitas packing & sinkronisasi video ke Cloud Server</p>
+        </div>
+        <button
+          onClick={handleManualSync}
+          disabled={isSyncing}
+          className="flex items-center gap-1 bg-primary text-white hover:opacity-90 px-3 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+          title="Sinkronkan rekaman yang belum terunggah ke Cloud Server"
+        >
+          <span className={`material-symbols-outlined text-sm ${isSyncing ? 'animate-spin' : ''}`}>
+            {isSyncing ? 'sync' : 'cloud_upload'}
+          </span>
+          <span>{isSyncing ? 'Menyinkronkan...' : 'Sinkronkan Cloud'}</span>
+        </button>
+      </div>
+
+      {/* Sync Banner Notification */}
+      {syncMessage && (
+        <div className="p-2 px-3 bg-primary-container text-on-primary-container text-[11px] sm:text-xs font-bold rounded-lg border border-primary/20 flex items-center justify-between animate-[fade-in_0.2s_ease-out]">
+          <div className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-sm">info</span>
+            <span>{syncMessage}</span>
+          </div>
+          <button onClick={() => setSyncMessage(null)} className="opacity-70 hover:opacity-100">
+            <span className="material-symbols-outlined text-xs">close</span>
+          </button>
+        </div>
+      )}
+
+      {/* Subscription Pending Approval Banner */}
+      {subscriptionInfo.pendingSub && (
+        <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-[fade-in_0.2s_ease-out]">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 text-xs">
+            <span className="material-symbols-outlined text-base animate-spin text-amber-600">sync</span>
+            <span>
+              <strong>Pembayaran Sedang Diverifikasi:</strong> Pengajuan aktivasi paket <strong className="text-primary">{subscriptionInfo.pendingSub.plans?.name || 'Paket'}</strong> Anda sedang menunggu persetujuan (approval) admin.
+            </span>
+          </div>
+          <span className="text-[10px] font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full self-start sm:self-auto">
+            PROSES VERIFIKASI
+          </span>
+        </div>
+      )}
+
+      {/* Subscription Expired Banner */}
+      {subscriptionInfo.isExpired && subscriptionInfo.activeSub && subscriptionInfo.activeSub.plans?.name !== 'FREE' && (
+        <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-red-500/10 border border-red-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-[fade-in_0.2s_ease-out]">
+          <div className="flex items-center gap-2 text-red-800 dark:text-red-200 text-xs">
+            <span className="material-symbols-outlined text-base text-red-600">error</span>
+            <span>
+              <strong>Masa Langganan Telah Habis:</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda telah berakhir. Segera perpanjang paket untuk melanjutkan akses fitur multi-staf & kuota rekaman.
+            </span>
+          </div>
+          <Link
+            to="/plans"
+            className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-sm">payment</span>
+            Perpanjang Paket
+          </Link>
+        </div>
+      )}
+
+      {/* Subscription Renewal Warning Banner (<= 7 Days) */}
+      {!subscriptionInfo.isExpired && subscriptionInfo.daysRemaining !== null && subscriptionInfo.daysRemaining <= 7 && subscriptionInfo.activeSub?.plans?.name !== 'FREE' && (
+        <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-[fade-in_0.2s_ease-out]">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 text-xs">
+            <span className="material-symbols-outlined text-base text-amber-600">warning</span>
+            <span>
+              <strong>Masa Langganan Segera Berakhir:</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda akan berakhir dalam <strong className="text-primary">{subscriptionInfo.daysRemaining} hari lagi</strong> ({new Date(subscriptionInfo.activeSub.end_date).toLocaleDateString('id-ID')}). Segera lakukan perpanjangan.
+            </span>
+          </div>
+          <Link
+            to="/plans"
+            className="bg-primary hover:bg-primary/90 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-sm">autorenew</span>
+            Perpanjang Sekarang
+          </Link>
+        </div>
+      )}
+
       {/* Daily Statistics */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {/* Total Orders */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg flex flex-col justify-between rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Total Orders</span>
-            <div className="bg-surface-container p-sm rounded">
-              <span className="material-symbols-outlined text-primary">package</span>
+        <div className="bg-white border border-ui-divider hover:border-primary transition-all p-2.5 sm:p-3 flex flex-col justify-between rounded-xl">
+          <div className="flex justify-between items-start mb-1">
+            <span className="font-label-caps text-[10px] sm:text-xs text-on-surface-variant uppercase">Total Orders</span>
+            <div className="bg-surface-container p-1 rounded">
+              <span className="material-symbols-outlined text-primary text-base sm:text-lg">package</span>
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">{stats.total}</p>
-            <p className="font-code-sm text-code-sm text-primary mt-xs">Total pesanan masuk</p>
+            <p className="font-display-lg text-2xl sm:text-3xl font-bold">{stats.total}</p>
+            <p className="font-code-sm text-[10px] sm:text-xs text-primary">Pesanan masuk</p>
           </div>
         </div>
 
         {/* Selesai */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg flex flex-col justify-between border-b-4 border-b-status-success rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Selesai</span>
-            <div className="bg-surface-container p-sm rounded">
-              <span className="material-symbols-outlined text-status-success" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+        <div className="bg-white border border-ui-divider hover:border-primary transition-all p-2.5 sm:p-3 flex flex-col justify-between border-b-3 border-b-status-success rounded-xl">
+          <div className="flex justify-between items-start mb-1">
+            <span className="font-label-caps text-[10px] sm:text-xs text-on-surface-variant uppercase">Selesai</span>
+            <div className="bg-surface-container p-1 rounded">
+              <span className="material-symbols-outlined text-status-success text-base sm:text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">{stats.completed}</p>
-            <p className="font-code-sm text-code-sm text-status-success mt-xs">Selesai di-packing</p>
+            <p className="font-display-lg text-2xl sm:text-3xl font-bold">{stats.completed}</p>
+            <p className="font-code-sm text-[10px] sm:text-xs text-status-success">Di-packing</p>
           </div>
         </div>
 
         {/* Proses */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg flex flex-col justify-between border-b-4 border-b-status-processing rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Proses / Pending</span>
-            <div className="bg-surface-container p-sm rounded">
-              <span className="material-symbols-outlined text-status-processing" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
+        <div className="bg-white border border-ui-divider hover:border-primary transition-all p-2.5 sm:p-3 flex flex-col justify-between border-b-3 border-b-status-processing rounded-xl">
+          <div className="flex justify-between items-start mb-1">
+            <span className="font-label-caps text-[10px] sm:text-xs text-on-surface-variant uppercase">Pending</span>
+            <div className="bg-surface-container p-1 rounded">
+              <span className="material-symbols-outlined text-status-processing text-base sm:text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>cloud_upload</span>
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">{stats.pendingUploads}</p>
-            <p className="font-code-sm text-code-sm text-on-surface-variant mt-xs">Menunggu video diupload</p>
+            <p className="font-display-lg text-2xl sm:text-3xl font-bold">{stats.pendingUploads}</p>
+            <p className="font-code-sm text-[10px] sm:text-xs text-on-surface-variant">Menunggu upload</p>
           </div>
         </div>
 
         {/* Video Uploads */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg flex flex-col justify-between rounded-xl">
-          <div className="flex justify-between items-start mb-md">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Video Proof</span>
-            <div className="bg-surface-container p-sm rounded">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>videocam</span>
+        <div className="bg-white border border-ui-divider hover:border-primary transition-all p-2.5 sm:p-3 flex flex-col justify-between rounded-xl">
+          <div className="flex justify-between items-start mb-1">
+            <span className="font-label-caps text-[10px] sm:text-xs text-on-surface-variant uppercase">Video Proof</span>
+            <div className="bg-surface-container p-1 rounded">
+              <span className="material-symbols-outlined text-primary text-base sm:text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>videocam</span>
             </div>
           </div>
           <div>
-            <p className="font-display-lg text-4xl font-bold">{stats.videoCount}</p>
-            <p className="font-code-sm text-code-sm text-primary mt-xs">Video berhasil direkam</p>
+            <p className="font-display-lg text-2xl sm:text-3xl font-bold">{stats.videoCount}</p>
+            <p className="font-code-sm text-[10px] sm:text-xs text-primary">Terekam</p>
           </div>
         </div>
       </section>
 
       {/* Charts Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3">
         {/* Main Line Chart */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-8 h-[400px] flex flex-col rounded-xl">
-          <div className="flex justify-between items-center mb-lg">
+        <div className="bg-white border border-ui-divider p-2.5 sm:p-4 lg:col-span-8 h-[220px] sm:h-[300px] flex flex-col rounded-xl">
+          <div className="flex justify-between items-center mb-2">
             <div>
-              <h3 className="font-headline-md text-headline-md font-bold">Order Trends</h3>
-              <p className="font-body-md text-on-surface-variant">Daily volume for the current month</p>
+              <h3 className="font-headline-md text-xs sm:text-sm font-bold">Tren Pesanan</h3>
+              <p className="font-body-md text-[10px] text-on-surface-variant">Volume harian bulan ini</p>
             </div>
-            <div className="flex gap-sm">
-              <button className="px-md py-xs border border-primary text-primary font-label-caps text-label-caps rounded-DEFAULT">Daily</button>
-              <button className="px-md py-xs border border-ui-divider text-on-surface-variant font-label-caps text-label-caps rounded-DEFAULT hover:bg-surface-variant">Weekly</button>
+            <div className="flex gap-1">
+              <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded">Harian</span>
             </div>
           </div>
           <div className="flex-1 w-full relative">
@@ -222,20 +542,20 @@ export default function Dashboard() {
         </div>
 
         {/* Marketplace Pie Chart */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-4 h-[400px] flex flex-col rounded-xl">
-          <h3 className="font-headline-md text-headline-md font-bold mb-md">Marketplace Distribution</h3>
+        <div className="bg-white border border-ui-divider p-2.5 sm:p-4 lg:col-span-4 h-[220px] sm:h-[300px] flex flex-col rounded-xl">
+          <h3 className="font-headline-md text-xs sm:text-sm font-bold mb-1">Distribusi Channel</h3>
           <div className="flex-1 relative flex items-center justify-center">
             <Doughnut data={pieChartData} options={pieChartOptions as any} />
           </div>
-          <div className="grid grid-cols-3 gap-xs mt-md">
+          <div className="grid grid-cols-3 gap-1 mt-1">
             {stats.marketplaceDistribution?.labels.map((lbl: string, i: number) => {
               const total = stats.marketplaceDistribution.data.reduce((a: number, b: number) => a + b, 0);
               const val = stats.marketplaceDistribution.data[i];
               const pct = total ? Math.round((val / total) * 100) : 0;
               return (
                 <div key={lbl} className="text-center">
-                  <p className="font-label-caps text-[10px] text-on-surface-variant truncate">{lbl}</p>
-                  <p className="font-bold text-primary">{pct}%</p>
+                  <p className="font-label-caps text-[9px] text-on-surface-variant truncate">{lbl}</p>
+                  <p className="font-bold text-xs text-primary">{pct}%</p>
                 </div>
               );
             })}
@@ -244,82 +564,58 @@ export default function Dashboard() {
       </section>
 
       {/* Storage & Security Section */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-lg flex-1">
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-3 flex-1">
         {/* Storage Stats */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-5 relative overflow-hidden rounded-xl">
+        <div className="bg-white border border-ui-divider p-2.5 sm:p-4 lg:col-span-5 relative overflow-hidden rounded-xl">
           <div className="relative z-10">
-            <h3 className="font-headline-md text-headline-md font-bold mb-md">Storage & Efficiency</h3>
-            <p className="font-label-caps text-label-caps text-on-surface-variant mb-xl">LAST 30 DAYS</p>
-            <div className="space-y-lg">
+            <h3 className="font-headline-md text-xs sm:text-sm font-bold mb-1">Penyimpanan & Efisiensi</h3>
+            <p className="font-label-caps text-[9px] text-on-surface-variant mb-2">30 HARI TERAKHIR</p>
+            <div className="space-y-2">
               <div>
-                <p className="font-body-md text-on-surface-variant">Total Videos Uploaded</p>
-                <p className="font-display-lg text-3xl font-bold text-primary">{stats.storageMetrics?.totalVideosThisMonth || 0} Videos</p>
+                <p className="font-body-md text-[11px] text-on-surface-variant">Total Video Terupload</p>
+                <p className="font-display-lg text-xl sm:text-2xl font-bold text-primary">{stats.storageMetrics?.totalVideosThisMonth || 0} Video</p>
               </div>
-              <div className="grid grid-cols-2 gap-md">
-                <div className="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-status-success">
-                  <p className="font-code-sm text-code-sm text-on-surface-variant">Total Size</p>
-                  <p className="font-bold">{((stats.storageMetrics?.totalSizeThisMonth || 0) / (1024*1024)).toFixed(2)} MB</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2 bg-surface-container-low rounded border-l-3 border-status-success">
+                  <p className="font-code-sm text-[10px] text-on-surface-variant">Ukuran Total</p>
+                  <p className="font-bold text-xs">{((stats.storageMetrics?.totalSizeThisMonth || 0) / (1024*1024)).toFixed(2)} MB</p>
                 </div>
-                <div className="p-md bg-surface-container-low rounded-DEFAULT border-l-4 border-primary">
-                  <p className="font-code-sm text-code-sm text-on-surface-variant">Avg Size/Vid</p>
-                  <p className="font-bold">{((stats.storageMetrics?.avgSizeBytes || 0) / (1024*1024)).toFixed(2)} MB</p>
+                <div className="p-2 bg-surface-container-low rounded border-l-3 border-primary">
+                  <p className="font-code-sm text-[10px] text-on-surface-variant">Rata-rata/Vid</p>
+                  <p className="font-bold text-xs">{((stats.storageMetrics?.avgSizeBytes || 0) / (1024*1024)).toFixed(2)} MB</p>
                 </div>
               </div>
             </div>
           </div>
-          {/* Atmospheric Grid Pattern */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: "radial-gradient(#006e2a 0.5px, transparent 0.5px)", backgroundSize: "16px 16px" }}></div>
         </div>
 
         {/* Security & Compliance */}
-        <div className="bg-white border border-ui-divider hover:border-primary hover:bg-surface-container-low transition-all duration-200 p-lg lg:col-span-7 flex flex-col rounded-xl">
-          <div className="flex justify-between items-center mb-lg">
-            <h3 className="font-headline-md text-headline-md font-bold">Security & Compliance</h3>
-          </div>
-          <p className="text-body-md text-on-surface-variant mb-md">
-            Sistem BUKTIIN dilengkapi dengan infrastruktur standar enterprise untuk memastikan keamanan data dan video bukti toko Anda 100% terjaga.
-          </p>
-          <div className="space-y-md flex-1">
-            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
-                <span className="material-symbols-outlined text-primary text-[24px]">lock</span>
-              </div>
+        <div className="bg-white border border-ui-divider p-2.5 sm:p-4 lg:col-span-7 flex flex-col rounded-xl">
+          <h3 className="font-headline-md text-xs sm:text-sm font-bold mb-1.5">Keamanan Cloud Enterprise</h3>
+          <div className="space-y-1.5 flex-1">
+            <div className="flex items-center gap-2 p-1.5 bg-surface-variant/20 rounded">
+              <span className="material-symbols-outlined text-primary text-base">lock</span>
               <div>
-                <p className="font-bold text-on-surface">AES-256 Cloud Encryption</p>
-                <p className="text-sm text-on-surface-variant">Semua video dan data transaksi dienkripsi menggunakan standar militer.</p>
+                <p className="font-bold text-xs text-on-surface">AES-256 Cloud Encryption</p>
+                <p className="text-[10px] text-on-surface-variant">Video dan data dienkripsi standar keamanan tinggi.</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
-                <span className="material-symbols-outlined text-status-success text-[24px]">verified_user</span>
-              </div>
+            <div className="flex items-center gap-2 p-1.5 bg-surface-variant/20 rounded">
+              <span className="material-symbols-outlined text-status-success text-base">verified_user</span>
               <div>
-                <p className="font-bold text-on-surface">OAuth 2.0 Secure Authorization</p>
-                <p className="text-sm text-on-surface-variant">Sistem terhubung langsung ke jaringan Secure Cloud Server Enterprise (No-Knowledge Protocol).</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-md p-md bg-surface-variant/30 rounded-lg">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shrink-0 border border-ui-divider shadow-sm">
-                <span className="material-symbols-outlined text-secondary text-[24px]">dns</span>
-              </div>
-              <div>
-                <p className="font-bold text-on-surface">Tier 3 Data Center (99.9% Uptime)</p>
-                <p className="text-sm text-on-surface-variant">Infrastruktur server andal memastikan API tidak pernah <i>down</i> saat sedang merekam.</p>
+                <p className="font-bold text-xs text-on-surface">OAuth 2.0 Direct Sync</p>
+                <p className="text-[10px] text-on-surface-variant">Terhubung langsung ke Secure Cloud Server.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-xl border-t border-ui-divider py-md flex flex-col md:flex-row justify-between items-center text-on-surface-variant">
-        <p className="font-code-sm text-code-sm">© 2026 Nafindo Group. All Rights Reserved.</p>
-        <div className="flex gap-lg items-center mt-md md:mt-0">
-          <span className="font-label-caps text-label-caps">Developed by Nafindo Group</span>
-          <span className="font-code-sm text-code-sm bg-surface-container px-sm py-1 rounded">BUILD_ID: B-9982</span>
-        </div>
+      {/* Compact Footer */}
+      <footer className="mt-2 border-t border-ui-divider py-1.5 flex flex-row justify-between items-center text-[10px] text-on-surface-variant">
+        <p>© 2026 Nafindo Group.</p>
+        <span className="font-code-sm">v4.0.0</span>
       </footer>
     </div>
   );
