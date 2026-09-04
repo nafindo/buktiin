@@ -13,6 +13,7 @@ export default function AdminLayout() {
   const [error, setError] = useState('');
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showPin, setShowPin] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Live Notifications State
   const [pendingPayments, setPendingPayments] = useState<any[]>([]);
@@ -85,7 +86,14 @@ export default function AdminLayout() {
     }
   };
 
-  if (checkingAuth) return null;
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-bold text-on-surface-variant font-mono">Memeriksa Akses Admin...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -161,8 +169,6 @@ export default function AdminLayout() {
   }
 
   const pendingCount = pendingPayments.length;
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-surface text-on-surface font-body-md">

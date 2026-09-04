@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+const formatTime = (timestamp: any) => {
+  try {
+    if (!timestamp) return '-';
+    const d = new Date(timestamp);
+    if (isNaN(d.getTime())) return '-';
+    return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return '-';
+  }
+};
+
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -131,15 +142,16 @@ export default function AdminDashboard() {
           <div className="relative h-64 w-full flex items-end gap-2 border-b border-l border-ui-divider px-md pb-md">
             {stats?.revenue_growth && stats.revenue_growth.length > 0 ? (
               stats.revenue_growth.map((item: any, idx: number) => {
-                const maxRevenue = Math.max(...stats.revenue_growth.map((g: any) => g.revenue));
-                const heightPercent = maxRevenue > 0 ? (item.revenue / maxRevenue) * 100 : 0;
+                const maxRevenue = Math.max(...stats.revenue_growth.map((g: any) => Number(g.revenue) || 0), 1);
+                const itemRev = Number(item.revenue) || 0;
+                const heightPercent = maxRevenue > 0 ? Math.min(100, Math.max(4, (itemRev / maxRevenue) * 100)) : 4;
                 return (
                   <div key={idx} className="flex-1 flex flex-col justify-end gap-1 group relative">
                     <div className="w-full bg-primary transition-all cursor-pointer rounded-t-sm hover:brightness-110" style={{ height: `${heightPercent}%`, minHeight: '4px' }}></div>
                     <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container-highest text-on-surface-variant font-code-sm text-xs px-2 py-1 rounded transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                      Rp {item.revenue.toLocaleString('id-ID')}
+                      Rp {itemRev.toLocaleString('id-ID')}
                     </div>
-                    <p className="font-code-sm text-code-sm text-center mt-2">{item.month}</p>
+                    <p className="font-code-sm text-code-sm text-center mt-2">{item.month || '-'}</p>
                   </div>
                 );
               })
@@ -187,7 +199,7 @@ export default function AdminDashboard() {
             stats.activity_logs.map((log: any, idx: number) => (
               <div key={idx} className="px-lg py-md flex items-center gap-lg hover:bg-surface-container-lowest transition-colors">
                 <span className="font-code-sm text-code-sm text-on-surface-variant shrink-0">
-                  {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {formatTime(log.timestamp)}
                 </span>
                 <span className={`material-symbols-outlined ${log.status === 'success' ? 'text-status-success' : 'text-status-processing'}`}>
                   {log.type === 'SIGNUP' ? 'person_add' : log.type === 'SUBSCRIPTION' ? 'payments' : log.type === 'RECORDING' ? 'videocam' : 'info'}
