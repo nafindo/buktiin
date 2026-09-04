@@ -47,21 +47,21 @@ function RootAuthRoute() {
   const videoId = searchParams.get('v');
 
   useEffect(() => {
-    CapApp.getInfo()
-      .then((info) => {
-        if (info.id && (info.id.endsWith('.admin') || info.id.includes('admin') || info.name.toLowerCase().includes('admin'))) {
-          setIsAdminApp(true);
-          localStorage.setItem('is_admin_mode', 'true');
-        } else {
-          if (!window.location.hash.startsWith('#/admin')) {
-            localStorage.removeItem('is_admin_mode');
-          }
+    let isMounted = true;
+    Promise.all([
+      CapApp.getInfo().catch(() => null),
+      supabase.auth.getSession()
+    ]).then(([info, { data }]) => {
+      if (!isMounted) return;
+      if (info && info.id && (info.id.endsWith('.admin') || info.id.includes('admin') || (info.name && info.name.toLowerCase().includes('admin')))) {
+        setIsAdminApp(true);
+        localStorage.setItem('is_admin_mode', 'true');
+      } else {
+        if (!window.location.hash.startsWith('#/admin')) {
+          localStorage.removeItem('is_admin_mode');
         }
-      })
-      .catch(() => {});
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+      }
+      setSession(data?.session || null);
       setLoading(false);
     });
 
@@ -70,6 +70,7 @@ function RootAuthRoute() {
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);

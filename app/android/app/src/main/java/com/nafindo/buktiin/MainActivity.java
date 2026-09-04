@@ -1,8 +1,6 @@
 package com.nafindo.buktiin;
 
 import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
@@ -10,22 +8,6 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(GallerySaverPlugin.class);
         super.onCreate(savedInstanceState);
-
-        if (getPackageName().contains("admin")) {
-            WebView webView = getBridge().getWebView();
-            if (webView != null) {
-                WebSettings settings = webView.getSettings();
-                settings.setSupportZoom(true);
-                settings.setBuiltInZoomControls(true);
-                settings.setDisplayZoomControls(false);
-                settings.setUseWideViewPort(true);
-                settings.setLoadWithOverviewMode(true);
-                settings.setDomStorageEnabled(true);
-                settings.setJavaScriptEnabled(true);
-
-                webView.loadUrl("https://nafindo.github.io/buktiin/#/admin/dashboard");
-            }
-        }
     }
 
     @Override

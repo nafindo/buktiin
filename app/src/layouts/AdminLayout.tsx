@@ -162,45 +162,73 @@ export default function AdminLayout() {
 
   const pendingCount = pendingPayments.length;
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="bg-surface text-on-surface font-body-md min-h-screen">
-      {/* SideNavBar Shell (Always visible, exactly like web) */}
-      <aside className="flex flex-col h-screen py-lg px-md w-64 fixed left-0 top-0 border-r border-ui-divider bg-surface z-50">
-        <div className="mb-xl">
-          <h1 className="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-            <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
-            Admin Console
-          </h1>
-          <p className="font-body-md text-body-md text-on-surface-variant">Buktiin Evidence System</p>
+    <div className="flex h-screen w-screen overflow-hidden bg-surface text-on-surface font-body-md">
+      {/* Backdrop for mobile drawer */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-xs transition-opacity"
+        />
+      )}
+
+      {/* SideNavBar: Permanent on lg/desktop/landscape, drawer on mobile portrait */}
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-surface border-r border-ui-divider flex flex-col p-4 transition-transform duration-200 ease-in-out shrink-0 ${
+          sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between mb-6 pb-3 border-b border-ui-divider">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+              <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+            </div>
+            <div>
+              <h1 className="font-extrabold text-sm sm:text-base text-primary leading-tight">Admin Console</h1>
+              <p className="text-[10px] text-on-surface-variant font-mono">Buktiin Evidence System</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-1 text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container"
+          >
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
         </div>
 
-        <nav className="flex-1 space-y-xs overflow-y-auto">
+        {/* Navigation Menus */}
+        <nav className="flex-1 space-y-1.5 overflow-y-auto">
           <Link
             to="/admin/dashboard"
-            className={`flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md rounded-xl ${
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               path.includes('/dashboard')
-                ? 'text-primary font-bold border-r-2 border-primary bg-surface-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            <span className="material-symbols-outlined">dashboard</span>
-            Dashboard
+            <span className="material-symbols-outlined text-xl">dashboard</span>
+            <span>Dashboard</span>
           </Link>
 
           <Link
             to="/admin/subscriptions"
-            className={`flex items-center justify-between px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md rounded-xl ${
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               path.includes('/subscriptions')
-                ? 'text-primary font-bold border-r-2 border-primary bg-surface-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            <div className="flex items-center gap-md">
-              <span className="material-symbols-outlined text-amber-500">verified</span>
-              Persetujuan Langganan
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl text-amber-500">verified</span>
+              <span>Persetujuan Langganan</span>
             </div>
             {pendingCount > 0 ? (
-              <span className="bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full animate-pulse">
+              <span className="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse shadow">
                 {pendingCount}
               </span>
             ) : (
@@ -212,15 +240,16 @@ export default function AdminLayout() {
 
           <Link
             to="/admin/users"
-            className={`flex items-center justify-between px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md rounded-xl ${
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               path.includes('/users')
-                ? 'text-primary font-bold border-r-2 border-primary bg-surface-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            <div className="flex items-center gap-md">
-              <span className="material-symbols-outlined">group</span>
-              User Management
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl">group</span>
+              <span>User Management</span>
             </div>
             {pendingCount > 0 && (
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" title={`${pendingCount} pembayaran menunggu approval`}></span>
@@ -229,33 +258,37 @@ export default function AdminLayout() {
 
           <Link
             to="/admin/plans"
-            className={`flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md rounded-xl ${
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               path.includes('/plans')
-                ? 'text-primary font-bold border-r-2 border-primary bg-surface-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            <span className="material-symbols-outlined">settings_applications</span>
-            Plan Configuration
+            <span className="material-symbols-outlined text-xl">settings_applications</span>
+            <span>Plan Configuration</span>
           </Link>
 
           <Link
             to="/admin/storage"
-            className={`flex items-center gap-md px-md py-sm transition-colors duration-200 ease-in-out font-body-md text-body-md rounded-xl ${
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
               path.includes('/storage')
-                ? 'text-primary font-bold border-r-2 border-primary bg-surface-container'
-                : 'text-on-surface-variant hover:bg-surface-container-low'
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
             }`}
           >
-            <span className="material-symbols-outlined">receipt_long</span>
-            Cluster Storage
+            <span className="material-symbols-outlined text-xl">receipt_long</span>
+            <span>Cluster Storage</span>
           </Link>
         </nav>
 
-        <div className="mt-auto pt-lg border-t border-ui-divider space-y-xs">
+        {/* Sidebar Footer Buttons */}
+        <div className="pt-4 mt-auto border-t border-ui-divider space-y-2">
           <Link
             to="/admin/users"
-            className="w-full bg-primary-container text-on-primary-container py-md px-md font-bold text-center block rounded-xl hover:opacity-90 transition-opacity text-xs"
+            onClick={() => setSidebarOpen(false)}
+            className="w-full bg-primary hover:bg-primary/90 text-white py-2.5 px-3 font-bold text-center block rounded-xl text-xs shadow transition-all"
           >
             Kelola Pengguna
           </Link>
@@ -263,160 +296,170 @@ export default function AdminLayout() {
             href="https://wa.me/6281232797271"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-md px-md py-sm font-body-md text-xs text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors"
+            className="flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container rounded-xl transition-colors"
           >
             <span className="material-symbols-outlined text-green-600 text-base">chat</span>
-            WhatsApp Support
+            <span>WhatsApp Support</span>
           </a>
         </div>
       </aside>
 
-      {/* TopAppBar Shell */}
-      <header className="flex justify-between items-center h-16 px-lg ml-64 border-b border-ui-divider bg-surface fixed top-0 right-0 left-0 z-40">
-        <div className="flex items-center gap-xl">
-          <span className="font-headline-md text-headline-md font-bold text-on-surface">BUKTIIN Admin</span>
-          <div className="relative hidden lg:block">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-            <input
-              className="pl-10 pr-md py-xs bg-surface-container border border-ui-divider focus:border-primary outline-none font-body-md text-body-md w-64 rounded-lg text-xs"
-              placeholder="Cari operasi..."
-              type="text"
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-lg">
-          {/* Interactive Notification Bell */}
-          <div className="relative" ref={notifDropdownRef}>
+      {/* Main Workspace Area (Never gepeng, full responsive flex) */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
+        {/* Top Header */}
+        <header className="h-16 px-4 sm:px-6 border-b border-ui-divider bg-surface shrink-0 flex justify-between items-center z-10">
+          <div className="flex items-center gap-3">
+            {/* Hamburger Button for Mobile Drawer */}
             <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative hover:bg-surface-container-low p-2 rounded-xl transition-all"
-              title="Notifikasi Pembayaran & Sistem"
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+              title="Buka Menu Navigasi"
             >
-              <span className="material-symbols-outlined text-xl">notifications</span>
-              {pendingCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-4 h-4 px-1 bg-amber-500 text-white text-[9px] font-extrabold flex items-center justify-center rounded-full shadow animate-pulse">
-                  {pendingCount}
-                </span>
-              )}
+              <span className="material-symbols-outlined text-2xl">menu</span>
             </button>
 
-            {/* Notification Popover Dropdown */}
-            {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface border border-ui-divider rounded-2xl shadow-2xl z-50 overflow-hidden animate-[fade-in_0.15s_ease-out]">
-                <div className="p-3.5 border-b border-ui-divider flex items-center justify-between bg-surface-container-low">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-amber-500 text-lg">notifications_active</span>
-                    <span className="text-xs font-bold text-on-surface">Notifikasi Pembayaran ({pendingCount})</span>
-                  </div>
-                  {pendingCount > 0 && (
-                    <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
-                      Menunggu Approval
-                    </span>
-                  )}
-                </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-2xl hidden sm:inline-block">admin_panel_settings</span>
+              <span className="font-extrabold text-base sm:text-lg text-on-surface">BUKTIIN Admin</span>
+            </div>
 
-                <div className="max-h-80 overflow-y-auto divide-y divide-ui-divider text-xs">
-                  {pendingCount > 0 ? (
-                    pendingPayments.map((sub) => (
-                      <div
-                        key={sub.id}
-                        className="p-3 hover:bg-surface-container-low transition-colors flex flex-col gap-1.5 cursor-pointer"
-                        onClick={() => {
-                          setShowNotifications(false);
-                          navigate('/admin/users');
-                        }}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-primary text-[11px] bg-primary/10 px-2 py-0.5 rounded">
-                            {sub.plans?.name || 'Paket'} Plan
-                          </span>
-                          <span className="text-[10px] text-on-surface-variant font-mono">
-                            {new Date(sub.created_at).toLocaleDateString('id-ID')}
-                          </span>
-                        </div>
-                        <p className="font-bold text-on-surface truncate">{sub.user_name || sub.user_email || 'Pengguna'}</p>
-                        <p className="text-[11px] text-on-surface-variant truncate">{sub.user_email}</p>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="font-extrabold text-on-surface text-xs">
-                            {sub.amount_paid
-                              ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(sub.amount_paid)
-                              : sub.plans?.price
-                              ? `Rp ${sub.plans.price.toLocaleString('id-ID')}`
-                              : 'Kustom'}
-                          </span>
-                          <span className="text-[10px] text-primary font-bold hover:underline flex items-center gap-0.5">
-                            Lihat & Approve
-                            <span className="material-symbols-outlined text-xs">chevron_right</span>
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-6 text-center text-on-surface-variant">
-                      <span className="material-symbols-outlined text-2xl text-status-success mb-1">check_circle</span>
-                      <p className="font-bold text-xs">Tidak Ada Pembayaran Pending</p>
-                      <p className="text-[11px] mt-0.5">Semua pengajuan pembayaran langganan sudah diproses.</p>
+            <span className="hidden sm:inline-block bg-primary/10 text-primary text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              Superuser
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Interactive Notification Bell */}
+            <div className="relative" ref={notifDropdownRef}>
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative hover:bg-surface-container p-2 rounded-xl transition-all"
+                title="Notifikasi Pembayaran & Sistem"
+              >
+                <span className="material-symbols-outlined text-xl">notifications</span>
+                {pendingCount > 0 && (
+                  <span className="absolute top-1 right-1 min-w-4 h-4 px-1 bg-amber-500 text-white text-[9px] font-extrabold flex items-center justify-center rounded-full shadow animate-pulse">
+                    {pendingCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Popover Dropdown */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-72 sm:w-96 bg-surface border border-ui-divider rounded-2xl shadow-2xl z-50 overflow-hidden animate-[fade-in_0.15s_ease-out]">
+                  <div className="p-3.5 border-b border-ui-divider flex items-center justify-between bg-surface-container-low">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-amber-500 text-lg">notifications_active</span>
+                      <span className="text-xs font-bold text-on-surface">Notifikasi Pembayaran ({pendingCount})</span>
                     </div>
-                  )}
-                </div>
+                    {pendingCount > 0 && (
+                      <span className="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+                        Menunggu Approval
+                      </span>
+                    )}
+                  </div>
 
-                <div className="p-2 border-t border-ui-divider bg-surface-container-low text-center">
-                  <Link
-                    to="/admin/users"
-                    onClick={() => setShowNotifications(false)}
-                    className="text-[11px] text-primary font-bold hover:underline"
-                  >
-                    Buka User Management & Approval →
-                  </Link>
+                  <div className="max-h-80 overflow-y-auto divide-y divide-ui-divider text-xs">
+                    {pendingCount > 0 ? (
+                      pendingPayments.map((sub) => (
+                        <div
+                          key={sub.id}
+                          className="p-3 hover:bg-surface-container-low transition-colors flex flex-col gap-1.5 cursor-pointer"
+                          onClick={() => {
+                            setShowNotifications(false);
+                            navigate('/admin/users');
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-primary text-[11px] bg-primary/10 px-2 py-0.5 rounded">
+                              {sub.plans?.name || 'Paket'} Plan
+                            </span>
+                            <span className="text-[10px] text-on-surface-variant font-mono">
+                              {new Date(sub.created_at).toLocaleDateString('id-ID')}
+                            </span>
+                          </div>
+                          <p className="font-bold text-on-surface truncate">{sub.user_name || sub.user_email || 'Pengguna'}</p>
+                          <p className="text-[11px] text-on-surface-variant truncate">{sub.user_email}</p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="font-extrabold text-on-surface text-xs">
+                              {sub.amount_paid
+                                ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(sub.amount_paid)
+                                : sub.plans?.price
+                                ? `Rp ${sub.plans.price.toLocaleString('id-ID')}`
+                                : 'Kustom'}
+                            </span>
+                            <span className="text-[10px] text-primary font-bold hover:underline flex items-center gap-0.5">
+                              Lihat & Approve
+                              <span className="material-symbols-outlined text-xs">chevron_right</span>
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-6 text-center text-on-surface-variant">
+                        <span className="material-symbols-outlined text-2xl text-status-success mb-1">check_circle</span>
+                        <p className="font-bold text-xs">Tidak Ada Pembayaran Pending</p>
+                        <p className="text-[11px] mt-0.5">Semua pengajuan pembayaran langganan sudah diproses.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-2 border-t border-ui-divider bg-surface-container-low text-center">
+                    <Link
+                      to="/admin/users"
+                      onClick={() => setShowNotifications(false)}
+                      className="text-[11px] text-primary font-bold hover:underline"
+                    >
+                      Buka User Management & Approval →
+                    </Link>
+                  </div>
                 </div>
+              )}
+            </div>
+
+            <a
+              href="https://wa.me/6281232797271"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:bg-surface-container p-2 rounded-xl transition-all text-on-surface-variant"
+              title="Bantuan WhatsApp"
+            >
+              <span className="material-symbols-outlined text-xl text-green-600">chat</span>
+            </a>
+
+            <div className="hidden sm:block h-6 w-px bg-ui-divider"></div>
+
+            <div className="hidden sm:flex items-center gap-2.5 py-1 px-2 rounded-xl bg-surface-container/50 border border-ui-divider">
+              <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                AD
               </div>
-            )}
-          </div>
-
-          <a
-            href="https://wa.me/6281232797271"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:bg-surface-container-low p-2 rounded-xl transition-all text-on-surface-variant"
-            title="Bantuan WhatsApp"
-          >
-            <span className="material-symbols-outlined text-xl">help</span>
-          </a>
-
-          <div className="h-8 w-px bg-ui-divider"></div>
-
-          <div className="flex items-center gap-md py-xs px-sm rounded transition-all">
-            <div className="text-right">
-              <p className="font-body-md text-body-md font-bold leading-none">Admin Buktiin</p>
-              <p className="font-code-sm text-code-sm text-on-surface-variant">Superuser</p>
+              <div className="text-right">
+                <p className="font-bold text-xs leading-none">Admin</p>
+              </div>
             </div>
-            <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-              AD
-            </div>
+
+            {/* Quick Lock / Logout PIN Button */}
+            <button
+              onClick={() => {
+                if (window.confirm('Kunci sesi Admin Console?')) {
+                  localStorage.removeItem('admin_pin');
+                  setIsAuthenticated(false);
+                  setPin('');
+                }
+              }}
+              className="hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-status-error p-2 rounded-xl transition-all flex items-center gap-1"
+              title="Kunci / Keluar Admin"
+            >
+              <span className="material-symbols-outlined text-xl">lock</span>
+            </button>
           </div>
+        </header>
 
-          {/* Quick Lock / Logout PIN Button */}
-          <button
-            onClick={() => {
-              if (window.confirm('Kunci sesi Admin Console?')) {
-                localStorage.removeItem('admin_pin');
-                setIsAuthenticated(false);
-                setPin('');
-              }
-            }}
-            className="hover:bg-red-50 dark:hover:bg-red-950/40 text-on-surface-variant hover:text-status-error p-2 rounded-xl transition-all flex items-center gap-1"
-            title="Kunci / Keluar Admin"
-          >
-            <span className="material-symbols-outlined text-xl">lock</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Main Content Canvas */}
-      <main className="ml-64 mt-16 relative min-h-screen">
-        <Outlet />
-      </main>
+        {/* Main Content Canvas */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-surface-container-lowest/30">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
