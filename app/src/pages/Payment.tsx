@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import logoImg from '../assets/images/logo.png';
-import { fetchQrisSettings, DEFAULT_QRIS_SETTINGS, type QrisSettingsMap } from '../lib/qrisConfig';
+import {
+  fetchQrisSettings,
+  DEFAULT_QRIS_SETTINGS,
+  adminClient,
+  dataUrlToBlob,
+  type QrisSettingsMap
+} from '../lib/qrisConfig';
 
 type PeriodKey = 'monthly' | 'quarterly' | 'semiAnnual' | 'annual';
 
@@ -168,6 +174,30 @@ export default function Payment() {
 
       const notesFormatted = `[DURASI: ${durationDays} HARI | PERIODE: ${selectedPeriod}] Pengirim: ${senderName} | WA: ${senderPhone} | Catatan: ${notes || '-'}`;
 
+      // Upload proof to Supabase Storage CDN first (fast & lightweight URL)
+      let finalProofUrl = proofImageBase64;
+      try {
+        const filePath = `proof_${userId}_${Date.now()}.jpg`;
+        const blob = dataUrlToBlob(proofImageBase64);
+        const { error: uploadErr } = await adminClient.storage
+          .from('payment_proofs')
+          .upload(filePath, blob, {
+            contentType: 'image/jpeg',
+            upsert: true
+          });
+
+        if (!uploadErr) {
+          const { data: urlData } = adminClient.storage
+            .from('payment_proofs')
+            .getPublicUrl(filePath);
+          if (urlData?.publicUrl) {
+            finalProofUrl = urlData.publicUrl;
+          }
+        }
+      } catch (upErr) {
+        console.warn('Storage upload note:', upErr);
+      }
+
       const pendingPaymentData = {
         plan_id: plan.id,
         plan_name: plan.name,
@@ -175,7 +205,7 @@ export default function Payment() {
         period: selectedPeriod,
         amount_paid: rawPrice,
         payment_method: 'QRIS_DANA',
-        payment_proof_url: proofImageBase64,
+        payment_proof_url: finalProofUrl,
         sender_name: senderName,
         sender_phone: senderPhone,
         notes: notesFormatted,
@@ -212,7 +242,7 @@ export default function Payment() {
             plan_id: plan.id,
             status: 'PENDING_APPROVAL',
             payment_method: 'QRIS_DANA',
-            payment_proof_url: proofImageBase64,
+            payment_proof_url: finalProofUrl,
             amount_paid: rawPrice,
             user_email: userEmail,
             user_name: senderName || userEmail,
@@ -250,7 +280,7 @@ export default function Payment() {
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
           payment_method: 'QRIS_DANA',
-          payment_proof_url: proofImageBase64,
+          payment_proof_url: finalProofUrl,
           amount_paid: rawPrice,
           user_email: userEmail,
           user_name: senderName || userEmail,

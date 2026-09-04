@@ -219,13 +219,91 @@ export async function fetchQrisSettings(): Promise<QrisSettingsMap> {
 }
 
 /**
- * Saves QRIS settings to Supabase & localStorage
+ * Helper to convert Base64 Data URL to Blob
  */
-export async function saveQrisSettings(settings: QrisSettingsMap): Promise<boolean> {
-  try {
-    const payload = JSON.stringify(settings);
-    localStorage.setItem('cached_qris_settings', payload);
+export function dataUrlToBlob(dataUrl: string): Blob {
+  const parts = dataUrl.split(';base64,');
+  const contentType = parts[0].split(':')[1] || 'image/jpeg';
+  const raw = window.atob(parts[1]);
+  const rawLength = raw.length;
+  const uInt8Array = new Uint8Array(rawLength);
+  for (let i = 0; i < rawLength; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+  return new Blob([uInt8Array], { type: contentType });
+}
 
+/**
+ * Uploads a QRIS image file or Blob to Supabase Storage ('qris_images' bucket)
+ * and returns the permanent public URL.
+ */
+export async function uploadQrisImageFile(
+  fileOrBlob: Blob,
+  planKey: string,
+  periodKey: string
+): Promise<string | null> {
+  try {
+    const ext = fileOrBlob.type === 'image/png' ? 'png' : fileOrBlob.type === 'image/webp' ? 'webp' : 'jpg';
+    const filePath = `${planKey.toLowerCase()}_${periodKey.toLowerCase()}_${Date.now()}.${ext}`;
+
+    const { error } = await adminClient.storage
+      .from('qris_images')
+      .upload(filePath, fileOrBlob, {
+        contentType: fileOrBlob.type || 'image/jpeg',
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: urlData } = adminClient.storage
+      .from('qris_images')
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  } catch (err) {
+    console.error('Failed to upload QRIS image to Supabase storage:', err);
+    return null;
+  }
+}
+
+/**
+ * Saves QRIS settings to Supabase & localStorage.
+ * Automatically converts any inline base64 images into cloud storage URLs first.
+ */
+export async function saveQrisSettings(settings: QrisSettingsMap): Promise<{ success: boolean; error?: string }> {
+  try {
+    // 1. Deep clone settings so we can mutate safely
+    const cleanSettings: QrisSettingsMap = JSON.parse(JSON.stringify(settings));
+
+    // 2. Scan and upload any remaining base64 images to Supabase Storage
+    for (const planKey of Object.keys(cleanSettings)) {
+      const planConfig = cleanSettings[planKey];
+      for (const periodKey of ['monthly', 'quarterly', 'semiAnnual', 'annual'] as const) {
+        const item = planConfig?.[periodKey];
+        if (item?.qrImageUrl && item.qrImageUrl.startsWith('data:image/')) {
+          try {
+            const blob = dataUrlToBlob(item.qrImageUrl);
+            const uploadedUrl = await uploadQrisImageFile(blob, planKey, periodKey);
+            if (uploadedUrl) {
+              item.qrImageUrl = uploadedUrl;
+            }
+          } catch (uploadErr) {
+            console.warn(`Could not upload inline base64 for ${planKey}_${periodKey}:`, uploadErr);
+          }
+        }
+      }
+    }
+
+    const payload = JSON.stringify(cleanSettings);
+
+    // 3. Cache locally (safe catch if localStorage is full)
+    try {
+      localStorage.setItem('cached_qris_settings', payload);
+    } catch (lsErr) {
+      console.warn('localStorage cache full, skipping local cache:', lsErr);
+    }
+
+    // 4. Save to Supabase plans table
     const { error } = await adminClient
       .from('plans')
       .upsert({
@@ -236,12 +314,15 @@ export async function saveQrisSettings(settings: QrisSettingsMap): Promise<boole
         orderlimit: 0,
         retentiondays: 0,
         accountlimit: 0
-      });
+      }, { onConflict: 'id' });
 
-    if (error) throw error;
-    return true;
-  } catch (err) {
+    if (error) {
+      throw new Error(error.message || JSON.stringify(error));
+    }
+
+    return { success: true };
+  } catch (err: any) {
     console.error('Failed to save QRIS settings to Supabase:', err);
-    return false;
+    return { success: false, error: err.message || String(err) };
   }
 }

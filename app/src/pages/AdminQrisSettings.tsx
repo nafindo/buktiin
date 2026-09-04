@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   fetchQrisSettings,
   saveQrisSettings,
+  uploadQrisImageFile,
   DEFAULT_QRIS_SETTINGS,
   type QrisSettingsMap,
   type PeriodConfig
@@ -25,6 +26,7 @@ export default function AdminQrisSettings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanKey>('BASIC');
 
   useEffect(() => {
@@ -70,12 +72,15 @@ export default function AdminQrisSettings() {
       return;
     }
 
+    const cardKey = `${planKey}_${periodKey}`;
+    setUploadingKey(cardKey);
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const maxDim = 800;
+        const maxDim = 500;
         let w = img.width;
         let h = img.height;
         if (w > h && w > maxDim) {
@@ -89,8 +94,23 @@ export default function AdminQrisSettings() {
         canvas.height = h;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, w, h);
-        const base64 = canvas.toDataURL('image/jpeg', 0.85);
-        handlePeriodChange(planKey, periodKey, 'qrImageUrl', base64);
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            // Langsung upload ke cloud CDN Supabase
+            const publicUrl = await uploadQrisImageFile(blob, planKey, periodKey);
+            if (publicUrl) {
+              handlePeriodChange(planKey, periodKey, 'qrImageUrl', publicUrl);
+              setUploadingKey(null);
+              return;
+            }
+          }
+
+          // Fallback lokal jika offline
+          const base64 = canvas.toDataURL('image/jpeg', 0.85);
+          handlePeriodChange(planKey, periodKey, 'qrImageUrl', base64);
+          setUploadingKey(null);
+        }, 'image/jpeg', 0.85);
       };
       img.src = event.target?.result as string;
     };
@@ -100,13 +120,13 @@ export default function AdminQrisSettings() {
   const handleSave = async () => {
     setSaving(true);
     setSaveSuccess(false);
-    const ok = await saveQrisSettings(settings);
+    const res = await saveQrisSettings(settings);
     setSaving(false);
-    if (ok) {
+    if (res.success) {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 4000);
     } else {
-      alert('Gagal menyimpan pengaturan ke database server. Mohon periksa koneksi internet.');
+      alert('Gagal menyimpan pengaturan: ' + (res.error || 'Mohon periksa koneksi internet.'));
     }
   };
 
@@ -346,18 +366,27 @@ export default function AdminQrisSettings() {
                     )}
 
                     <div className="flex-1 space-y-1">
-                      <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-variant border border-ui-divider rounded-xl text-xs font-bold text-on-surface transition-colors">
-                        <span className="material-symbols-outlined text-base">upload</span>
-                        <span>Unggah Gambar QRIS</span>
+                      <label className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-variant border border-ui-divider rounded-xl text-xs font-bold text-on-surface transition-colors ${
+                        uploadingKey === `${selectedPlan}_${periodKey}` ? 'opacity-70 cursor-wait' : ''
+                      }`}>
+                        <span className={`material-symbols-outlined text-base ${
+                          uploadingKey === `${selectedPlan}_${periodKey}` ? 'animate-spin text-primary' : ''
+                        }`}>
+                          {uploadingKey === `${selectedPlan}_${periodKey}` ? 'sync' : 'upload'}
+                        </span>
+                        <span>
+                          {uploadingKey === `${selectedPlan}_${periodKey}` ? 'Mengunggah ke Cloud...' : 'Unggah Gambar QRIS'}
+                        </span>
                         <input
                           type="file"
                           accept="image/*"
+                          disabled={uploadingKey === `${selectedPlan}_${periodKey}`}
                           onChange={(e) => handleImageUpload(selectedPlan, periodKey, e)}
                           className="hidden"
                         />
                       </label>
                       <p className="text-[10px] text-on-surface-variant">
-                        File gambar barcode QRIS langsung tampil saat user checkout.
+                        File gambar barcode QRIS langsung tersimpan di Cloud Storage CDN.
                       </p>
                     </div>
                   </div>
