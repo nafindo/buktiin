@@ -13,3 +13,4 @@ backend/uploads/
 *.pdf
 *.csv
 desktop/backup/
+*.apk
