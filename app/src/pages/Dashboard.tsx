@@ -443,13 +443,34 @@ export default function Dashboard() {
               )}
             </span>
           </div>
-          <Link
-            to="/plans"
-            className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
-          >
-            <span className="material-symbols-outlined text-sm">payment</span>
-            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? 'Upgrade Paket' : 'Perpanjang Paket'}
-          </Link>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? (
+              <Link
+                to="/plans?mode=upgrade"
+                className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">upgrade</span>
+                Upgrade Paket
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to={`/payment?planId=${subscriptionInfo.activeSub.plan_id}&mode=renew`}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">autorenew</span>
+                  Perpanjang Paket
+                </Link>
+                <Link
+                  to="/plans?mode=upgrade"
+                  className="bg-surface border border-red-500/50 hover:bg-red-500/10 text-red-700 dark:text-red-300 font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">upgrade</span>
+                  Upgrade Plan
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -470,13 +491,34 @@ export default function Dashboard() {
               )}
             </span>
           </div>
-          <Link
-            to="/plans"
-            className="bg-primary hover:bg-primary/90 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
-          >
-            <span className="material-symbols-outlined text-sm">autorenew</span>
-            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? 'Upgrade Paket' : 'Perpanjang Sekarang'}
-          </Link>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? (
+              <Link
+                to="/plans?mode=upgrade"
+                className="bg-primary hover:bg-primary/90 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-sm">upgrade</span>
+                Upgrade Paket
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to={`/payment?planId=${subscriptionInfo.activeSub.plan_id}&mode=renew`}
+                  className="bg-status-success hover:bg-status-success/90 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">autorenew</span>
+                  Perpanjang Sekarang
+                </Link>
+                <Link
+                  to="/plans?mode=upgrade"
+                  className="bg-surface border border-primary/40 hover:bg-primary/10 text-primary font-bold px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">upgrade</span>
+                  Upgrade Plan
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       )}
 

@@ -14,6 +14,7 @@ import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import ResetPassword from './pages/ResetPassword';
 
 // App Pages
 import Dashboard from './pages/Dashboard';
@@ -184,6 +185,7 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/login" element={<LoginRegister />} />
           <Route path="/register" element={<LoginRegister />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
 
         {/* Public Routes with generic topnav */}

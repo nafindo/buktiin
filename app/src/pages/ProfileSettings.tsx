@@ -14,6 +14,10 @@ export default function ProfileSettings() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({ full_name: '', phone: '', avatar_url: '', company_name: '' });
   const [videoQuality, setVideoQuality] = useState(localStorage.getItem('buktiin_video_quality') || '720p');
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -119,6 +123,33 @@ export default function ProfileSettings() {
       setUserProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone, avatar_url: editForm.avatar_url, company_name: editForm.company_name }));
       setShowEditModal(false);
       alert("Profil berhasil diupdate!");
+    }
+  };
+
+  const handleSavePassword = async () => {
+    setPasswordError('');
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError('Kata sandi baru minimal 8 karakter.');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('Konfirmasi kata sandi tidak cocok.');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordForm.newPassword
+      });
+      if (error) throw error;
+      alert('Kata sandi berhasil diubah!');
+      setShowPasswordModal(false);
+      setPasswordForm({ newPassword: '', confirmPassword: '' });
+    } catch (err: any) {
+      setPasswordError(err.message || 'Gagal mengubah kata sandi.');
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -280,6 +311,20 @@ export default function ProfileSettings() {
             </div>
           </section>
 
+          <section className="md:col-span-12 border border-ui-divider bg-surface-container/30 p-2.5 rounded-xl flex justify-between items-center gap-2 mt-1">
+            <div>
+              <h4 className="font-bold text-xs text-on-surface">Keamanan Akun</h4>
+              <p className="text-[10px] text-on-surface-variant">Ubah kata sandi akun Anda secara langsung.</p>
+            </div>
+            <button 
+              onClick={() => { setPasswordError(''); setShowPasswordModal(true); }}
+              className="px-3 py-1 border border-ui-divider bg-surface hover:bg-surface-variant text-on-surface text-xs font-bold transition-all rounded-lg flex items-center gap-1 shadow-xs"
+            >
+              <span className="material-symbols-outlined text-sm text-primary">lock_reset</span>
+              Ganti Kata Sandi
+            </button>
+          </section>
+
           <section className="md:col-span-12 border border-error/20 bg-error-container/10 p-2.5 rounded-xl flex justify-between items-center gap-2 mt-1">
             <div>
               <h4 className="font-bold text-xs text-error">Keluar Akun</h4>
@@ -366,6 +411,76 @@ export default function ProfileSettings() {
                 className="flex-1 py-sm bg-primary text-white font-bold rounded-DEFAULT hover:opacity-90 transition-opacity"
               >
                 Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex flex-col items-center justify-center p-4 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]">
+          <div className="w-full max-w-sm bg-surface rounded-2xl overflow-hidden shadow-2xl border border-ui-divider flex flex-col p-5 gap-4">
+            <div className="flex items-center gap-2 border-b border-ui-divider pb-3">
+              <span className="material-symbols-outlined text-primary text-2xl">lock_reset</span>
+              <div>
+                <h3 className="font-headline-md font-bold text-sm text-on-surface">Ubah Kata Sandi</h3>
+                <p className="text-[11px] text-on-surface-variant">Pastikan kata sandi baru kuat dan aman.</p>
+              </div>
+            </div>
+
+            {passwordError && (
+              <div className="bg-error-container text-on-error-container p-2.5 rounded-xl text-xs flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm shrink-0">error</span>
+                <span>{passwordError}</span>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <label className="font-label-caps text-[10px] text-on-surface-variant font-bold">KATA SANDI BARU</label>
+                <input 
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+                  placeholder="Minimal 8 karakter"
+                  className="w-full px-3 py-2 bg-surface-container border border-ui-divider rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-xs text-on-surface"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-label-caps text-[10px] text-on-surface-variant font-bold">KONFIRMASI KATA SANDI</label>
+                <input 
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={e => setPasswordForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  placeholder="Ulangi kata sandi baru"
+                  className="w-full px-3 py-2 bg-surface-container border border-ui-divider rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-xs text-on-surface"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2 border-t border-ui-divider">
+              <button 
+                type="button"
+                onClick={() => { setShowPasswordModal(false); setPasswordError(''); }}
+                className="flex-1 py-2 bg-surface-container border border-ui-divider text-on-surface font-bold rounded-xl text-xs hover:bg-surface-variant transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                type="button"
+                disabled={passwordSaving}
+                onClick={handleSavePassword}
+                className="flex-1 py-2 bg-primary text-white font-bold rounded-xl text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1 shadow-sm"
+              >
+                {passwordSaving ? (
+                  <>
+                    <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <span>Simpan Sandi</span>
+                )}
               </button>
             </div>
           </div>

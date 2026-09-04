@@ -26,6 +26,8 @@ export default function Payment() {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const planId = searchParams.get('planId');
+  const modeParam = searchParams.get('mode') as 'renew' | 'upgrade' | null;
+  const isRenew = modeParam === 'renew';
 
   const periodParam = (searchParams.get('period') || (searchParams.get('isAnnual') === '1' ? 'annual' : 'monthly')) as PeriodKey;
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>(periodParam || 'monthly');
@@ -172,7 +174,8 @@ export default function Payment() {
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + durationDays);
 
-      const notesFormatted = `[DURASI: ${durationDays} HARI | PERIODE: ${selectedPeriod}] Pengirim: ${senderName} | WA: ${senderPhone} | Catatan: ${notes || '-'}`;
+      const modePrefix = isRenew ? '[PERPANJANGAN]' : '[UPGRADE PLAN]';
+      const notesFormatted = `${modePrefix} [DURASI: ${durationDays} HARI | PERIODE: ${selectedPeriod}] Pengirim: ${senderName} | WA: ${senderPhone} | Catatan: ${notes || '-'}`;
 
       // Upload proof to Supabase Storage CDN first (fast & lightweight URL)
       let finalProofUrl = proofImageBase64;
@@ -468,8 +471,21 @@ export default function Payment() {
           <div className="flex items-center gap-2">
             <img src={logoImg} alt="Buktiin" className="w-8 h-8 rounded-lg shadow-sm" />
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-on-surface leading-tight">Pembayaran Langganan</h1>
-              <p className="text-[11px] text-on-surface-variant">QRIS DANA & Aktivasi Manual Cepat</p>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-base sm:text-lg font-bold text-on-surface leading-tight">
+                  {isRenew ? `Perpanjangan Paket ${plan?.name || ''}` : `Upgrade ke Paket ${plan?.name || ''}`}
+                </h1>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${
+                  isRenew ? 'bg-status-success/15 text-status-success border border-status-success/30' : 'bg-primary/15 text-primary border border-primary/30'
+                }`}>
+                  {isRenew ? 'Perpanjangan' : 'Upgrade'}
+                </span>
+              </div>
+              <p className="text-[11px] text-on-surface-variant">
+                {isRenew
+                  ? `Perpanjang masa aktif paket Anda selama ${durationDays} hari`
+                  : `Tingkatkan kuota dan fitur toko Anda ke paket ${plan?.name || ''}`}
+              </p>
             </div>
           </div>
           <Link
