@@ -13,6 +13,7 @@ export default function MainLayout() {
   const [userEmail, setUserEmail] = useState('');
   const [userAvatar, setUserAvatar] = useState('https://lh3.googleusercontent.com/aida-public/AB6AXuBPAXSkUc_dLhkZh4Y7ZV49jywLUrYj7TB6LZXqBoPmNBPkII_yNVIa9s-hwCaZ7wYj6_H9w__QWjYUSCOKjsxFH0crqQ7tKoEFg_qD1JTYl0bX37peDAHRsBA-zf_vIDcQcUlZMUVdcrfDltV5-k5yAdBjO2bUiJKI59PLG9Yd9ARqz4B30A1-TbZldx_umceXjERgyvgcWJN4wOaVhbEFuGglnZrElAnkbDhqpBjhWwn0qTx2rvoK');
   const [planName, setPlanName] = useState('No Plan');
+  const [isSubscriptionExpired, setIsSubscriptionExpired] = useState(false);
   const [isSubAccount, setIsSubAccount] = useState(() => localStorage.getItem('isSubAccount') === 'true');
   const [deviceLimitsError, setDeviceLimitsError] = useState(false);
   const [isSystemBusy, setIsSystemBusy] = useState(false);
@@ -62,16 +63,79 @@ export default function MainLayout() {
         .from('subscriptions')
         .select('*, plans(*)')
         .eq('user_id', targetOwnerId)
-        .eq('status', 'ACTIVE')
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .order('created_at', { ascending: false });
         
       if (!subArray || subArray.length === 0) {
-        if (path !== '/plans' && !userIsSub) navigate('/plans');
+        // User baru yang belum punya langganan -> Auto inisialisasi FREE Plan 7 Hari
+        try {
+          const { data: freePlan } = await supabase
+            .from('plans')
+            .select('id, name')
+            .ilike('name', 'FREE')
+            .maybeSingle();
+
+          if (freePlan) {
+            const startDate = new Date();
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 7);
+
+            await supabase.from('subscriptions').insert({
+              user_id: targetOwnerId,
+              plan_id: freePlan.id,
+              status: 'ACTIVE',
+              start_date: startDate.toISOString(),
+              end_date: endDate.toISOString(),
+              payment_method: 'FREE_TRIAL_7D',
+              amount_paid: 0,
+              user_email: session.user.email,
+              notes: 'Auto Free Trial 7 Hari (Akun Baru)'
+            });
+
+            setPlanName('FREE Plan (7 Hari)');
+            setIsSubscriptionExpired(false);
+          } else {
+            if (path !== '/plans' && !userIsSub) navigate('/plans');
+          }
+        } catch (planErr) {
+          console.warn('Auto provision free plan in layout:', planErr);
+          if (path !== '/plans' && !userIsSub) navigate('/plans');
+        }
       } else {
-        const activeSub = subArray[0];
-        if (activeSub.plans) {
-          setPlanName(activeSub.plans.name + ' Plan');
+        const activeSub = subArray.find((s) => s.status === 'ACTIVE');
+        if (activeSub) {
+          const isExpired = activeSub.end_date && (new Date(activeSub.end_date).getTime() <= Date.now());
+          if (isExpired) {
+            setIsSubscriptionExpired(true);
+            setPlanName('EXPIRED (OFF)');
+            supabase
+              .from('subscriptions')
+              .update({ status: 'EXPIRED', updated_at: new Date().toISOString() })
+              .eq('id', activeSub.id)
+              .then();
+
+            const restrictedPaths = ['/scanner', '/unboxing', '/storage', '/subaccounts'];
+            if (restrictedPaths.some((p) => path.startsWith(p)) && !userIsSub) {
+              navigate('/plans');
+            }
+          } else {
+            setIsSubscriptionExpired(false);
+            if (activeSub.plans) {
+              setPlanName(activeSub.plans.name + ' Plan');
+            }
+          }
+        } else {
+          const pendingSub = subArray.find((s) => s.status === 'PENDING_APPROVAL');
+          if (pendingSub) {
+            setPlanName('Menunggu Approval');
+            setIsSubscriptionExpired(false);
+          } else {
+            setIsSubscriptionExpired(true);
+            setPlanName('OFF / Expired');
+            const restrictedPaths = ['/scanner', '/unboxing', '/storage', '/subaccounts'];
+            if (restrictedPaths.some((p) => path.startsWith(p)) && !userIsSub) {
+              navigate('/plans');
+            }
+          }
         }
       }
       
@@ -265,6 +329,19 @@ export default function MainLayout() {
             </Link>
           </div>
         </header>
+
+        {/* Expired Subscription Alert Banner */}
+        {isSubscriptionExpired && path !== '/plans' && (
+          <div className="bg-red-600 text-white px-3 py-1.5 text-xs font-bold flex items-center justify-between shadow z-30 shrink-0">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm">error</span>
+              <span>Masa aktif paket Anda telah berakhir (OFF). Scanner & rekaman dinonaktifkan.</span>
+            </div>
+            <Link to="/plans" className="bg-white text-red-700 px-2.5 py-0.5 rounded text-[11px] font-black hover:bg-gray-100 transition-colors">
+              Perpanjang / Upgrade Sekarang
+            </Link>
+          </div>
+        )}
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto">

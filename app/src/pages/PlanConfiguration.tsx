@@ -43,7 +43,7 @@ export default function PlanConfiguration() {
         .order('price', { ascending: true });
 
       if (error) throw error;
-      setPlans(data || []);
+      setPlans((data || []).filter((p: any) => !p.name?.startsWith('CONFIG_')));
     } catch (err) {
       console.error('Error fetching plans:', err);
     } finally {

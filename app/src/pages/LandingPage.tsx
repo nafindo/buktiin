@@ -35,7 +35,7 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchPlans = async () => {
       const { data } = await supabase.from('plans').select('*').order('price', { ascending: true });
-      if (data) setPlans(data);
+      if (data) setPlans(data.filter((p: any) => !p.name?.startsWith('CONFIG_')));
       setLoading(false);
     };
     if (!videoId) {

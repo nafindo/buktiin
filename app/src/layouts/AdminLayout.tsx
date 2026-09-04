@@ -287,6 +287,19 @@ export default function AdminLayout() {
             <span className="material-symbols-outlined text-xl">receipt_long</span>
             <span>Cluster Storage</span>
           </Link>
+
+          <Link
+            to="/admin/qris"
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              path.includes('/qris')
+                ? 'text-primary bg-primary/10 border-l-4 border-primary shadow-xs'
+                : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+            }`}
+          >
+            <span className="material-symbols-outlined text-xl text-amber-500">qr_code_2</span>
+            <span>Pengaturan QRIS</span>
+          </Link>
         </nav>
 
         {/* Sidebar Footer Buttons */}

@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import logoImg from '../assets/images/logo.png';
+import { fetchQrisSettings, DEFAULT_QRIS_SETTINGS, type QrisSettingsMap } from '../lib/qrisConfig';
+
+type PeriodKey = 'monthly' | 'quarterly' | 'semiAnnual' | 'annual';
 
 const PLAN_DEFAULT_PAYMENT_LINKS: Record<string, string> = {
   'BASIC': 'https://link.dana.id/p2mlink?params=[orderId=kxnjuyxs]',
@@ -17,7 +20,10 @@ export default function Payment() {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const planId = searchParams.get('planId');
-  const isAnnual = searchParams.get('isAnnual') === '1';
+
+  const periodParam = (searchParams.get('period') || (searchParams.get('isAnnual') === '1' ? 'annual' : 'monthly')) as PeriodKey;
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>(periodParam || 'monthly');
+  const [qrisSettings, setQrisSettings] = useState<QrisSettingsMap>(DEFAULT_QRIS_SETTINGS);
 
   const [plan, setPlan] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -49,6 +55,11 @@ export default function Payment() {
       setSenderName(session.user.user_metadata?.full_name || session.user.user_metadata?.company_name || '');
       setSenderPhone(session.user.user_metadata?.phone || '');
 
+      const [qrisData] = await Promise.all([
+        fetchQrisSettings()
+      ]);
+      if (qrisData) setQrisSettings(qrisData);
+
       if (planId) {
         const { data: planData } = await supabase
           .from('plans')
@@ -64,6 +75,7 @@ export default function Payment() {
         const { data: plans } = await supabase
           .from('plans')
           .select('*')
+          .not('name', 'like', 'CONFIG_%')
           .gt('price', 0)
           .order('price', { ascending: true })
           .limit(1);
@@ -79,8 +91,19 @@ export default function Payment() {
     loadSessionAndPlan();
   }, [planId, navigate]);
 
-  const rawPrice = plan ? (isAnnual ? plan.price * 10 : plan.price) : 0;
+  const planKey = (plan?.name || '').toUpperCase().trim();
+  const periodConfig = qrisSettings[planKey]?.[selectedPeriod] || DEFAULT_QRIS_SETTINGS[planKey]?.[selectedPeriod];
+
+  const durationDays = periodConfig?.durationDays || (selectedPeriod === 'annual' ? 365 : selectedPeriod === 'semiAnnual' ? 180 : selectedPeriod === 'quarterly' ? 90 : 30);
+  const periodLabel = periodConfig?.label || (selectedPeriod === 'annual' ? '1 Tahun (365 Hari)' : selectedPeriod === 'semiAnnual' ? '6 Bulan (180 Hari)' : selectedPeriod === 'quarterly' ? '3 Bulan (90 Hari)' : '1 Bulan (30 Hari)');
+
+  const rawPrice = periodConfig?.price !== undefined ? periodConfig.price : (plan ? (selectedPeriod === 'annual' ? plan.price * 10 : plan.price) : 0);
   const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(rawPrice);
+
+  const activePaymentLink = periodConfig?.paymentLink || PLAN_DEFAULT_PAYMENT_LINKS[planKey] || DEFAULT_DANA_LINK;
+  const customQrImage = periodConfig?.qrImageUrl;
+  const qrImageUrl = customQrImage || `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=10&data=${encodeURIComponent(activePaymentLink)}`;
+  const accountInfo = periodConfig?.accountInfo || 'DANA / QRIS - Buktiin Store';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,7 +130,6 @@ export default function Payment() {
         const maxDimension = 1200;
         let width = img.width;
         let height = img.height;
-
         if (width > height && width > maxDimension) {
           height = Math.round((height * maxDimension) / width);
           width = maxDimension;
@@ -142,7 +164,7 @@ export default function Payment() {
     try {
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() + (isAnnual ? 365 : 30));
+      endDate.setDate(endDate.getDate() + durationDays);
 
       const payload = {
         user_id: userId,
@@ -155,7 +177,7 @@ export default function Payment() {
         amount_paid: rawPrice,
         user_email: userEmail,
         user_name: senderName || userEmail,
-        notes: `Pengirim: ${senderName} | WA: ${senderPhone} | Catatan: ${notes || '-'}`
+        notes: `[DURASI: ${durationDays} HARI | PERIODE: ${selectedPeriod}] Pengirim: ${senderName} | WA: ${senderPhone} | Catatan: ${notes || '-'}`
       };
 
       const { error: insertError } = await supabase
@@ -163,7 +185,6 @@ export default function Payment() {
         .insert(payload);
 
       if (insertError) {
-        // Fallback without new columns if schema not fully migrated
         console.warn('Full insert failed, trying minimal schema:', insertError);
         const { error: fallbackError } = await supabase
           .from('subscriptions')
@@ -186,10 +207,6 @@ export default function Payment() {
       setSubmitting(false);
     }
   };
-
-  const planKey = (plan?.name || '').toUpperCase().trim();
-  const activePaymentLink = plan?.payment_link || PLAN_DEFAULT_PAYMENT_LINKS[planKey] || DEFAULT_DANA_LINK;
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&margin=10&data=${encodeURIComponent(activePaymentLink)}`;
 
   if (loading) {
     return (
@@ -297,7 +314,11 @@ export default function Payment() {
           <div className="bg-surface-container-low border border-ui-divider rounded-xl p-4 w-full mb-6 text-left space-y-2 text-xs">
             <div className="flex justify-between text-on-surface-variant">
               <span>Paket:</span>
-              <span className="font-bold text-on-surface">{plan?.name} Plan ({isAnnual ? 'Tahunan' : 'Bulanan'})</span>
+              <span className="font-bold text-on-surface">{plan?.name} Plan</span>
+            </div>
+            <div className="flex justify-between text-on-surface-variant">
+              <span>Durasi & Masa Aktif:</span>
+              <span className="font-bold text-primary">{periodLabel}</span>
             </div>
             <div className="flex justify-between text-on-surface-variant">
               <span>Nominal:</span>
@@ -345,6 +366,47 @@ export default function Payment() {
           </Link>
         </div>
 
+        {/* Duration Switcher on Payment Page */}
+        <div className="mb-6 p-2 bg-surface border border-ui-divider rounded-2xl flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto shadow-sm">
+          <button
+            type="button"
+            onClick={() => setSelectedPeriod('monthly')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              selectedPeriod === 'monthly' ? 'bg-primary text-white shadow' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            1 Bulan (30 Hari)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedPeriod('quarterly')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              selectedPeriod === 'quarterly' ? 'bg-primary text-white shadow' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            Triwulan (90 Hari)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedPeriod('semiAnnual')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              selectedPeriod === 'semiAnnual' ? 'bg-primary text-white shadow' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            6 Bulan (180 Hari)
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedPeriod('annual')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1 ${
+              selectedPeriod === 'annual' ? 'bg-primary text-white shadow' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+          >
+            <span>1 Tahun (365 Hari)</span>
+            <span className="bg-amber-400 text-amber-950 text-[9px] px-1 py-0.2 rounded font-black">HEMAT</span>
+          </button>
+        </div>
+
         {errorMsg && (
           <div className="mb-6 p-3 bg-red-50 dark:bg-red-950/40 border border-status-error/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-2">
             <span className="material-symbols-outlined text-base">error</span>
@@ -373,7 +435,11 @@ export default function Payment() {
                 />
               </div>
 
-              <p className="text-[11px] text-on-surface-variant mt-2 leading-relaxed">
+              <div className="text-[11px] font-bold text-on-surface bg-surface-container px-3 py-1 rounded-full mb-1">
+                {accountInfo}
+              </div>
+
+              <p className="text-[11px] text-on-surface-variant mt-1 leading-relaxed">
                 Scan QRIS di atas menggunakan <span className="font-bold text-on-surface">DANA, GoPay, OVO, ShopeePay, BCA Mobile, Livin Mandiri, BRImo</span>, atau aplikasi perbankan apa saja.
               </p>
 
@@ -421,11 +487,11 @@ export default function Payment() {
               <div className="space-y-2 text-xs border-b border-ui-divider pb-3">
                 <div className="flex justify-between text-on-surface-variant">
                   <span>Paket Langganan</span>
-                  <span className="font-bold text-on-surface">{plan?.name} Plan ({isAnnual ? 'Tahunan' : 'Bulanan'})</span>
+                  <span className="font-bold text-on-surface">{plan?.name} Plan</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
-                  <span>Masa Berlaku</span>
-                  <span className="font-bold text-on-surface">{isAnnual ? '12 Bulan (365 Hari)' : '1 Bulan (30 Hari)'}</span>
+                  <span>Durasi & Masa Berlaku</span>
+                  <span className="font-bold text-primary">{periodLabel}</span>
                 </div>
                 <div className="flex justify-between text-on-surface-variant">
                   <span>Akun Terdaftar</span>

@@ -427,12 +427,20 @@ export default function Dashboard() {
       )}
 
       {/* Subscription Expired Banner */}
-      {subscriptionInfo.isExpired && subscriptionInfo.activeSub && subscriptionInfo.activeSub.plans?.name !== 'FREE' && (
+      {subscriptionInfo.isExpired && subscriptionInfo.activeSub && (
         <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-red-500/10 border border-red-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-[fade-in_0.2s_ease-out]">
           <div className="flex items-center gap-2 text-red-800 dark:text-red-200 text-xs">
             <span className="material-symbols-outlined text-base text-red-600">error</span>
             <span>
-              <strong>Masa Langganan Telah Habis:</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda telah berakhir. Segera perpanjang paket untuk melanjutkan akses fitur multi-staf & kuota rekaman.
+              {subscriptionInfo.activeSub.plans?.name === 'FREE' ? (
+                <>
+                  <strong>Masa Uji Coba Gratis Berakhir (OFF):</strong> Masa aktif 7 hari Free Plan Anda telah habis. Upgrade ke paket berbayar untuk mengaktifkan kembali scanner & rekaman gudang.
+                </>
+              ) : (
+                <>
+                  <strong>Masa Langganan Telah Habis (OFF):</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda telah berakhir. Segera perpanjang paket untuk melanjutkan akses fitur & kuota rekaman.
+                </>
+              )}
             </span>
           </div>
           <Link
@@ -440,18 +448,26 @@ export default function Dashboard() {
             className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-sm">payment</span>
-            Perpanjang Paket
+            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? 'Upgrade Paket' : 'Perpanjang Paket'}
           </Link>
         </div>
       )}
 
       {/* Subscription Renewal Warning Banner (<= 7 Days) */}
-      {!subscriptionInfo.isExpired && subscriptionInfo.daysRemaining !== null && subscriptionInfo.daysRemaining <= 7 && subscriptionInfo.activeSub?.plans?.name !== 'FREE' && (
+      {!subscriptionInfo.isExpired && subscriptionInfo.daysRemaining !== null && subscriptionInfo.daysRemaining <= 7 && subscriptionInfo.activeSub && (
         <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm animate-[fade-in_0.2s_ease-out]">
           <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200 text-xs">
             <span className="material-symbols-outlined text-base text-amber-600">warning</span>
             <span>
-              <strong>Masa Langganan Segera Berakhir:</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda akan berakhir dalam <strong className="text-primary">{subscriptionInfo.daysRemaining} hari lagi</strong> ({new Date(subscriptionInfo.activeSub.end_date).toLocaleDateString('id-ID')}). Segera lakukan perpanjangan.
+              {subscriptionInfo.activeSub.plans?.name === 'FREE' ? (
+                <>
+                  <strong>Masa Uji Coba Gratis:</strong> Paket Free 7 Hari Anda tersisa <strong className="text-primary">{subscriptionInfo.daysRemaining} hari lagi</strong> ({new Date(subscriptionInfo.activeSub.end_date).toLocaleDateString('id-ID')}). Upgrade sekarang untuk menikmati fitur penuh.
+                </>
+              ) : (
+                <>
+                  <strong>Masa Langganan Segera Berakhir:</strong> Paket <strong>{subscriptionInfo.activeSub.plans?.name}</strong> Anda akan berakhir dalam <strong className="text-primary">{subscriptionInfo.daysRemaining} hari lagi</strong> ({new Date(subscriptionInfo.activeSub.end_date).toLocaleDateString('id-ID')}). Segera lakukan perpanjangan.
+                </>
+              )}
             </span>
           </div>
           <Link
@@ -459,7 +475,7 @@ export default function Dashboard() {
             className="bg-primary hover:bg-primary/90 text-white font-bold px-3 py-1.5 rounded-lg text-xs self-start sm:self-auto transition-colors whitespace-nowrap shadow-sm flex items-center gap-1"
           >
             <span className="material-symbols-outlined text-sm">autorenew</span>
-            Perpanjang Sekarang
+            {subscriptionInfo.activeSub.plans?.name === 'FREE' ? 'Upgrade Paket' : 'Perpanjang Sekarang'}
           </Link>
         </div>
       )}

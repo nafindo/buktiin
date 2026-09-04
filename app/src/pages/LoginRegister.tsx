@@ -73,6 +73,36 @@ export default function LoginRegister() {
         if (error) throw error;
         if (authData?.user) {
           await registerDeviceSession(authData.user.id, getDeviceId());
+
+          // Inisialisasi FREE Plan dengan masa aktif 7 hari
+          try {
+            const { data: freePlan } = await supabase
+              .from('plans')
+              .select('id, name')
+              .ilike('name', 'FREE')
+              .maybeSingle();
+
+            if (freePlan) {
+              const startDate = new Date();
+              const endDate = new Date();
+              endDate.setDate(endDate.getDate() + 7);
+
+              await supabase.from('subscriptions').insert({
+                user_id: authData.user.id,
+                plan_id: freePlan.id,
+                status: 'ACTIVE',
+                start_date: startDate.toISOString(),
+                end_date: endDate.toISOString(),
+                payment_method: 'FREE_TRIAL_7D',
+                amount_paid: 0,
+                user_email: email,
+                user_name: fullName || email,
+                notes: 'Free Trial 7 Hari (Pendaftaran Akun Baru)'
+              });
+            }
+          } catch (planErr) {
+            console.warn('Auto create free 7d plan error:', planErr);
+          }
         }
       }
       navigate('/dashboard');

@@ -105,6 +105,7 @@ export default function UserManagement() {
   const getExpiryInfo = (user: any) => {
     const sub = getUserSubscription(user);
     const planName = (sub?.plans?.name || user.plan || '').toUpperCase();
+    const isFree = planName === 'FREE';
 
     if (sub?.status === 'PENDING_APPROVAL') {
       return {
@@ -113,19 +114,20 @@ export default function UserManagement() {
         badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-400 font-bold animate-pulse',
         sub,
         isPending: true,
+        isFree,
         daysLeft: null
       };
     }
 
     const endDateStr = sub?.end_date || user.end_date || user.subscription_end;
 
-    if (!endDateStr || planName === 'FREE' || planName === 'NO PLAN') {
+    if (!endDateStr) {
       return {
-        label: 'Permanen / Free',
-        dateStr: 'Selamanya',
+        label: 'Belum Aktif',
+        dateStr: '-',
         badgeClass: 'bg-surface-container text-on-surface-variant border border-ui-divider',
         sub,
-        isFree: true,
+        isFree,
         daysLeft: null
       };
     }
@@ -141,13 +143,14 @@ export default function UserManagement() {
       year: 'numeric'
     });
 
-    if (diffDays < 0) {
+    if (diffDays <= 0) {
       return {
-        label: 'Kedaluwarsa',
+        label: 'Kedaluwarsa (OFF)',
         dateStr: formattedDate,
         badgeClass: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300 font-bold',
         sub,
         isExpired: true,
+        isFree,
         daysLeft: diffDays
       };
     } else if (diffDays <= 7) {
@@ -157,6 +160,7 @@ export default function UserManagement() {
         badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 font-bold',
         sub,
         isWarning: true,
+        isFree,
         daysLeft: diffDays
       };
     } else {
@@ -166,6 +170,7 @@ export default function UserManagement() {
         badgeClass: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300 border border-green-300 font-bold',
         sub,
         isActive: true,
+        isFree,
         daysLeft: diffDays
       };
     }
@@ -184,12 +189,53 @@ export default function UserManagement() {
     setActionLoading(true);
     const pin = localStorage.getItem('admin_pin');
     try {
-      const startDate = new Date();
-      const endDate = new Date();
-      const isAnnual = sub.amount_paid && sub.plans?.price && sub.amount_paid >= sub.plans.price * 5;
-      endDate.setDate(endDate.getDate() + (isAnnual ? 365 : 30));
+      // 1. Tentukan durasi paket (hari)
+      let durationDays = 30; // Standar 30 hari
+      if (sub.notes && sub.notes.includes('[DURASI:')) {
+        const match = sub.notes.match(/\[DURASI:\s*(\d+)\s*HARI/i);
+        if (match) durationDays = parseInt(match[1], 10);
+      } else if (sub.notes && sub.notes.toLowerCase().includes('triwulan')) {
+        durationDays = 90;
+      } else if (sub.notes && (sub.notes.toLowerCase().includes('semester') || sub.notes.toLowerCase().includes('6 bulan') || sub.notes.toLowerCase().includes('semiannual'))) {
+        durationDays = 180;
+      } else if (sub.is_annual || (sub.amount_paid && sub.plans?.price && sub.amount_paid >= sub.plans.price * 5)) {
+        durationDays = 365;
+      }
 
-      // 1. Update subscription status
+      const targetUserId = sub.user_id || targetUser?.id;
+
+      // 2. Cek apakah pengguna sedang memiliki langganan aktif (Perpanjangan / Renewal)
+      // "untuk perpanjangan masa aktif akan otomatis bertambah setelah masa aktif sebelumnya berakhir"
+      let baseDate = new Date();
+      if (targetUserId) {
+        const { data: existingActive } = await supabase
+          .from('subscriptions')
+          .select('id, end_date')
+          .eq('user_id', targetUserId)
+          .eq('status', 'ACTIVE')
+          .gt('end_date', new Date().toISOString())
+          .neq('id', sub.id)
+          .order('end_date', { ascending: false })
+          .limit(1);
+
+        if (existingActive && existingActive.length > 0 && existingActive[0].end_date) {
+          const prevEnd = new Date(existingActive[0].end_date);
+          if (prevEnd.getTime() > Date.now()) {
+            baseDate = prevEnd; // Akumulasi bertambah dari tanggal akhir sebelumnya!
+          }
+
+          // Tandai sub lama menjadi 'REPLACED'
+          await supabase
+            .from('subscriptions')
+            .update({ status: 'REPLACED', updated_at: new Date().toISOString() })
+            .eq('id', existingActive[0].id);
+        }
+      }
+
+      const startDate = new Date();
+      const endDate = new Date(baseDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
+      // 3. Update subscription status menjadi ACTIVE
       const { error: subError } = await supabase
         .from('subscriptions')
         .update({
@@ -202,8 +248,7 @@ export default function UserManagement() {
 
       if (subError) throw subError;
 
-      // 2. Sync user plan via RPC if pin is present
-      const targetUserId = sub.user_id || targetUser?.id;
+      // 4. Sync user plan via RPC if pin is present
       if (pin && targetUserId && sub.plans?.name) {
         try {
           await supabase.rpc('admin_update_user_plan', {
@@ -216,7 +261,7 @@ export default function UserManagement() {
         }
       }
 
-      alert(`Pembayaran berhasil disetujui! Paket ${planName} aktif s/d ${endDate.toLocaleDateString('id-ID')}.`);
+      alert(`Pembayaran berhasil disetujui! Paket ${planName} aktif selama ${durationDays} hari s/d ${endDate.toLocaleDateString('id-ID')}.`);
       setSelectedProofModal(null);
       fetchAllData();
     } catch (err: any) {

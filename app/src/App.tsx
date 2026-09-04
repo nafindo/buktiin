@@ -32,6 +32,7 @@ import UserManagement from './pages/UserManagement';
 import PlanConfiguration from './pages/PlanConfiguration';
 import ClusterStorageManagement from './pages/ClusterStorageManagement';
 import AdminSubscriptions from './pages/AdminSubscriptions';
+import AdminQrisSettings from './pages/AdminQrisSettings';
 
 function RootAuthRoute() {
   const [loading, setLoading] = useState(true);
@@ -222,6 +223,7 @@ function App() {
             <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
             <Route path="/admin/plans" element={<PlanConfiguration />} />
             <Route path="/admin/storage" element={<ClusterStorageManagement />} />
+            <Route path="/admin/qris" element={<AdminQrisSettings />} />
           </Route>
         )}
 

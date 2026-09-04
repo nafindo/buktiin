@@ -48,11 +48,49 @@ export default function AdminSubscriptions() {
 
     setActionLoading(sub.id);
     try {
+      // 1. Tentukan durasi paket (hari)
+      let durationDays = 30; // Default bulanan
+      if (sub.notes && sub.notes.includes('[DURASI:')) {
+        const match = sub.notes.match(/\[DURASI:\s*(\d+)\s*HARI/i);
+        if (match) durationDays = parseInt(match[1], 10);
+      } else if (sub.notes && sub.notes.toLowerCase().includes('triwulan')) {
+        durationDays = 90;
+      } else if (sub.notes && (sub.notes.toLowerCase().includes('semester') || sub.notes.toLowerCase().includes('6 bulan') || sub.notes.toLowerCase().includes('semiannual'))) {
+        durationDays = 180;
+      } else if (sub.is_annual || (sub.amount_paid && sub.plans?.price && sub.amount_paid >= sub.plans.price * 5)) {
+        durationDays = 365;
+      }
+
+      // 2. Cek apakah ada langganan aktif sebelumnya (Perpanjangan / Renewal)
+      // "untuk perpanjangan masa aktif akan otomatis bertambah setelah masa aktif sebelumnya berakhir"
+      let baseDate = new Date();
+      if (sub.user_id) {
+        const { data: existingActive } = await supabase
+          .from('subscriptions')
+          .select('id, end_date')
+          .eq('user_id', sub.user_id)
+          .eq('status', 'ACTIVE')
+          .gt('end_date', new Date().toISOString())
+          .neq('id', sub.id)
+          .order('end_date', { ascending: false })
+          .limit(1);
+
+        if (existingActive && existingActive.length > 0 && existingActive[0].end_date) {
+          const prevEnd = new Date(existingActive[0].end_date);
+          if (prevEnd.getTime() > Date.now()) {
+            baseDate = prevEnd; // Bertambah dari tanggal berakhir sebelumnya!
+          }
+
+          // Tandai sub lama menjadi 'REPLACED' agar hanya 1 langganan yang aktif
+          await supabase
+            .from('subscriptions')
+            .update({ status: 'REPLACED', updated_at: new Date().toISOString() })
+            .eq('id', existingActive[0].id);
+        }
+      }
+
       const startDate = new Date();
-      const endDate = new Date();
-      // Default 30 days unless annual
-      const isAnnual = sub.amount_paid && sub.plans?.price && sub.amount_paid >= (sub.plans.price * 5);
-      endDate.setDate(endDate.getDate() + (isAnnual ? 365 : 30));
+      const endDate = new Date(baseDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
       const { error } = await supabase
         .from('subscriptions')
@@ -80,7 +118,7 @@ export default function AdminSubscriptions() {
         }
       }
 
-      alert(`Paket ${sub.plans?.name || 'Plan'} berhasil disetujui & diaktifkan!`);
+      alert(`Paket ${sub.plans?.name || 'Plan'} berhasil disetujui! Aktif selama ${durationDays} hari s/d ${endDate.toLocaleDateString('id-ID')}.`);
       fetchSubscriptions();
     } catch (err: any) {
       console.error('Approve subscription error:', err);

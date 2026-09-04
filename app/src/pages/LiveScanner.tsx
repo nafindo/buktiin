@@ -281,6 +281,15 @@ export default function LiveScanner() {
           .eq('status', 'ACTIVE')
           .single();
 
+        if (!userSub || (userSub.end_date && new Date(userSub.end_date).getTime() < Date.now())) {
+          setLimitPopup({
+            show: true,
+            title: 'Masa Aktif Akun Berakhir (OFF)',
+            message: 'Masa aktif paket langganan Anda telah habis. Silakan perpanjang atau upgrade paket di menu Paket Langganan untuk melanjutkan perekaman.'
+          });
+          return;
+        }
+
         if (userSub && userSub.plans) {
           const maxVideos = userSub.plans.max_videos || 0;
           if (maxVideos > 0) {

@@ -26,8 +26,13 @@ const planDevices: Record<string, string> = {
   'ENTERPRISE': 'Custom Multi-Akun'
 };
 
+import { fetchQrisSettings, DEFAULT_QRIS_SETTINGS, type QrisSettingsMap } from '../lib/qrisConfig';
+
+type PeriodKey = 'monthly' | 'quarterly' | 'semiAnnual' | 'annual';
+
 export default function SelectPlan() {
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>('monthly');
+  const [qrisSettings, setQrisSettings] = useState<QrisSettingsMap>(DEFAULT_QRIS_SETTINGS);
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -36,7 +41,7 @@ export default function SelectPlan() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchPlansAndConfig = async () => {
       setIsSubAccount(localStorage.getItem('isSubAccount') === 'true');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -45,36 +50,66 @@ export default function SelectPlan() {
       }
       setUserId(session.user.id);
       
-      const { data } = await supabase.from('plans').select('*').order('price', { ascending: true });
-      // Show all plans including FREE at the front, and ENTERPRISE at the back.
-      if (data) setPlans(data);
+      const [plansRes, qrisRes] = await Promise.all([
+        supabase.from('plans').select('*').order('price', { ascending: true }),
+        fetchQrisSettings()
+      ]);
+
+      if (plansRes.data) {
+        // Filter out CONFIG_ row
+        setPlans(plansRes.data.filter((p: any) => !p.name?.startsWith('CONFIG_')));
+      }
+      if (qrisRes) {
+        setQrisSettings(qrisRes);
+      }
       setLoading(false);
     };
-    fetchPlans();
+    fetchPlansAndConfig();
   }, [navigate]);
 
-  const toggleBilling = () => {
-    setIsAnnual(!isAnnual);
+  const getPlanPrice = (plan: any): number => {
+    if (plan.name === 'ENTERPRISE' || plan.price === 0) return 0;
+    const planKey = plan.name.toUpperCase();
+    const configuredPrice = qrisSettings[planKey]?.[selectedPeriod]?.price;
+    if (configuredPrice !== undefined && configuredPrice > 0) return configuredPrice;
+
+    // Fallbacks
+    if (selectedPeriod === 'monthly') return plan.price;
+    if (selectedPeriod === 'quarterly') return Math.round(plan.price * 2.8);
+    if (selectedPeriod === 'semiAnnual') return Math.round(plan.price * 5.4);
+    if (selectedPeriod === 'annual') return plan.price * 10;
+    return plan.price;
+  };
+
+  const getPeriodSuffix = (): string => {
+    if (selectedPeriod === 'monthly') return '/bln (30 hr)';
+    if (selectedPeriod === 'quarterly') return '/3 bln (90 hr)';
+    if (selectedPeriod === 'semiAnnual') return '/6 bln (180 hr)';
+    if (selectedPeriod === 'annual') return '/thn (365 hr)';
+    return '/bln';
   };
 
   const handlePay = async (plan: any) => {
     if (paying) return;
     setPaying(true);
 
-    // Free plan: direct activation
-    if (plan.price === 0) {
+    // Free plan: direct activation (7 Days Trial)
+    if (plan.price === 0 || plan.name === 'FREE') {
       try {
         const startDate = new Date();
         const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 30);
+        endDate.setDate(endDate.getDate() + 7); // Exactly 7 Days
         await supabase.from('subscriptions').insert({
           user_id: userId,
           plan_id: plan.id,
           status: 'ACTIVE',
           start_date: startDate.toISOString(),
-          end_date: endDate.toISOString()
+          end_date: endDate.toISOString(),
+          payment_method: 'FREE_TRIAL_7D',
+          amount_paid: 0,
+          notes: 'Free Trial 7 Hari (Aktivasi Mandiri)'
         });
-        alert(`Paket ${plan.name} berhasil diaktifkan!`);
+        alert(`Paket ${plan.name} berhasil diaktifkan untuk masa aktif 7 hari!`);
         navigate('/dashboard');
       } catch (err: any) {
         console.error('Failed to activate plan:', err);
@@ -87,7 +122,7 @@ export default function SelectPlan() {
 
     // Paid Plan: Navigate to QRIS DANA payment & upload proof page
     setPaying(false);
-    navigate(`/payment?planId=${plan.id}&isAnnual=${isAnnual ? '1' : '0'}`);
+    navigate(`/payment?planId=${plan.id}&period=${selectedPeriod}`);
   };
 
   return (
@@ -102,18 +137,53 @@ export default function SelectPlan() {
             Tingkatkan keamanan gudang dan kapasitas kuota rekaman video toko Anda.
           </p>
           
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-2 mt-1">
-            <span className={`font-label-caps text-xs ${!isAnnual ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`} id="monthly-label">Bulanan</span>
-            <button 
-              className="relative w-11 h-6 bg-surface-container-highest rounded-full p-0.5 focus:outline-none transition-colors" 
-              onClick={toggleBilling}
+          {/* 4-Period Duration Tabs Selector */}
+          <div className="flex items-center justify-center gap-1 sm:gap-2 mt-2 max-w-xl mx-auto p-1 bg-surface-container rounded-2xl border border-ui-divider overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => setSelectedPeriod('monthly')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                selectedPeriod === 'monthly'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
             >
-              <div className={`w-5 h-5 bg-primary rounded-full transition-transform transform ${isAnnual ? 'translate-x-5' : 'translate-x-0'}`}></div>
+              1 Bulan (30 Hari)
             </button>
-            <span className={`font-label-caps text-xs ${isAnnual ? 'text-on-surface font-bold' : 'text-on-surface-variant'}`} id="annual-label">
-              Tahunan <span className="bg-primary-container text-on-primary-container text-[9px] px-1.5 py-0.5 rounded-full ml-0.5 font-bold">HEMAT 17%</span>
-            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedPeriod('quarterly')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                selectedPeriod === 'quarterly'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Triwulan (90 Hari)
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedPeriod('semiAnnual')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+                selectedPeriod === 'semiAnnual'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              6 Bulan (180 Hari)
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedPeriod('annual')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1 ${
+                selectedPeriod === 'annual'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              <span>Tahunan (365 Hari)</span>
+              <span className="bg-amber-400 text-amber-950 text-[9px] px-1 py-0.2 rounded font-black">HEMAT</span>
+            </button>
           </div>
         </div>
 
@@ -137,10 +207,10 @@ export default function SelectPlan() {
                       <span className="text-xs font-bold">Rp</span>
                     )}
                     <span className="text-lg sm:text-xl font-extrabold">
-                      {plan.name === 'ENTERPRISE' ? 'Custom' : (isAnnual ? plan.price * 10 : plan.price).toLocaleString('id-ID')}
+                      {plan.name === 'ENTERPRISE' ? 'Custom' : getPlanPrice(plan).toLocaleString('id-ID')}
                     </span>
                     {plan.name !== 'ENTERPRISE' && (
-                      <span className="text-on-surface-variant text-[10px]">/{isAnnual ? 'thn' : 'bln'}</span>
+                      <span className="text-on-surface-variant text-[10px]">{getPeriodSuffix()}</span>
                     )}
                   </div>
                 </div>
@@ -157,6 +227,22 @@ export default function SelectPlan() {
                     <li className="flex items-center gap-1.5 text-xs">
                       <span className="material-symbols-outlined text-status-success text-sm">devices</span>
                       <span>{planDevices[plan.name]}</span>
+                    </li>
+                    <li className="flex items-center gap-1.5 text-xs">
+                      <span className="material-symbols-outlined text-primary text-sm">schedule</span>
+                      <span className="font-medium">
+                        {plan.name === 'FREE' 
+                          ? 'Masa Aktif 7 Hari (Free Trial)' 
+                          : plan.name === 'ENTERPRISE'
+                          ? 'Masa Aktif Sesuai Kebutuhan'
+                          : selectedPeriod === 'annual'
+                          ? 'Masa Aktif 1 Tahun (365 Hari)'
+                          : selectedPeriod === 'semiAnnual'
+                          ? 'Masa Aktif 6 Bulan (180 Hari)'
+                          : selectedPeriod === 'quarterly'
+                          ? 'Masa Aktif 3 Bulan (90 Hari)'
+                          : 'Masa Aktif 1 Bulan (30 Hari)'}
+                      </span>
                     </li>
                   </ul>
                 </div>
