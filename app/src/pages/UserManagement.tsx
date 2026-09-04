@@ -109,10 +109,11 @@ export default function UserManagement() {
     const planName = (sub?.plans?.name || user.plan || '').toUpperCase();
     const isFree = planName === 'FREE';
 
-    if (sub?.status === 'PENDING_APPROVAL') {
+    const metaPayment = user.raw_user_meta_data?.pending_payment || user.user_metadata?.pending_payment;
+    if (sub?.status === 'PENDING_APPROVAL' || metaPayment) {
       return {
         label: 'Menunggu Approval',
-        dateStr: sub.created_at ? new Date(sub.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-',
+        dateStr: (sub?.created_at || metaPayment?.submitted_at) ? new Date(sub?.created_at || metaPayment?.submitted_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-',
         badgeClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-400 font-bold animate-pulse',
         sub,
         isPending: true,
@@ -751,38 +752,61 @@ export default function UserManagement() {
 
                         {/* Bukti Pembayaran / Approval Column */}
                         <td className="py-3 px-4">
-                          {sub?.payment_proof_url ? (
-                            <div className="flex items-center gap-2">
-                              <img
-                                src={sub.payment_proof_url}
-                                alt="Bukti"
-                                onClick={() => setSelectedProofModal(sub)}
-                                className="w-8 h-8 rounded-lg object-cover border border-ui-divider cursor-pointer hover:scale-105 transition-transform"
-                                title="Klik untuk lihat bukti transfer"
-                              />
-                              {isPending ? (
+                          {(() => {
+                            const metaPayment = user.raw_user_meta_data?.pending_payment || user.user_metadata?.pending_payment;
+                            const proofUrl = sub?.payment_proof_url || metaPayment?.payment_proof_url;
+                            const modalData = {
+                              ...sub,
+                              id: sub?.id,
+                              user_id: user.id,
+                              user_email: sub?.user_email || user.email,
+                              user_name: sub?.user_name || user.name || metaPayment?.sender_name,
+                              payment_proof_url: proofUrl,
+                              amount_paid: sub?.amount_paid || metaPayment?.amount_paid,
+                              notes: sub?.notes || metaPayment?.notes,
+                              plans: sub?.plans || { name: metaPayment?.plan_name || user.plan },
+                              status: sub?.status || (metaPayment ? 'PENDING_APPROVAL' : 'ACTIVE')
+                            };
+
+                            if (proofUrl) {
+                              return (
+                                <div className="flex items-center gap-2">
+                                  <img
+                                    src={proofUrl}
+                                    alt="Bukti"
+                                    onClick={() => setSelectedProofModal(modalData)}
+                                    className="w-8 h-8 rounded-lg object-cover border border-ui-divider cursor-pointer hover:scale-105 transition-transform"
+                                    title="Klik untuk lihat bukti transfer"
+                                  />
+                                  {isPending ? (
+                                    <button
+                                      onClick={() => setSelectedProofModal(modalData)}
+                                      className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-sm transition-all animate-pulse"
+                                    >
+                                      <span className="material-symbols-outlined text-xs">verified</span>
+                                      Approve
+                                    </button>
+                                  ) : (
+                                    <span className="text-[10px] text-on-surface-variant">Terverifikasi</span>
+                                  )}
+                                </div>
+                              );
+                            }
+
+                            if (isPending) {
+                              return (
                                 <button
-                                  onClick={() => setSelectedProofModal(sub)}
-                                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-sm transition-all animate-pulse"
+                                  onClick={() => setSelectedProofModal(modalData)}
+                                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-sm animate-pulse"
                                 >
                                   <span className="material-symbols-outlined text-xs">verified</span>
                                   Approve
                                 </button>
-                              ) : (
-                                <span className="text-[10px] text-on-surface-variant">Terverifikasi</span>
-                              )}
-                            </div>
-                          ) : isPending ? (
-                            <button
-                              onClick={() => setSelectedProofModal(sub)}
-                              className="bg-amber-500 hover:bg-amber-600 text-white font-bold px-2 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow-sm"
-                            >
-                              <span className="material-symbols-outlined text-xs">verified</span>
-                              Approve
-                            </button>
-                          ) : (
-                            <span className="text-[10px] text-on-surface-variant">-</span>
-                          )}
+                              );
+                            }
+
+                            return <span className="text-[10px] text-on-surface-variant">-</span>;
+                          })()}
                         </td>
 
                         {/* Actions */}
