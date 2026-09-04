@@ -14,9 +14,16 @@
       if (typeof require !== 'undefined') {
         window.electronApi = require('electron');
       }
+      try {
+        if (localStorage.getItem('is_admin_mode') === 'true') {
+          if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#/login' || window.location.hash === '#/dashboard') {
+            window.location.hash = '#/admin/dashboard';
+          }
+        }
+      } catch (e) {}
     </script>
-    <script type="module" crossorigin src="./assets/index-BnBRfhAW.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Be5yZIfk.css">
+    <script type="module" crossorigin src="./assets/index-BnsqOpz4.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CDbR4T_F.css">
   </head>
   <body>
     <div id="root"></div>
