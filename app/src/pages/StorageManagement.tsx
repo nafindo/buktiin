@@ -18,7 +18,7 @@ export default function StorageManagement() {
       try {
         const { data: subArray } = await supabase
           .from('subscriptions')
-          .select('status, plans ( name, storagelimit )')
+          .select('*, plans ( name, storagelimit )')
           .eq('user_id', user.id)
           .eq('status', 'ACTIVE')
           .order('created_at', { ascending: false })
@@ -29,7 +29,10 @@ export default function StorageManagement() {
           const planData = Array.isArray(subData.plans) ? subData.plans[0] : subData.plans;
           if (planData) {
             setPlanName(planData.name);
-            setMaxStorageMB(planData.storagelimit);
+            const subExtraGB = Number(subData.extra_storage_gb || 0);
+            const metaExtraGB = Number(user.user_metadata?.extra_storage_gb || 0);
+            const extraMB = Math.max(subExtraGB, metaExtraGB) * 1024;
+            setMaxStorageMB((planData.storagelimit || 5000) + extraMB);
           }
         }
       } catch (err) {
@@ -103,14 +106,31 @@ export default function StorageManagement() {
             </div>
             
             <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-              <p className="font-body-md text-[11px] text-on-surface-variant max-w-md">Upgrade paket untuk menambah kapasitas kuota penyimpanan video cloud Anda.</p>
-              <button 
-                onClick={() => navigate('/plans')}
-                className="w-full sm:w-auto px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-1.5"
-              >
-                <span className="material-symbols-outlined text-sm">upgrade</span>
-                UPGRADE PAKET
-              </button>
+              <p className="font-body-md text-[11px] text-on-surface-variant max-w-md">
+                {planName !== 'FREE' ? (
+                  <>Butuh kuota lebih besar? Anda bisa menambah Add-on Storage atau upgrade paket langganan toko Anda.</>
+                ) : (
+                  <>Upgrade paket untuk menambah kapasitas kuota penyimpanan video cloud Anda.</>
+                )}
+              </p>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {planName !== 'FREE' && (
+                  <button 
+                    onClick={() => navigate('/plans')}
+                    className="flex-1 sm:flex-none px-3 py-1.5 border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary/10 transition-all flex items-center justify-center gap-1"
+                  >
+                    <span className="material-symbols-outlined text-sm">extension</span>
+                    TAMBAH ADD-ON
+                  </button>
+                )}
+                <button 
+                  onClick={() => navigate('/plans')}
+                  className="flex-1 sm:flex-none px-4 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:opacity-90 transition-all flex items-center justify-center gap-1.5"
+                >
+                  <span className="material-symbols-outlined text-sm">upgrade</span>
+                  UPGRADE PAKET
+                </button>
+              </div>
             </div>
           </div>
 

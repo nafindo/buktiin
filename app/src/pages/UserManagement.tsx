@@ -25,6 +25,8 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [selectedPlan, setSelectedPlan] = useState('STARTER');
   const [editExpiryDate, setEditExpiryDate] = useState('');
+  const [editExtraStorage, setEditExtraStorage] = useState(0);
+  const [editExtraAccounts, setEditExtraAccounts] = useState(0);
   const [actionLoading, setActionLoading] = useState(false);
 
   const fetchAllData = async () => {
@@ -321,7 +323,7 @@ export default function UserManagement() {
     }
   };
 
-  // Update Plan & Expiry Date Manually
+  // Update Plan, Expiry Date & Add-ons Manually
   const handleUpdatePlan = async () => {
     if (!selectedUser) return;
     setActionLoading(true);
@@ -335,45 +337,47 @@ export default function UserManagement() {
       });
       if (rpcError) throw rpcError;
 
-      // 2. If expiry date specified, update subscription record
-      if (editExpiryDate) {
-        const { data: targetPlan } = await supabase
-          .from('plans')
-          .select('id')
-          .eq('name', selectedPlan)
-          .single();
+      // 2. If expiry date or add-on specified, update subscription record
+      const { data: targetPlan } = await supabase
+        .from('plans')
+        .select('id')
+        .eq('name', selectedPlan)
+        .single();
 
-        const sub = getUserSubscription(selectedUser);
-        const endDateIso = new Date(editExpiryDate).toISOString();
+      const sub = getUserSubscription(selectedUser);
+      const endDateIso = editExpiryDate ? new Date(editExpiryDate).toISOString() : new Date(Date.now() + 30 * 86400000).toISOString();
 
-        if (sub) {
-          await supabase
-            .from('subscriptions')
-            .update({
-              plan_id: targetPlan?.id || sub.plan_id,
-              status: 'ACTIVE',
-              end_date: endDateIso,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', sub.id);
-        } else if (targetPlan) {
-          await supabase
-            .from('subscriptions')
-            .insert({
-              user_id: selectedUser.id,
-              plan_id: targetPlan.id,
-              status: 'ACTIVE',
-              start_date: new Date().toISOString(),
-              end_date: endDateIso,
-              user_email: selectedUser.email,
-              user_name: selectedUser.name
-            });
-        }
+      if (sub) {
+        await supabase
+          .from('subscriptions')
+          .update({
+            plan_id: targetPlan?.id || sub.plan_id,
+            status: 'ACTIVE',
+            end_date: endDateIso,
+            extra_storage_gb: Number(editExtraStorage) || 0,
+            extra_accounts: Number(editExtraAccounts) || 0,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', sub.id);
+      } else if (targetPlan) {
+        await supabase
+          .from('subscriptions')
+          .insert({
+            user_id: selectedUser.id,
+            plan_id: targetPlan.id,
+            status: 'ACTIVE',
+            start_date: new Date().toISOString(),
+            end_date: endDateIso,
+            extra_storage_gb: Number(editExtraStorage) || 0,
+            extra_accounts: Number(editExtraAccounts) || 0,
+            user_email: selectedUser.email,
+            user_name: selectedUser.name
+          });
       }
 
       setEditModalOpen(false);
       fetchAllData();
-      alert('Paket dan masa berlaku berhasil diperbarui!');
+      alert('Paket, masa berlaku, dan kuota add-on berhasil diperbarui!');
     } catch (err) {
       console.error(err);
       alert('Gagal memperbarui paket.');
@@ -392,6 +396,9 @@ export default function UserManagement() {
     setSelectedPlan(user.plan === 'No Plan' ? 'FREE' : user.plan.toUpperCase());
 
     const sub = getUserSubscription(user);
+    setEditExtraStorage(Number(sub?.extra_storage_gb || user.raw_user_meta_data?.extra_storage_gb || 0));
+    setEditExtraAccounts(Number(sub?.extra_accounts || user.raw_user_meta_data?.extra_accounts || 0));
+
     if (sub?.end_date) {
       setEditExpiryDate(new Date(sub.end_date).toISOString().split('T')[0]);
     } else {
@@ -693,11 +700,27 @@ export default function UserManagement() {
                           {user.email}
                         </td>
 
-                        {/* Plan */}
+                        {/* Plan & Add-ons */}
                         <td className="py-3 px-4">
-                          <span className="px-2 py-0.5 border border-ui-divider rounded-md font-bold text-[10px] bg-surface-container uppercase">
-                            {user.plan || 'FREE'}
-                          </span>
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className="px-2 py-0.5 border border-ui-divider rounded-md font-bold text-[10px] bg-surface-container uppercase">
+                              {user.plan || 'FREE'}
+                            </span>
+                            {((sub?.extra_storage_gb && sub.extra_storage_gb > 0) || (sub?.extra_accounts && sub.extra_accounts > 0)) && (
+                              <div className="flex flex-wrap gap-1">
+                                {sub.extra_storage_gb > 0 && (
+                                  <span className="text-[9px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.2 rounded font-bold">
+                                    +{sub.extra_storage_gb}GB
+                                  </span>
+                                )}
+                                {sub.extra_accounts > 0 && (
+                                  <span className="text-[9px] bg-secondary/10 text-secondary border border-secondary/20 px-1.5 py-0.2 rounded font-bold">
+                                    +{sub.extra_accounts} Staf
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </td>
 
                         {/* Tanggal Expired Langganan Pelanggan */}
@@ -1188,6 +1211,78 @@ export default function UserManagement() {
                 >
                   +1 Tahun
                 </button>
+              </div>
+            </div>
+
+            {/* Add-on 1: Extra Storage */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[11px] font-bold text-on-surface flex items-center gap-1">
+                  <span className="material-symbols-outlined text-primary text-sm">cloud</span>
+                  Tambahan Kuota Storage (GB) - Addon
+                </label>
+                <span className="text-[10px] text-primary font-bold">+{editExtraStorage} GB</span>
+              </div>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={editExtraStorage}
+                onChange={(e) => setEditExtraStorage(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full bg-surface-container border border-ui-divider rounded-xl px-3 py-2 text-xs font-mono outline-none focus:border-primary mb-1.5"
+                placeholder="0"
+              />
+              <div className="flex flex-wrap gap-1 text-[10px]">
+                {[0, 10, 25, 50, 100].map((gb) => (
+                  <button
+                    key={gb}
+                    type="button"
+                    onClick={() => setEditExtraStorage(gb)}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-colors ${
+                      editExtraStorage === gb
+                        ? 'bg-primary text-white'
+                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-variant'
+                    }`}
+                  >
+                    {gb === 0 ? '0 GB' : `+${gb} GB`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Add-on 2: Extra Accounts */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[11px] font-bold text-on-surface flex items-center gap-1">
+                  <span className="material-symbols-outlined text-secondary text-sm">group_add</span>
+                  Tambahan Kuota Sub-Akun Staf - Addon
+                </label>
+                <span className="text-[10px] text-secondary font-bold">+{editExtraAccounts} Staf</span>
+              </div>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={editExtraAccounts}
+                onChange={(e) => setEditExtraAccounts(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full bg-surface-container border border-ui-divider rounded-xl px-3 py-2 text-xs font-mono outline-none focus:border-primary mb-1.5"
+                placeholder="0"
+              />
+              <div className="flex flex-wrap gap-1 text-[10px]">
+                {[0, 1, 2, 5, 10].map((acc) => (
+                  <button
+                    key={acc}
+                    type="button"
+                    onClick={() => setEditExtraAccounts(acc)}
+                    className={`px-2 py-0.5 rounded-md font-bold transition-colors ${
+                      editExtraAccounts === acc
+                        ? 'bg-secondary text-white'
+                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-variant'
+                    }`}
+                  >
+                    {acc === 0 ? '0 Staf' : `+${acc} Staf`}
+                  </button>
+                ))}
               </div>
             </div>
 

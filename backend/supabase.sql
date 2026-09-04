@@ -77,6 +77,12 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'notes') THEN
     ALTER TABLE public.subscriptions ADD COLUMN notes TEXT;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'extra_storage_gb') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN extra_storage_gb INTEGER DEFAULT 0;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'subscriptions' AND column_name = 'extra_accounts') THEN
+    ALTER TABLE public.subscriptions ADD COLUMN extra_accounts INTEGER DEFAULT 0;
+  END IF;
 END $$;
 
 -- RLS (Row Level Security) agar aman

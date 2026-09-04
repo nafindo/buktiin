@@ -22,6 +22,7 @@ export default function SubAccounts() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [deviceLimit, setDeviceLimit] = useState(1);
+  const [extraAccounts, setExtraAccounts] = useState(0);
   const [planName, setPlanName] = useState('FREE');
 
   useEffect(() => {
@@ -59,22 +60,30 @@ export default function SubAccounts() {
         .limit(1);
 
       let currentPlan = 'FREE';
-      let totalLimit = 1;
+      let baseLimit = 1;
+      let addonAccounts = Number(session.user.user_metadata?.extra_accounts || 0);
 
       if (subsData && subsData.length > 0 && subsData[0].plans) {
         const plan = subsData[0].plans;
         currentPlan = plan.name || 'FREE';
-        totalLimit = plan.accountlimit || plan.accountLimit || getPlanDeviceLimit(currentPlan);
+        baseLimit = plan.accountlimit || plan.accountLimit || getPlanDeviceLimit(currentPlan);
+        const subExtra = Number(subsData[0].extra_accounts || 0);
+        if (subExtra > addonAccounts) {
+          addonAccounts = subExtra;
+        }
       } else {
         // Fallback: check if plan is stored in user metadata
         const metaPlan = session.user.user_metadata?.plan;
         if (metaPlan) {
           currentPlan = metaPlan;
-          totalLimit = getPlanDeviceLimit(metaPlan);
+          baseLimit = getPlanDeviceLimit(metaPlan);
         }
       }
 
+      const totalLimit = (baseLimit >= 999999) ? 999999 : (baseLimit + addonAccounts);
+
       setPlanName(currentPlan);
+      setExtraAccounts(addonAccounts);
       setDeviceLimit(totalLimit);
 
       // 2. Fetch existing sub-accounts directly from Supabase
@@ -102,7 +111,7 @@ export default function SubAccounts() {
   // total limit = 5 -> 1 master, 4 sub-accounts
   // total limit = 10 -> 1 master, 9 sub-accounts
   const maxSubAccounts = Math.max(0, deviceLimit - 1);
-  const isPlanAllowed = planName !== 'FREE' && planName !== 'BASIC' && maxSubAccounts > 0;
+  const isPlanAllowed = planName !== 'FREE' && maxSubAccounts > 0;
   const isLimitReached = subAccounts.length >= maxSubAccounts;
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -230,7 +239,7 @@ export default function SubAccounts() {
         </div>
       </div>
 
-      {/* CASE 1: FREE / BASIC PLAN (NO SUB-ACCOUNTS ALLOWED) */}
+      {/* CASE 1: FREE OR BASIC WITHOUT SUB-ACCOUNTS */}
       {!isPlanAllowed && !loading && (
         <div className="bg-surface border border-ui-divider rounded-2xl p-6 sm:p-8 text-center flex flex-col items-center justify-center max-w-lg mx-auto my-4 space-y-4 shadow-sm">
           <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center">
@@ -238,19 +247,38 @@ export default function SubAccounts() {
           </div>
 
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-on-surface">Fitur Akun Staf Terkunci</h2>
+            <h2 className="text-base sm:text-lg font-bold text-on-surface">Fitur Akun Staf Belum Aktif</h2>
             <p className="text-xs text-on-surface-variant mt-2 leading-relaxed">
-              Paket Anda saat ini (<span className="font-bold text-primary">{planName} Plan</span>) dibatasi hanya untuk <span className="font-bold text-on-surface">1 Akun Utama (1 Perangkat)</span>.
-              <br />
-              Fitur penambahan sub-akun staf untuk beberapa perangkat tersedia mulai dari paket <span className="font-bold text-on-surface">Starter (3 Akun)</span>, <span className="font-bold text-on-surface">Pro (5 Akun)</span>, <span className="font-bold text-on-surface">Business (10 Akun)</span>, dan <span className="font-bold text-on-surface">Enterprise</span>.
+              {planName === 'FREE' ? (
+                <>
+                  Paket Anda saat ini (<span className="font-bold text-primary">Free Plan</span>) dibatasi hanya untuk <span className="font-bold text-on-surface">1 Akun Utama (1 Perangkat)</span>.
+                  <br />
+                  Silakan upgrade ke paket berbayar untuk mengaktifkan fitur multi-perangkat atau pesan kuota staf tambahan.
+                </>
+              ) : (
+                <>
+                  Paket Anda saat ini (<span className="font-bold text-primary">{planName} Plan</span>) memiliki kuota dasar <span className="font-bold text-on-surface">1 Akun Utama</span>.
+                  <br />
+                  Untuk paket Basic, Anda dapat membeli <span className="font-bold text-primary">Add-on Kuota Akun Staf (+1, +2, dst)</span> atau langsung <span className="font-bold text-primary">Upgrade Paket</span> ke Starter/Pro/Business.
+                </>
+              )}
             </p>
           </div>
 
           <div className="w-full bg-surface-container-low border border-ui-divider rounded-xl p-3 text-left space-y-2 text-xs">
             <div className="flex justify-between items-center text-on-surface-variant">
               <span>Paket Saat Ini:</span>
-              <span className="font-bold text-on-surface">{planName} (1 Device)</span>
+              <span className="font-bold text-on-surface">{planName} (1 Device Utama)</span>
             </div>
+            {planName === 'BASIC' && (
+              <div className="flex justify-between items-center text-primary bg-primary/10 p-2 rounded-lg font-bold">
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">stars</span>
+                  Add-on Staf untuk Basic:
+                </span>
+                <span>Bisa Beli +1, +2, +5 Akun</span>
+              </div>
+            )}
             <div className="flex justify-between items-center text-on-surface-variant">
               <span>Starter Plan:</span>
               <span className="font-bold text-primary">1 Utama + 2 Akun Staf (Total 3 Device)</span>
@@ -269,13 +297,13 @@ export default function SubAccounts() {
             to="/plans"
             className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition-all"
           >
-            <span className="material-symbols-outlined text-base">upgrade</span>
-            Upgrade Paket untuk Tambah Staf
+            <span className="material-symbols-outlined text-base">shopping_cart</span>
+            {planName === 'BASIC' ? 'Beli Add-on Staf / Upgrade Paket' : 'Upgrade ke Paket Berbayar'}
           </Link>
         </div>
       )}
 
-      {/* CASE 2: PAID PLAN WITH SUB-ACCOUNT ACCESS (STARTER, PRO, BUSINESS, ENTERPRISE) */}
+      {/* CASE 2: PLAN WITH SUB-ACCOUNT ACCESS (STARTER, PRO, BUSINESS, ENTERPRISE, OR BASIC WITH ADD-ON) */}
       {isPlanAllowed && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 flex-1">
           {/* Left: Account List */}
@@ -351,9 +379,16 @@ export default function SubAccounts() {
                 <span className="material-symbols-outlined text-primary text-base">person_add</span>
                 Tambah Akun Staf Baru
               </h2>
-              <p className="text-[10px] text-on-surface-variant">
-                Alokasi Paket {planName}: 1 Akun Utama + {maxSubAccounts} Akun Staf
-              </p>
+              <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                <p className="text-[10px] text-on-surface-variant">
+                  Alokasi: 1 Utama + {maxSubAccounts} Staf ({deviceLimit} Perangkat)
+                </p>
+                {extraAccounts > 0 && (
+                  <span className="bg-primary/10 text-primary border border-primary/20 text-[9px] font-bold px-1.5 py-0.2 rounded-md">
+                    +{extraAccounts} Add-on
+                  </span>
+                )}
+              </div>
             </div>
 
             {successMsg && (
@@ -377,13 +412,13 @@ export default function SubAccounts() {
                   <span>Batas Kuota Staf Tercapai</span>
                 </div>
                 <p className="text-[11px] leading-relaxed">
-                  Paket <span className="font-bold">{planName}</span> Anda memiliki kuota maksimal {maxSubAccounts} akun staf ({deviceLimit} total perangkat).
+                  Paket <span className="font-bold">{planName}</span> Anda telah mencapai kuota maksimal {maxSubAccounts} akun staf ({deviceLimit} total perangkat).
                 </p>
                 <Link
                   to="/plans"
                   className="block text-center bg-primary text-white font-bold py-2 rounded-lg text-[11px] hover:bg-primary/90 transition-colors shadow"
                 >
-                  Upgrade Paket untuk Tambah Kuota
+                  Beli Tambahan Kuota Staf (Add-on) / Upgrade
                 </Link>
               </div>
             ) : (
